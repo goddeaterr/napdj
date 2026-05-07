@@ -6,7 +6,6 @@ const TRAIL_LENGTH = 16
 export default function CustomCursor() {
   const dotRef      = useRef<HTMLDivElement>(null)
   const ringRef     = useRef<HTMLDivElement>(null)
-  const trailRef    = useRef<HTMLDivElement[]>([])
   const trailCanvas = useRef<HTMLCanvasElement | null>(null)
 
   const posRef     = useRef({ x: -200, y: -200 })
