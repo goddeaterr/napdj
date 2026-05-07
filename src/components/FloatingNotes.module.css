@@ -1,0 +1,38 @@
+.wrap {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.note {
+  position: absolute;
+  bottom: -40px;
+  opacity: 0;
+  font-style: normal;
+  user-select: none;
+  animation: floatNote linear infinite both;
+  will-change: transform, opacity;
+}
+
+@keyframes floatNote {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0;
+  }
+  8% {
+    opacity: 0.7;
+  }
+  80% {
+    opacity: 0.35;
+  }
+  100% {
+    transform: translateY(-95vh) rotate(var(--rotate, 20deg));
+    opacity: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .wrap { display: none; }
+}

@@ -1,0 +1,9 @@
+.wrap {
+  display: inline-flex;
+  will-change: transform;
+  /* Smooth on leave handled by JS, but add transition for the first frame */
+}
+/* Disable on touch devices */
+@media (pointer: coarse) {
+  .wrap { transform: none !important; }
+}

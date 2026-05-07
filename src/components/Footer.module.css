@@ -1,0 +1,120 @@
+.footer { position: relative; border-top: 1px solid rgba(155,48,255,0.15); padding: clamp(40px,6vw,72px) 0 36px; overflow: hidden; }
+.topGlow { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 700px; height: 300px; background: radial-gradient(ellipse, rgba(155,48,255,0.1), transparent 65%); pointer-events: none; }
+.bottomGlow { position: absolute; bottom: 0; right: 0; width: 400px; height: 300px; background: radial-gradient(circle at right bottom, rgba(0,200,255,0.05), transparent 65%); pointer-events: none; }
+
+/* Big CTA */
+.cta { display: flex; justify-content: space-between; align-items: flex-end; gap: 48px; margin-bottom: clamp(28px,4vw,48px); flex-wrap: wrap; opacity: 0; transform: translateY(32px); transition: opacity 0.9s, transform 0.9s; }
+.in { opacity: 1 !important; transform: none !important; }
+.ctaLeft { flex: 1; min-width: 280px; }
+.ctaTitle { margin-bottom: 20px; }
+.ctaAccent { color: var(--purple); text-shadow: 0 0 60px rgba(155,48,255,0.4); }
+.ctaSub { font-size: 16px; color: rgba(255,255,255,0.45); line-height: 1.7; max-width: 380px; }
+.ctaRight { display: flex; flex-direction: column; gap: 14px; align-items: flex-start; }
+.emailBtn { font-size: 12px !important; }
+.copied { border-color: var(--green) !important; color: var(--green) !important; }
+
+/* Divider */
+.divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(155,48,255,0.2) 30%, rgba(155,48,255,0.4) 50%, rgba(155,48,255,0.2) 70%, transparent); margin: 0 0 64px; }
+
+/* Info grid */
+.infoGrid { display: grid; grid-template-columns: 2fr 1fr 1fr 1.5fr; gap: clamp(20px,3vw,40px); margin-bottom: 36px; }
+
+/* Brand */
+.brand {}
+.logo { font-family: var(--font-display); font-size: 40px; letter-spacing: 0.04em; color: var(--white); margin-bottom: 18px; }
+.logoPurple { color: var(--purple); text-shadow: 0 0 30px rgba(155,48,255,0.5); }
+.brandDesc { font-size: 14px; color: rgba(255,255,255,0.4); line-height: 1.75; margin-bottom: 28px; max-width: 280px; }
+.badges { display: flex; gap: 20px; }
+.badge { display: flex; flex-direction: column; gap: 3px; }
+.badgeNum { font-family: var(--font-display); font-size: 28px; color: var(--purple); }
+.badgeLabel { font-family: var(--font-condensed); font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(255,255,255,0.3); }
+
+/* Links column */
+.linksCol { display: flex; flex-direction: column; gap: 12px; }
+.colTitle { font-family: var(--font-condensed); font-size: 10px; font-weight: 700; letter-spacing: 0.32em; text-transform: uppercase; color: rgba(155,48,255,0.8); margin-bottom: 4px; }
+.link { font-size: 14px; color: rgba(255,255,255,0.4); background: none; border: none; cursor: pointer; padding: 0; text-align: left; text-decoration: none; font-family: var(--font-body); transition: color 0.2s; }
+.link:hover { color: rgba(255,255,255,0.85); }
+.linkStatic { font-size: 14px; color: rgba(255,255,255,0.35); font-family: var(--font-body); }
+
+/* Contact */
+.contactItem { display: flex; align-items: flex-start; gap: 10px; }
+.contactIcon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+.contactLink { font-size: 14px; color: rgba(255,255,255,0.5); text-decoration: none; transition: color 0.2s; }
+.contactLink:hover { color: var(--purple); }
+.contactText { font-size: 14px; color: rgba(255,255,255,0.4); }
+
+.hoursCard { margin-top: 20px; padding: 18px; background: rgba(155,48,255,0.05); border: 1px solid rgba(155,48,255,0.12); border-radius: 4px; }
+.hoursTitle { font-family: var(--font-condensed); font-size: 10px; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase; color: var(--purple); margin-bottom: 12px; }
+.hoursRow { display: flex; justify-content: space-between; font-size: 12px; color: rgba(255,255,255,0.4); margin-bottom: 6px; font-family: var(--font-condensed); letter-spacing: 0.05em; }
+
+/* Bottom */
+.bottom { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: rgba(255,255,255,0.2); letter-spacing: 0.06em; flex-wrap: wrap; gap: 12px; }
+.bottomCenter { color: rgba(155,48,255,0.4); }
+.madeWith { font-style: italic; color: rgba(255,255,255,0.15); }
+
+@media (max-width: 1100px) { .infoGrid { grid-template-columns: 1fr 1fr; gap: 40px; } }
+@media (max-width: 700px) { .infoGrid { grid-template-columns: 1fr; } .cta { flex-direction: column; align-items: flex-start; } .bottom { flex-direction: column; text-align: center; } }
+
+/* ── Neko art logo in footer ── */
+.logo {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  font-size: unset !important;
+  font-family: unset !important;
+  margin-bottom: 18px;
+}
+.logoText {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  line-height: 1.1;
+}
+.logoNeko {
+  font-family: var(--font-display);
+  font-size: 22px; letter-spacing: 0.06em;
+  color: var(--white);
+}
+.logoArt {
+  font-family: var(--font-display);
+  font-size: 22px; letter-spacing: 0.06em;
+  color: var(--purple);
+  text-shadow: 0 0 24px rgba(155,48,255,0.5);
+}
+.logoPlatform {
+  font-family: var(--font-condensed);
+  font-size: 10px; letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.25);
+}
+@media (max-width: 480px) {
+  .infoGrid { grid-template-columns: 1fr !important; }
+  .cta { flex-direction: column; align-items: flex-start; gap: 20px; }
+  .ctaRight { flex-direction: column; align-items: stretch; }
+}
+
+/* ── Footer CTA — gradient background ── */
+.cta {
+  background: linear-gradient(135deg,
+    rgba(155,48,255,0.06) 0%,
+    rgba(255,45,120,0.04) 50%,
+    rgba(155,48,255,0.06) 100%
+  );
+  border: 1px solid rgba(155,48,255,0.12);
+  border-radius: 8px;
+  padding: 40px clamp(20px,4vw,48px) !important;
+  margin-bottom: clamp(28px,4vw,48px) !important;
+}
+
+/* Footer logo glow */
+.logoPurple {
+  text-shadow: 0 0 24px rgba(155,48,255,0.5);
+}
+
+/* Badge number gradient */
+.badgeNum {
+  background: linear-gradient(135deg, var(--purple), var(--pink));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}

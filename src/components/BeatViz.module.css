@@ -1,0 +1,78 @@
+.wrap {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: transparent;
+  z-index: 2;
+}
+
+.label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+  font-family: var(--font-condensed);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: rgba(155,48,255,0.4);
+  white-space: nowrap;
+  z-index: 3;
+  pointer-events: none;
+}
+
+/* ── Bar row ── */
+.bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 50%;
+  padding: 0 0;
+  flex: 1;
+}
+
+/* Mirrored second row */
+.mirror {
+  align-items: flex-start;
+  transform: scaleY(-1);
+  opacity: 0.35;
+}
+
+.bar {
+  flex: 1;
+  min-width: 1px;
+  height: var(--base, 40%);
+  background: var(--col, var(--purple));
+  border-radius: 1px 1px 0 0;
+  opacity: 0.7;
+  animation: beatBounce var(--dur, 0.6s) var(--del, 0s) ease-in-out infinite alternate;
+  box-shadow: 0 0 4px var(--col, var(--purple));
+  will-change: transform;
+}
+
+@keyframes beatBounce {
+  from { transform: scaleY(0.25); opacity: 0.4; }
+  to   { transform: scaleY(1);    opacity: 0.85; }
+}
+
+/* Fade edges */
+.wrap::before,
+.wrap::after {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 80px;
+  z-index: 2;
+  pointer-events: none;
+}
+.wrap::before {
+  left: 0;
+  background: linear-gradient(to right, var(--black), transparent);
+}
+.wrap::after {
+  right: 0;
+  background: linear-gradient(to left, var(--black), transparent);
+}

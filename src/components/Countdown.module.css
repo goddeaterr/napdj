@@ -1,0 +1,195 @@
+.wrap {
+  position: relative;
+  padding: clamp(36px,5vw,56px) 0;
+  border-top: 1px solid rgba(155,48,255,0.12);
+  border-bottom: 1px solid rgba(155,48,255,0.12);
+  background: rgba(155,48,255,0.03);
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.9s cubic-bezier(0.16,1,0.3,1), transform 0.9s cubic-bezier(0.16,1,0.3,1);
+}
+.in { opacity: 1; transform: none; }
+
+.bgGlow {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 800px; height: 400px;
+  background: radial-gradient(ellipse, rgba(155,48,255,0.08), transparent 65%);
+  pointer-events: none;
+}
+
+.inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(28px,5vw,56px);
+  align-items: center;
+}
+
+.left {}
+.heading {
+  font-family: var(--font-display);
+  font-size: clamp(40px, 5vw, 64px);
+  line-height: 0.95;
+  text-transform: uppercase;
+  margin: 20px 0 20px;
+}
+.accent { color: var(--purple); }
+.sub {
+  font-size: 15px;
+  color: rgba(255,255,255,0.45);
+  line-height: 1.75;
+  margin-bottom: 36px;
+  max-width: 380px;
+}
+
+/* Clock */
+.right { display: flex; flex-direction: column; align-items: center; gap: 24px; }
+
+.clock {
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+  position: relative;
+}
+
+.unit {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 0 20px;
+}
+
+.digits {
+  display: flex;
+  gap: 3px;
+}
+
+.digit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 72px;
+  background: rgba(155,48,255,0.08);
+  border: 1px solid rgba(155,48,255,0.18);
+  border-radius: 4px;
+  font-family: var(--font-display);
+  font-size: 52px;
+  color: var(--white);
+  letter-spacing: -0.02em;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 20px rgba(155,48,255,0.1), inset 0 1px 0 rgba(255,255,255,0.05);
+}
+
+.digit::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0;
+  top: 50%;
+  height: 1px;
+  background: rgba(0,0,0,0.3);
+}
+
+.tickFlash .digit {
+  box-shadow: 0 0 24px rgba(155,48,255,0.2), inset 0 1px 0 rgba(255,255,255,0.05);
+  color: var(--purple-bright);
+}
+
+.unitLabel {
+  font-family: var(--font-condensed);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+}
+
+.colon {
+  position: absolute;
+  right: -4px;
+  top: 18px;
+  font-family: var(--font-display);
+  font-size: 40px;
+  color: var(--purple);
+  opacity: 0.2;
+  transition: opacity 0.5s;
+  pointer-events: none;
+  line-height: 1;
+}
+.colonOn { opacity: 0.8; }
+
+.clockBase { width: 100%; }
+
+.spotsRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 24px;
+  background: rgba(57,255,20,0.05);
+  border: 1px solid rgba(57,255,20,0.15);
+  border-radius: 4px;
+}
+
+.spotsDot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 10px rgba(57,255,20,0.6);
+  animation: pulse 2s ease-in-out infinite;
+  flex-shrink: 0;
+}
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.6;transform:scale(0.85)} }
+
+.spotsText {
+  font-family: var(--font-condensed);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(57,255,20,0.75);
+}
+
+@media (max-width: 860px) {
+  .inner { grid-template-columns: 1fr; gap: 48px; }
+  .right { align-items: flex-start; }
+  .clock { gap: 0; }
+  .unit { padding: 0 12px; }
+  .digit { width: 40px; height: 56px; font-size: 40px; }
+}
+@media (max-width: 460px) {
+  .unit { padding: 0 6px; }
+  .digit { width: 34px; height: 48px; font-size: 34px; }
+}
+
+/* ── Enhanced countdown ── */
+
+/* Digit — glowing face */
+.digit {
+  background: linear-gradient(180deg,
+    rgba(155,48,255,0.12) 0%,
+    rgba(155,48,255,0.06) 50%,
+    rgba(155,48,255,0.12) 100%
+  ) !important;
+  border-color: rgba(155,48,255,0.25) !important;
+}
+
+/* Seconds tick flash */
+.tickFlash .digit {
+  animation: digitFlash 1s ease-in-out infinite;
+}
+@keyframes digitFlash {
+  0%,100% { border-color: rgba(155,48,255,0.25); color: var(--white); }
+  50%     { border-color: rgba(155,48,255,0.6); color: rgba(191,95,255,1); text-shadow: 0 0 20px rgba(155,48,255,0.8); }
+}
+
+/* Spots row — more prominent */
+.spotsRow {
+  background: linear-gradient(135deg, rgba(57,255,20,0.07), rgba(57,255,20,0.03)) !important;
+  border-radius: 6px;
+}
