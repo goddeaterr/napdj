@@ -124,7 +124,7 @@ interface PlanData {
   desc: string; includes: string[]; excludes: string[]; cta: string
 }
 
-function PricingCard({ plan, delay, isHovered, otp, onHover, onLeave }: {
+function PricingCard({ plan, delay, isHovered: _isHovered, otp, onHover, onLeave }: {
   plan: PlanData
   delay: number; isHovered: boolean; otp: string
   onHover: () => void; onLeave: () => void

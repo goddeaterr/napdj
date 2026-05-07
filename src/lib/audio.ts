@@ -575,7 +575,7 @@ export const AMBIENT_BANK: PadSound[] = [
     synth(ctx, dest, v=1) {
       const rev = mkRev(ctx, 5); rev.connect(dest)
       const freqs=[200,300,500]
-      freqs.forEach((f,i) => {
+      freqs.forEach((f,_i) => {
         const osc=ctx.createOscillator(); const g=ctx.createGain()
         osc.type='sine'; osc.frequency.value=f*(0.99+Math.random()*0.02)
         osc.connect(g); g.connect(rev)
