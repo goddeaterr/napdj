@@ -159,14 +159,11 @@
 @media (max-width: 1100px) { .langSwitch { display: none; } }
 /* 960: collapse to hamburger */
 @media (max-width: 960px) {
-  .links { display: none; }
-  .ambientWrap { display: none; }
-  .hamburger { display: flex; }
-  .mobile { display: flex; }
-}
-/* Hide CTA button at narrow widths */
-@media (max-width: 840px) {
-  .navCta { display: none; }
+  .links      { display: none; }
+  .ambientWrap{ display: none; }
+  .navCta     { display: none; }   /* book button moves into the drawer */
+  .hamburger  { display: flex; margin-left: auto; }
+  .mobile     { display: flex; }
 }
 /* 480: hide logoArt too, show just cat + "neko" */
 @media (max-width: 480px) {

@@ -6,7 +6,7 @@ import AmbientPlayer from './AmbientPlayer'
 import NekoLogo from './NekoLogo'
 import styles from './Navbar.module.css'
 
-const SECTION_IDS = ['hero','about','learning','gallery','console','testimonials','pricing','builder','faq','book','contact'] as const
+const SECTION_IDS = ['hero','about','learning','gallery','testimonials','pricing','builder','faq','book','contact'] as const
 
 function scrollToSection(id: string) {
   const el = document.getElementById(id)

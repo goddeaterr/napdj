@@ -6,13 +6,11 @@ import ScrollProgress  from './components/ScrollProgress'
 import ParticleCanvas  from './components/ParticleCanvas'
 import Navbar          from './components/Navbar'
 import Hero            from './components/Hero'
-import BeatViz         from './components/BeatViz'
 import { GraduatesMarquee, ClubsMarquee } from './components/Marquee'
 import About           from './components/About'
 import Learning        from './components/Learning'
 import Countdown       from './components/Countdown'
 import Gallery         from './components/Gallery'
-import DJConsole       from './components/DJConsole'
 import Testimonials    from './components/Testimonials'
 import Pricing         from './components/Pricing'
 import DJBuilder       from './components/DJBuilder'
@@ -44,14 +42,6 @@ export default function App() {
         <Gallery />
         <ClubsMarquee />
         <Learning />
-
-        {/* Beat visualizer before interactive console */}
-        <BeatViz height={90} />
-
-        <DJConsole audioCtx={audioCtx} />
-
-        {/* Beat visualizer after console */}
-        <BeatViz height={72} />
 
         <Pricing />
         <Countdown />
