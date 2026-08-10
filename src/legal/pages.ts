@@ -41,6 +41,8 @@ const privacy: LegalPage = {
       ]},
       { heading: '2. What we collect', body: [
         '• Booking form: your name, e-mail address, phone number (optional), the course you selected, your preferred genre, preferred date and time, and any message you write.',
+        '• Account: to book a lesson you create an account. We store your name, e-mail address, phone number (optional), preferred language, a cryptographic hash of your password (never the password itself), and the record of lessons purchased, granted and used.',
+        '• Sign-in security: the time of your last sign-in and a count of failed attempts, kept so that an account being guessed at can be locked.',
         '• Correspondence: the content of e-mails or messages you send us.',
         '• Technical data: our hosting provider processes standard server logs (IP address, browser type, time of request) for security and availability. We do not run analytics, advertising or tracking scripts.',
         'We do not knowingly collect data from children under 14 without the consent of a parent or guardian, and we never collect special categories of data.',
@@ -81,6 +83,8 @@ const privacy: LegalPage = {
       ]},
       { heading: '2. Какие данные мы собираем', body: [
         '• Форма записи: имя, адрес электронной почты, телефон (необязательно), выбранный курс, предпочитаемый жанр, желаемые дата и время, а также текст сообщения.',
+        '• Аккаунт: для записи на урок создаётся аккаунт. Мы храним имя, адрес электронной почты, телефон (необязательно), язык, криптографический хеш пароля (сам пароль — никогда) и историю уроков: купленных, подаренных и использованных.',
+        '• Безопасность входа: время последнего входа и число неудачных попыток — чтобы заблокировать аккаунт при подборе пароля.',
         '• Переписка: содержание писем и сообщений, которые вы нам отправляете.',
         '• Технические данные: хостинг-провайдер обрабатывает стандартные журналы сервера (IP-адрес, тип браузера, время запроса) для безопасности и доступности. Мы не используем аналитику, рекламу и трекеры.',
         'Мы сознательно не собираем данные детей младше 14 лет без согласия родителя или опекуна и никогда не собираем особые категории данных.',
@@ -121,6 +125,8 @@ const privacy: LegalPage = {
       ]},
       { heading: '2. Kokius duomenis renkame', body: [
         '• Registracijos forma: vardas, el. pašto adresas, telefono numeris (neprivaloma), pasirinktas kursas, pageidaujamas žanras, pageidaujama data ir laikas bei jūsų žinutė.',
+        '• Paskyra: norint registruotis į pamoką sukuriama paskyra. Saugome vardą, el. pašto adresą, telefono numerį (neprivaloma), kalbą, kriptografinę slaptažodžio maišą (niekada — patį slaptažodį) ir pamokų istoriją: įsigytas, dovanotas ir panaudotas.',
+        '• Prisijungimo saugumas: paskutinio prisijungimo laikas ir nesėkmingų bandymų skaičius — kad būtų galima užrakinti paskyrą, jei bandoma spėlioti slaptažodį.',
         '• Susirašinėjimas: jūsų siunčiamų laiškų ir žinučių turinys.',
         '• Techniniai duomenys: prieglobos paslaugų teikėjas tvarko įprastus serverio žurnalus (IP adresą, naršyklės tipą, užklausos laiką) saugumo ir prieinamumo tikslais. Analitikos, reklamos ar sekimo scenarijų nenaudojame.',
         'Sąmoningai nerenkame jaunesnių nei 14 metų vaikų duomenų be tėvų ar globėjų sutikimo ir niekada nerenkame specialių kategorijų duomenų.',
