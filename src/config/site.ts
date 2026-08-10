@@ -99,4 +99,4 @@ export const LEGAL = {
   lastUpdated: '2026-08-10',
 } as const
 
-export const SITE_URL = 'https://nekoartplatform.lt'
+export const SITE_URL = 'https://napdj.com'

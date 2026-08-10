@@ -13,7 +13,7 @@ import { Resend } from 'resend'
 export const OWNER = process.env.OWNER_EMAIL || 'artemijstepanov@gmail.com'
 export const BRAND = process.env.BRAND_NAME || 'neko art platform'
 const PUBLIC_PHONE = process.env.PUBLIC_PHONE || '+370 624 50896'
-const SITE_URL     = process.env.PUBLIC_SITE_URL || 'https://nekoartplatform.lt'
+const SITE_URL     = process.env.PUBLIC_SITE_URL || 'https://napdj.com'
 const FROM         = `${BRAND} <${process.env.FROM_EMAIL || 'onboarding@resend.dev'}>`
 
 const resendReady = !!process.env.RESEND_API_KEY
