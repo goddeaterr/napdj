@@ -1,6 +1,5 @@
 import { useRef } from 'react'
 import type { AudioCtxRef } from './lib/audio'
-import CustomCursor    from './components/CustomCursor'
 import ClickRipple     from './components/ClickRipple'
 import ScrollProgress  from './components/ScrollProgress'
 import ParticleCanvas  from './components/ParticleCanvas'
@@ -10,7 +9,6 @@ import { GraduatesMarquee, ClubsMarquee } from './components/Marquee'
 import About           from './components/About'
 import Learning        from './components/Learning'
 import Countdown       from './components/Countdown'
-import Gallery         from './components/Gallery'
 import Testimonials    from './components/Testimonials'
 import Pricing         from './components/Pricing'
 import DJBuilder       from './components/DJBuilder'
@@ -25,7 +23,6 @@ export default function App() {
   return (
     <>
       {/* Global visual effects */}
-      <CustomCursor />
       <ClickRipple />
       <ScrollProgress />
 
@@ -39,7 +36,6 @@ export default function App() {
         <Hero />
         <GraduatesMarquee />
         <About />
-        <Gallery />
         <ClubsMarquee />
         <Learning />
 

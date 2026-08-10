@@ -1,4 +1,5 @@
 import { submitBooking } from '../server/lib/booking.js'
+import { clientIp } from '../server/lib/auth.js'
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*')
@@ -11,7 +12,7 @@ export default async function handler(req, res) {
     return
   }
 
-  const result = await submitBooking(req.body)
+  const result = await submitBooking(req.body, clientIp(req))
 
   if (!result.ok) {
     res.status(result.status).json({ ok: false, error: result.error })

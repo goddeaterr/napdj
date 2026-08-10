@@ -3,7 +3,7 @@ export type Lang = 'en' | 'ru' | 'lt'
 export const translations = {
   en: {
     // Navbar
-    nav_about:'About', nav_program:'Program', nav_gallery:'Gallery',
+    nav_about:'About', nav_program:'Program',
     nav_pricing:'Pricing', nav_contact:'Contact', nav_book:'Book a Lesson',
 
     // Hero
@@ -61,10 +61,6 @@ export const translations = {
     cd_spots:'Only 3 spots available this intake',
     cd_days:'Days', cd_hours:'Hours', cd_minutes:'Minutes', cd_seconds:'Seconds',
 
-    // Gallery
-    gallery_label:'Inside neko art',
-    gallery_title1:'The', gallery_title2:'Studio.',
-    gallery_hint:'Hover to explore',
 
     // DJ Console
     console_label:'Try It Now',
@@ -188,7 +184,7 @@ export const translations = {
   },
 
   ru: {
-    nav_about:'О нас', nav_program:'Программа', nav_gallery:'Галерея',
+    nav_about:'О нас', nav_program:'Программа',
     nav_pricing:'Цены', nav_contact:'Контакт', nav_book:'Записаться',
 
     hero_label:'Школа диджеинга · С 2020',
@@ -242,9 +238,6 @@ export const translations = {
     cd_spots:'Осталось только 3 места в этом наборе',
     cd_days:'Дней', cd_hours:'Часов', cd_minutes:'Минут', cd_seconds:'Секунд',
 
-    gallery_label:'Внутри neko art',
-    gallery_title1:'Наша', gallery_title2:'Студия.',
-    gallery_hint:'Наведите для просмотра',
 
     console_label:'Попробуй сейчас',
     console_title1:'Прикоснись к', console_title2:'Декам.',
@@ -359,7 +352,7 @@ export const translations = {
   },
 
   lt: {
-    nav_about:'Apie mus', nav_program:'Programa', nav_gallery:'Galerija',
+    nav_about:'Apie mus', nav_program:'Programa',
     nav_pricing:'Kainos', nav_contact:'Kontaktai', nav_book:'Registruotis',
 
     hero_label:'DJ mokykla · Nuo 2020',
@@ -413,9 +406,6 @@ export const translations = {
     cd_spots:'Liko tik 3 vietos šiame priėmime',
     cd_days:'Dienos', cd_hours:'Valandos', cd_minutes:'Minutės', cd_seconds:'Sekundės',
 
-    gallery_label:'neko art viduje',
-    gallery_title1:'Mūsų', gallery_title2:'Studija.',
-    gallery_hint:'Užveskite pelę',
 
     console_label:'Išbandykite dabar',
     console_title1:'Palieskite', console_title2:'Dekus.',

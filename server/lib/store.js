@@ -1,100 +1,41 @@
 /* ============================================================================
-   Booking store — append-only JSON file with atomic writes.
-   ----------------------------------------------------------------------------
-   Location: $DATA_DIR/bookings.json (defaults to ./data next to the project).
-   On Vercel the filesystem is ephemeral, so /tmp is used there and the data
-   only survives while the serverless instance is warm — run the Express
-   server (npm run server) on a normal host if you need durable history.
+   Booking store — picks a backend based on the environment.
+
+   • Supabase  when SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY are set.
+     This is what production should use: Vercel's filesystem is temporary, so
+     without it the reservation history disappears when an instance recycles.
+     Set the table up first with supabase/schema.sql.
+
+   • JSON file otherwise ($DATA_DIR/bookings.json, defaults to ./data).
+     Fine for local development and for self-hosted Node deployments.
+
+   Both backends expose the same functions, so nothing else in the codebase
+   needs to know which one is active.
 ============================================================================ */
-import { readFile, writeFile, mkdir, rename } from 'node:fs/promises'
-import { randomUUID } from 'node:crypto'
-import path from 'node:path'
+import * as fileStore from './stores/file.js'
+import * as supabaseStore from './stores/supabase.js'
 
-const DATA_DIR = process.env.DATA_DIR
-  || (process.env.VERCEL ? '/tmp/nap-data' : path.join(process.cwd(), 'data'))
+const useSupabase = Boolean(process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY)
 
-const FILE = path.join(DATA_DIR, 'bookings.json')
+const backend = useSupabase ? supabaseStore : fileStore
 
-/** Serialises writes so two bookings arriving together cannot clobber each other. */
-let queue = Promise.resolve()
+export const storeName        = backend.name
+export const storeDescription = backend.description
+/** True when bookings survive a restart of the hosting environment. */
+export const storeIsPersistent = useSupabase || !process.env.VERCEL
 
-async function readAll() {
-  try {
-    const raw = await readFile(FILE, 'utf8')
-    const parsed = JSON.parse(raw)
-    return Array.isArray(parsed) ? parsed : []
-  } catch {
-    return []
-  }
-}
+export const listBookings = backend.listBookings
+export const addBooking   = backend.addBooking
 
-async function writeAll(rows) {
-  await mkdir(DATA_DIR, { recursive: true })
-  const tmp = `${FILE}.${process.pid}.tmp`
-  await writeFile(tmp, JSON.stringify(rows, null, 2), 'utf8')
-  await rename(tmp, FILE)
-}
-
-function run(task) {
-  queue = queue.then(task, task)
-  return queue
-}
-
-/** Newest first. */
-export async function listBookings() {
-  const rows = await readAll()
-  return rows.sort((a, b) => String(b.createdAt).localeCompare(String(a.createdAt)))
-}
-
-export async function addBooking(data) {
-  return run(async () => {
-    const rows = await readAll()
-    const booking = {
-      id:        randomUUID(),
-      createdAt: new Date().toISOString(),
-      status:    'new',
-      ...data,
-    }
-    rows.push(booking)
-    await writeAll(rows)
-    return booking
-  })
-}
-
+/** Admin edits — only status and note may be changed. */
 export async function updateBooking(id, patch) {
-  return run(async () => {
-    const rows = await readAll()
-    const i = rows.findIndex(r => r.id === id)
-    if (i === -1) return null
-    const allowed = {}
-    if (typeof patch.status === 'string') allowed.status = patch.status
-    if (typeof patch.note   === 'string') allowed.note   = patch.note.slice(0, 2000)
-    rows[i] = { ...rows[i], ...allowed, updatedAt: new Date().toISOString() }
-    await writeAll(rows)
-    return rows[i]
-  })
+  const allowed = {}
+  if (typeof patch.status === 'string') allowed.status = patch.status
+  if (typeof patch.note   === 'string') allowed.note   = patch.note.slice(0, 2000)
+  return backend.updateBooking(id, allowed)
 }
 
 /** Records the outcome of the notification e-mails (internal, not admin input). */
-export async function markNotified(id, delivery) {
-  return run(async () => {
-    const rows = await readAll()
-    const i = rows.findIndex(r => r.id === id)
-    if (i === -1) return null
-    rows[i] = { ...rows[i], delivery }
-    await writeAll(rows)
-    return rows[i]
-  })
-}
+export const markNotified = backend.markNotified
 
-export async function deleteBooking(id) {
-  return run(async () => {
-    const rows = await readAll()
-    const next = rows.filter(r => r.id !== id)
-    if (next.length === rows.length) return false
-    await writeAll(next)
-    return true
-  })
-}
-
-export const STORE_PATH = FILE
+export const deleteBooking = backend.deleteBooking

@@ -27,6 +27,7 @@ export default function BookingForm() {
   const [errors,  setErrors]  = useState<Partial<Record<keyof FormState, string>>>({})
   const [status,  setStatus]  = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
   const [focused, setFocused] = useState<string | null>(null)
+  const [honeypot, setHoneypot] = useState('')
   const { ref: secRef, isVisible } = useScrollAnimation<HTMLDivElement>(0.05)
 
   const set = (k: keyof FormState, v: string) => {
@@ -73,6 +74,7 @@ export default function BookingForm() {
           noPreference: form.noPreference,
           message:      form.message,
           consent:      form.consent,
+          company:      honeypot,
           lang,
         }),
       })
@@ -192,6 +194,19 @@ export default function BookingForm() {
               </div>
             ) : (
               <form className={styles.form} onSubmit={submit} noValidate>
+
+                {/* Honeypot — hidden from people, irresistible to bots.
+                    Anything typed here makes the server discard the request. */}
+                <input
+                  type="text"
+                  name="company"
+                  className={styles.honeypot}
+                  tabIndex={-1}
+                  autoComplete="off"
+                  aria-hidden="true"
+                  value={honeypot}
+                  onChange={e => setHoneypot(e.target.value)}
+                />
 
                 {/* Name + Email row */}
                 <div className={styles.row}>

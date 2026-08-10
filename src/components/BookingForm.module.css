@@ -148,6 +148,15 @@
   line-height: 1.4;
 }
 
+/* Honeypot — off-screen, never announced to screen readers */
+.honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px; height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
 /* GDPR consent */
 .consent { display: flex; align-items: flex-start; gap: 12px; }
 .checkbox {

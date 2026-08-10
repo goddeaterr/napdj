@@ -99,13 +99,31 @@ Paste the printed `ADMIN_PASSWORD_HASH=…` line into `.env`, then restart the
 server. Also set `ADMIN_SECRET` to a random string, otherwise everyone is
 logged out whenever the server restarts.
 
-**Storage:** reservations live in `data/bookings.json` (`DATA_DIR` overrides the
-location). The folder is gitignored because it contains personal data.
+### Storage
 
-> ⚠️ On Vercel the filesystem is temporary, so the history is lost when the
-> serverless instance recycles. For a durable admin panel run `npm run server`
-> on a normal Node host (VPS, Render, Railway…), or move the store in
-> `server/lib/store.js` to a database.
+The store picks its backend from the environment — nothing else in the code
+changes:
+
+| Backend | When it is used | Where the data lives |
+|---|---|---|
+| **Supabase** | `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` are set | Postgres table `bookings` |
+| **JSON file** | otherwise | `data/bookings.json` (`DATA_DIR` overrides) |
+
+**Production must use Supabase.** Vercel's filesystem is temporary, so with the
+file backend the reservation history disappears whenever a serverless instance
+recycles. Setting it up takes a few minutes on the free tier:
+
+1. Create a project at <https://supabase.com>
+2. SQL Editor → New query → paste and run [`supabase/schema.sql`](supabase/schema.sql)
+3. Project Settings → API → copy **Project URL** and the **service_role** secret
+4. Add `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` to `.env` and to the
+   Vercel project's environment variables, then redeploy
+
+The table has row level security enabled with no policies, so the anon key can
+read nothing — only the server's service_role key has access. Keep that key out
+of the frontend and out of git.
+
+The `data/` folder is gitignored because it contains personal data.
 
 ---
 
@@ -145,7 +163,8 @@ See `.env.example` for the complete, commented list.
 | `ADMIN_PASSWORD_HASH` | scrypt hash of the admin password |
 | `ADMIN_SECRET` | Signs admin session tokens |
 | `ADMIN_SESSION_HOURS` | Login lifetime (default 8) |
-| `DATA_DIR` | Where `bookings.json` is written |
+| `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` | Persistent booking storage (required in production) |
+| `DATA_DIR` | Where `bookings.json` is written when Supabase is not configured |
 | `PUBLIC_PHONE`, `PUBLIC_SITE_URL`, `BRAND_NAME` | Shown in e-mails |
 | `API_PORT` | Local API port (default 3001) |
 

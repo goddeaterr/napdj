@@ -24,7 +24,6 @@ export default function Footer() {
   const navLinks = [
     { label: t('nav_about'),   id: 'about'    },
     { label: t('nav_program'), id: 'learning' },
-    { label: t('nav_gallery'), id: 'gallery'  },
     { label: 'Testimonials',   id: 'testimonials' },
     { label: t('nav_pricing'), id: 'pricing'  },
     { label: 'DJ Builder',     id: 'builder'  },

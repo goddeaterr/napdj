@@ -6,7 +6,7 @@ import AmbientPlayer from './AmbientPlayer'
 import NekoLogo from './NekoLogo'
 import styles from './Navbar.module.css'
 
-const SECTION_IDS = ['hero','about','learning','gallery','testimonials','pricing','builder','faq','book','contact'] as const
+const SECTION_IDS = ['hero','about','learning','testimonials','pricing','builder','faq','book','contact'] as const
 
 function scrollToSection(id: string) {
   const el = document.getElementById(id)
@@ -46,7 +46,6 @@ export default function Navbar({ audioCtx }: { audioCtx: AudioCtxRef }) {
   const links = [
     { label: t('nav_about'),   id: 'about'    },
     { label: t('nav_program'), id: 'learning' },
-    { label: t('nav_gallery'), id: 'gallery'  },
     { label: t('nav_pricing'), id: 'pricing'  },
     { label: t('nav_contact'), id: 'contact'  },
   ]
