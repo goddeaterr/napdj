@@ -4,8 +4,10 @@ import cors    from 'cors'
 
 import { submitBooking }                 from './lib/booking.js'
 import { getAvailability }               from './lib/availability.js'
+import { handleAuth }                    from './lib/accountApi.js'
+import { currentUser }                   from './lib/accounts.js'
 import { mailerStatus, OWNER }           from './lib/mailer.js'
-import { loginHandler, bookingsHandler } from './lib/adminApi.js'
+import { loginHandler, bookingsHandler, studentsHandler } from './lib/adminApi.js'
 import { adminConfigured, clientIp }      from './lib/auth.js'
 import { storeName, storeDescription, storeIsPersistent } from './lib/store.js'
 
@@ -34,6 +36,16 @@ app.get('/api/health', (_req, res) => res.json({
   persistent: storeIsPersistent,
 }))
 
+/* ── student accounts ── */
+app.all('/api/auth/:action', async (req, res) => {
+  try {
+    await handleAuth(req.params.action, req, res)
+  } catch (err) {
+    console.error(`  ❌ auth/${req.params.action}:`, err.message)
+    if (!res.headersSent) res.status(500).json({ ok: false, error: 'server_error' })
+  }
+})
+
 /* ── public availability (dates and times only) ── */
 app.get('/api/availability', async (_req, res) => {
   try {
@@ -46,7 +58,7 @@ app.get('/api/availability', async (_req, res) => {
 
 /* ── public booking endpoint ── */
 app.post('/api/send-booking', async (req, res) => {
-  const result = await submitBooking(req.body, clientIp(req))
+  const result = await submitBooking(req.body, clientIp(req), await currentUser(req))
 
   if (!result.ok) {
     console.error('  ❌ booking failed:', result.error, result.storageError || '')
@@ -66,5 +78,6 @@ app.post('/api/send-booking', async (req, res) => {
 /* ── admin (hidden panel at /admin) ── */
 app.post('/api/admin/login',   loginHandler)
 app.all('/api/admin/bookings', bookingsHandler)
+app.all('/api/admin/students', studentsHandler)
 
 app.listen(port, () => console.log(`🚀  http://localhost:${port}\n`))

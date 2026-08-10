@@ -40,3 +40,23 @@ export async function updateBooking(id, patch) {
 export const markNotified = backend.markNotified
 
 export const deleteBooking = backend.deleteBooking
+
+/* ── Accounts ─────────────────────────────────────────────────────────────
+   Same two backends, same surface. See supabase/accounts.sql for the tables. */
+export const createUser          = backend.createUser
+export const findUserByEmail     = backend.findUserByEmail
+export const findUserById        = backend.findUserById
+export const updateUser          = backend.updateUser
+export const listUsers           = backend.listUsers
+export const deleteUser          = backend.deleteUser
+
+export const createAuthToken     = backend.createAuthToken
+export const findAuthToken       = backend.findAuthToken
+export const useAuthToken        = backend.useAuthToken
+export const deleteAuthTokens    = backend.deleteAuthTokens
+
+export const addLessonEntry      = backend.addLessonEntry
+export const listLessonEntries   = backend.listLessonEntries
+export const lessonBalances      = backend.lessonBalances
+export const deleteLessonEntry   = backend.deleteLessonEntry
+export const listBookingsForUser = backend.listBookingsForUser

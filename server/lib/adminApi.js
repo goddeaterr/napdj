@@ -2,7 +2,11 @@
    Admin API handlers — written against the plain (req, res) signature so the
    same code serves both Express and Vercel functions.
 ============================================================================ */
-import { listBookings, updateBooking, deleteBooking } from './store.js'
+import {
+  listBookings, updateBooking, deleteBooking,
+  listUsers, deleteUser, lessonBalances, listLessonEntries, listBookingsForUser,
+} from './store.js'
+import { adjustLessons } from './accounts.js'
 import {
   adminConfigured, verifyPassword, createToken, isAuthorised,
   rateLimit, resetRateLimit, clientIp,
@@ -89,3 +93,54 @@ export async function bookingsHandler(req, res) {
 }
 
 export { VALID_STATUS }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   GET    /api/admin/students            → every account with its balance
+   POST   /api/admin/students            → { userId, delta, kind, note }
+   DELETE /api/admin/students?id=<uuid>  → remove an account
+══════════════════════════════════════════════════════════════════════════ */
+export async function studentsHandler(req, res) {
+  noStore(res)
+  if (req.method === 'OPTIONS') return res.status(204).end()
+  if (!isAuthorised(req)) return res.status(401).json({ ok: false, error: 'Not authorised' })
+
+  if (req.method === 'GET') {
+    const [users, balances] = await Promise.all([listUsers(), lessonBalances()])
+    const rows = await Promise.all(users.map(async u => ({
+      id: u.id,
+      name: u.name,
+      email: u.email,
+      phone: u.phone ?? '',
+      lang: u.lang ?? 'en',
+      emailVerified: Boolean(u.emailVerified),
+      createdAt: u.createdAt,
+      lastLoginAt: u.lastLoginAt ?? null,
+      balance: balances[u.id] || 0,
+      lessons: await listLessonEntries(u.id),
+      bookings: (await listBookingsForUser(u.id)).map(b => ({
+        id: b.id, status: b.status, plan: b.plan,
+        date: b.date, time: b.time, dateLabel: b.dateLabel, createdAt: b.createdAt,
+      })),
+    })))
+    return res.json({ ok: true, students: rows })
+  }
+
+  if (req.method === 'POST') {
+    const { userId, delta, kind, note } = req.body || {}
+    const result = await adjustLessons({ userId, delta, kind, note, createdBy: 'admin' })
+    if (!result.ok) return res.status(result.status).json({ ok: false, error: result.error })
+    return res.json({ ok: true, balance: result.balance })
+  }
+
+  if (req.method === 'DELETE') {
+    const id = req.query?.id || req.body?.id
+    if (!id) return res.status(400).json({ ok: false, error: 'Missing id' })
+    // Deleting the account cascades to its lessons and tokens; bookings are
+    // kept but unlinked, so the studio does not lose its own records.
+    const removed = await deleteUser(String(id))
+    if (!removed) return res.status(404).json({ ok: false, error: 'Not found' })
+    return res.json({ ok: true })
+  }
+
+  return res.status(405).json({ ok: false, error: 'Method not allowed' })
+}

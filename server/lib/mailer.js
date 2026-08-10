@@ -201,3 +201,137 @@ function clientHtml(booking) {
     <p style="margin:20px 0 0;font-size:12px;color:rgba(255,255,255,0.28);text-align:center;">${s.foot}</p>
   `)
 }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   Account e-mails
+══════════════════════════════════════════════════════════════════════════ */
+
+function button(href, label) {
+  return `<table width="100%" cellpadding="0" cellspacing="0"><tr><td align="center">
+    <a href="${href}" style="display:inline-block;background:#FFFFFF;color:#0A0A0A;text-decoration:none;
+       padding:14px 34px;border-radius:6px;font-size:12px;font-weight:800;letter-spacing:.18em;
+       text-transform:uppercase;">${label}</a>
+  </td></tr></table>`
+}
+
+function fallbackLink(href, label) {
+  return `<p style="margin:22px 0 0;font-size:12px;color:rgba(255,255,255,0.35);line-height:1.7;">
+    ${label}<br/>
+    <a href="${href}" style="color:rgba(255,255,255,0.6);word-break:break-all;">${href}</a>
+  </p>`
+}
+
+const VERIFY_COPY = {
+  en: {
+    subject: `Confirm your e-mail — ${BRAND}`,
+    headline: 'Confirm your e-mail',
+    hi: name => `Hi ${name},`,
+    body: 'Confirm this address to finish creating your account and book your lessons.',
+    cta: 'Confirm e-mail',
+    fallback: 'If the button does not work, paste this link into your browser:',
+    note: 'The link works for 24 hours. If you did not create an account, ignore this e-mail.',
+  },
+  ru: {
+    subject: `Подтвердите e-mail — ${BRAND}`,
+    headline: 'Подтвердите e-mail',
+    hi: name => `Привет, ${name}!`,
+    body: 'Подтвердите адрес, чтобы завершить создание аккаунта и записываться на уроки.',
+    cta: 'Подтвердить e-mail',
+    fallback: 'Если кнопка не работает, вставьте ссылку в браузер:',
+    note: 'Ссылка действует 24 часа. Если вы не создавали аккаунт, просто проигнорируйте письмо.',
+  },
+  lt: {
+    subject: `Patvirtinkite el. paštą — ${BRAND}`,
+    headline: 'Patvirtinkite el. paštą',
+    hi: name => `Sveiki, ${name},`,
+    body: 'Patvirtinkite šį adresą, kad baigtumėte kurti paskyrą ir galėtumėte registruotis į pamokas.',
+    cta: 'Patvirtinti el. paštą',
+    fallback: 'Jei mygtukas neveikia, nukopijuokite nuorodą į naršyklę:',
+    note: 'Nuoroda galioja 24 valandas. Jei paskyros nekūrėte, tiesiog ignoruokite šį laišką.',
+  },
+}
+
+export async function sendVerificationEmail({ email, name, lang }, link) {
+  const c = VERIFY_COPY[lang] || VERIFY_COPY.en
+  return send({
+    to: email,
+    subject: c.subject,
+    html: shell(c.headline, `
+      <p style="margin:0 0 6px;font-size:20px;font-weight:800;color:#fff;">${esc(c.hi(name))}</p>
+      <p style="margin:0 0 26px;font-size:14px;color:rgba(255,255,255,0.45);line-height:1.75;">${c.body}</p>
+      ${button(link, c.cta)}
+      ${fallbackLink(link, c.fallback)}
+      <p style="margin:22px 0 0;font-size:12px;color:rgba(255,255,255,0.28);line-height:1.7;">${c.note}</p>
+    `),
+  })
+}
+
+const RESET_COPY = {
+  en: {
+    subject: `Reset your password — ${BRAND}`,
+    headline: 'Reset your password',
+    hi: name => `Hi ${name},`,
+    body: 'We received a request to reset your password. Choose a new one here:',
+    cta: 'Choose a new password',
+    fallback: 'If the button does not work, paste this link into your browser:',
+    note: 'The link works for 1 hour and can be used once. If you did not ask for this, ignore this e-mail — your password stays as it is.',
+  },
+  ru: {
+    subject: `Восстановление пароля — ${BRAND}`,
+    headline: 'Восстановление пароля',
+    hi: name => `Привет, ${name}!`,
+    body: 'Мы получили запрос на смену пароля. Задайте новый здесь:',
+    cta: 'Задать новый пароль',
+    fallback: 'Если кнопка не работает, вставьте ссылку в браузер:',
+    note: 'Ссылка действует 1 час и работает один раз. Если вы это не запрашивали — проигнорируйте письмо, пароль останется прежним.',
+  },
+  lt: {
+    subject: `Slaptažodžio atkūrimas — ${BRAND}`,
+    headline: 'Slaptažodžio atkūrimas',
+    hi: name => `Sveiki, ${name},`,
+    body: 'Gavome prašymą pakeisti slaptažodį. Naują nustatykite čia:',
+    cta: 'Nustatyti naują slaptažodį',
+    fallback: 'Jei mygtukas neveikia, nukopijuokite nuorodą į naršyklę:',
+    note: 'Nuoroda galioja 1 valandą ir veikia vieną kartą. Jei to neprašėte, ignoruokite laišką — slaptažodis nepasikeis.',
+  },
+}
+
+export async function sendPasswordResetEmail({ email, name, lang }, link) {
+  const c = RESET_COPY[lang] || RESET_COPY.en
+  return send({
+    to: email,
+    subject: c.subject,
+    html: shell(c.headline, `
+      <p style="margin:0 0 6px;font-size:20px;font-weight:800;color:#fff;">${esc(c.hi(name))}</p>
+      <p style="margin:0 0 26px;font-size:14px;color:rgba(255,255,255,0.45);line-height:1.75;">${c.body}</p>
+      ${button(link, c.cta)}
+      ${fallbackLink(link, c.fallback)}
+      <p style="margin:22px 0 0;font-size:12px;color:rgba(255,255,255,0.28);line-height:1.7;">${c.note}</p>
+    `),
+  })
+}
+
+const CHANGED_COPY = {
+  en: { subject: `Your password was changed — ${BRAND}`, headline: 'Password changed',
+        body: 'Your password was just changed and every device has been signed out. If this was not you, contact us immediately.' },
+  ru: { subject: `Пароль изменён — ${BRAND}`, headline: 'Пароль изменён',
+        body: 'Ваш пароль только что изменён, все устройства вышли из аккаунта. Если это были не вы — немедленно свяжитесь с нами.' },
+  lt: { subject: `Slaptažodis pakeistas — ${BRAND}`, headline: 'Slaptažodis pakeistas',
+        body: 'Jūsų slaptažodis ką tik pakeistas, iš visų įrenginių atsijungta. Jei tai buvote ne jūs, nedelsdami susisiekite su mumis.' },
+}
+
+/** Security notice — tells someone their account was taken over. */
+export async function sendPasswordChangedEmail({ email, name, lang }) {
+  const c = CHANGED_COPY[lang] || CHANGED_COPY.en
+  return send({
+    to: email,
+    subject: c.subject,
+    html: shell(c.headline, `
+      <p style="margin:0 0 6px;font-size:20px;font-weight:800;color:#fff;">${esc(name)}</p>
+      <p style="margin:0 0 22px;font-size:14px;color:rgba(255,255,255,0.45);line-height:1.75;">${c.body}</p>
+      <p style="margin:0;font-size:13px;color:rgba(255,255,255,0.5);">
+        <a href="mailto:${esc(OWNER)}" style="color:#fff;">${esc(OWNER)}</a> · ${esc(PUBLIC_PHONE)}
+      </p>
+    `),
+  })
+}

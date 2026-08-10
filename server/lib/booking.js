@@ -62,7 +62,7 @@ function validate(data) {
  * Returns { ok, status, error?, booking?, warning? } — the caller only has to
  * map it onto its own response object.
  */
-export async function submitBooking(body, ip) {
+export async function submitBooking(body, ip, account = null) {
   // Honeypot: a field hidden from humans. Anything in it is a bot — answer
   // with a normal success so the bot has nothing to learn, and store nothing.
   if (typeof body?.company === 'string' && body.company.trim() !== '') {
@@ -73,7 +73,24 @@ export async function submitBooking(body, ip) {
     return { ok: false, status: 429, error: 'Too many requests. Please try again later.' }
   }
 
-  const data  = sanitise(body)
+  /* Bookings belong to an account. Identity comes from the session, never
+     from the request body, so nobody can book in someone else's name. */
+  if (!account) {
+    return { ok: false, status: 401, code: 'sign_in_required', error: 'Please sign in to book a lesson' }
+  }
+  if (!account.emailVerified) {
+    return { ok: false, status: 403, code: 'verify_email_required', error: 'Please confirm your e-mail address first' }
+  }
+
+  const data = {
+    ...sanitise(body),
+    name:   account.name,
+    email:  account.email,
+    phone:  String(body.phone || account.phone || '').trim().slice(0, 40),
+    userId: account.id,
+    consent: true,          // recorded at sign-up
+  }
+
   const error = validate(data)
   if (error) return { ok: false, status: 400, error }
 

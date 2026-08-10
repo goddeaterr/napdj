@@ -4,7 +4,11 @@ import type { Lang } from '../lib/i18n'
 import type { AudioCtxRef } from '../lib/audio'
 import AmbientPlayer from './AmbientPlayer'
 import NekoLogo from './NekoLogo'
+import { navigate } from '../lib/router'
+import { useAuth } from '../lib/AuthContext'
 import styles from './Navbar.module.css'
+
+const ACCOUNT_LABEL: Record<string, string> = { en: 'Sign in', ru: 'Войти', lt: 'Prisijungti' }
 
 const SECTION_IDS = ['hero','about','learning','testimonials','pricing','builder','faq','book','contact'] as const
 
@@ -17,6 +21,7 @@ function scrollToSection(id: string) {
 
 export default function Navbar({ audioCtx }: { audioCtx: AudioCtxRef }) {
   const { lang, setLang, t } = useLang()
+  const { user } = useAuth()
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [active, setActive]     = useState('')
@@ -98,6 +103,21 @@ export default function Navbar({ audioCtx }: { audioCtx: AudioCtxRef }) {
             </button>
           ))}
         </div>
+
+        {/* Account */}
+        <button
+          className={styles.accountBtn}
+          onClick={() => navigate(user ? '/account' : '/signin')}
+          title={user ? user.name : undefined}
+        >
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <circle cx="8" cy="5.5" r="2.6" stroke="currentColor" strokeWidth="1.3"/>
+            <path d="M2.8 13.4c0-2.7 2.3-4.5 5.2-4.5s5.2 1.8 5.2 4.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+          </svg>
+          <span className={styles.accountLabel}>
+            {user ? user.name.split(' ')[0] : ACCOUNT_LABEL[lang] ?? ACCOUNT_LABEL.en}
+          </span>
+        </button>
 
         {/* Book CTA */}
         <button

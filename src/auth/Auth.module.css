@@ -1,0 +1,305 @@
+/* ============================================================================
+   Auth screens. The submit button is also the black hole: on submit it
+   collapses from a wide pill into a sphere that the particles fall into.
+============================================================================ */
+
+.page {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 20px;
+  background: radial-gradient(ellipse at 50% 40%, #141414 0%, var(--black) 62%);
+  overflow: hidden;
+}
+
+/* ── Language switch ──────────────────────────────────────────────────── */
+.langRow {
+  position: absolute; top: 22px; right: 24px;
+  display: flex; gap: 2px; z-index: 3;
+}
+.langBtn {
+  background: none; border: none; cursor: pointer;
+  font-family: var(--font-condensed);
+  font-size: 11px; letter-spacing: .18em; font-weight: 700;
+  color: rgba(255,255,255,0.3);
+  padding: 6px 8px;
+  transition: color .25s;
+}
+.langBtn:hover { color: rgba(255,255,255,0.7); }
+.langActive { color: var(--white); }
+
+/* ── Card ─────────────────────────────────────────────────────────────── */
+.card {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 430px;
+  padding: 40px clamp(24px, 5vw, 42px) 34px;
+  background: rgba(14,14,14,0.82);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 14px;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+  transition: border-color .5s, box-shadow .5s, transform .5s var(--ease-out);
+}
+/* While the hole is active the card recedes slightly, so the eye goes to the sphere. */
+.cardBusy {
+  border-color: rgba(255,255,255,0.2);
+  box-shadow: 0 30px 90px rgba(0,0,0,0.75), 0 0 60px rgba(255,255,255,0.05);
+  transform: scale(0.985);
+}
+
+.brand {
+  display: block; margin: 0 auto 26px;
+  background: none; border: none; cursor: pointer;
+  font-family: var(--font-display);
+  font-size: 22px; letter-spacing: .06em; text-transform: lowercase;
+  color: var(--white);
+  opacity: .85; transition: opacity .25s;
+}
+.brand:hover { opacity: 1; }
+.brandNeko { color: var(--white); }
+.brandArt  { color: rgba(255,255,255,0.45); margin-left: 6px; }
+
+.title {
+  font-family: var(--font-display);
+  font-size: clamp(26px, 5vw, 34px);
+  line-height: 1.05;
+  letter-spacing: .02em;
+  text-transform: uppercase;
+  text-align: center;
+  color: var(--white);
+  margin-bottom: 8px;
+}
+.sub {
+  text-align: center;
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: rgba(255,255,255,0.42);
+  margin-bottom: 28px;
+}
+
+/* ── Fields ───────────────────────────────────────────────────────────── */
+.form { display: flex; flex-direction: column; gap: 16px; }
+
+.field { display: block; }
+.fieldLabel {
+  display: block;
+  font-family: var(--font-condensed);
+  font-size: 10px; font-weight: 700;
+  letter-spacing: .22em; text-transform: uppercase;
+  color: rgba(255,255,255,0.42);
+  margin-bottom: 7px;
+  transition: color .25s;
+}
+.fieldFocused .fieldLabel { color: var(--white); }
+
+.input {
+  width: 100%;
+  padding: 12px 14px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 7px;
+  color: var(--white);
+  font-family: var(--font-body);
+  font-size: 14.5px;
+  transition: border-color .25s, background .25s, box-shadow .25s;
+}
+.input::placeholder { color: rgba(255,255,255,0.25); }
+.input:focus {
+  outline: none;
+  border-color: rgba(255,255,255,0.45);
+  background: rgba(255,255,255,0.07);
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.06);
+}
+
+.hint {
+  display: block;
+  margin-top: 6px;
+  font-size: 11.5px;
+  color: rgba(255,255,255,0.3);
+}
+
+/* ── Consent ──────────────────────────────────────────────────────────── */
+.consent {
+  display: flex; align-items: flex-start; gap: 10px;
+  background: none; border: none; padding: 0;
+  cursor: pointer; text-align: left;
+}
+.check {
+  flex-shrink: 0;
+  width: 18px; height: 18px; margin-top: 1px;
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; color: var(--black);
+  transition: background .2s, border-color .2s;
+}
+.checkOn { background: var(--white); border-color: var(--white); }
+.consentText { font-size: 12.5px; line-height: 1.6; color: rgba(255,255,255,0.5); }
+.consentText a { color: rgba(255,255,255,0.85); text-decoration: underline; }
+
+/* ── The button, which becomes the black hole ─────────────────────────── */
+.submit {
+  position: relative;
+  margin-top: 6px;
+  width: 100%; height: 50px;
+  border: none; border-radius: 7px;
+  background: var(--white);
+  color: var(--black);
+  font-family: var(--font-condensed);
+  font-size: 12px; font-weight: 800;
+  letter-spacing: .2em; text-transform: uppercase;
+  cursor: pointer;
+  overflow: visible;
+  transition:
+    width   .55s cubic-bezier(0.7, 0, 0.3, 1),
+    height  .55s cubic-bezier(0.7, 0, 0.3, 1),
+    border-radius .55s cubic-bezier(0.7, 0, 0.3, 1),
+    margin  .55s cubic-bezier(0.7, 0, 0.3, 1),
+    background .4s, box-shadow .5s, transform .4s;
+  align-self: center;
+}
+.submit:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 8px 30px rgba(255,255,255,0.18); }
+.submit:disabled { cursor: default; }
+
+.submitLabel { transition: opacity .25s; }
+
+/* The dark core that appears once it is a sphere. */
+.core {
+  position: absolute; inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 50%, #000 38%, rgba(0,0,0,0.7) 62%, transparent 72%);
+  opacity: 0; transform: scale(0.4);
+  transition: opacity .45s, transform .55s cubic-bezier(0.7, 0, 0.3, 1);
+  pointer-events: none;
+}
+
+/* Pull: shrink to a sphere and start spinning up. */
+.submit.submitPulling {
+  width: 76px; height: 76px;
+  border-radius: 50%;
+  margin: 6px auto 0;
+  background: #fff;
+  box-shadow: 0 0 40px rgba(255,255,255,0.55), 0 0 90px rgba(255,255,255,0.25);
+  filter: blur(0.6px) drop-shadow(0 0 26px rgba(255,255,255,0.9));
+  animation: spinUp .38s linear infinite, tremble .22s ease-in-out 4;
+}
+.submit.submitPulling .submitLabel { opacity: 0; }
+.submit.submitPulling .core { opacity: 1; transform: scale(1); }
+
+/* Hold: a stable, bright accretion ring. */
+.submit.submitHold {
+  width: 76px; height: 76px;
+  border-radius: 50%;
+  margin: 6px auto 0;
+  box-shadow:
+    0 0 0 2px rgba(255,255,255,0.9),
+    0 0 60px rgba(255,255,255,0.8),
+    0 0 140px rgba(255,255,255,0.4);
+  filter: drop-shadow(0 0 30px rgba(255,255,255,0.85));
+  animation: spinUp .6s linear infinite, breathe 1.4s ease-in-out infinite;
+}
+.submit.submitHold .submitLabel { opacity: 0; }
+.submit.submitHold .core { opacity: 1; transform: scale(1); }
+
+/* Collapse: one violent flash outward, then back to a normal button. */
+.submit.submitCollapse {
+  width: 76px; height: 76px;
+  border-radius: 50%;
+  margin: 6px auto 0;
+  filter: blur(1px) drop-shadow(0 0 40px rgba(255,255,255,1));
+  animation: collapse .85s cubic-bezier(0.3, 0, 0.2, 1) forwards, spinUp .25s linear infinite;
+}
+.submit.submitCollapse .submitLabel { opacity: 0; }
+.submit.submitCollapse .core { opacity: 0; transform: scale(2.4); }
+
+.ghostAnchor { background: transparent; box-shadow: none; }
+
+/* Spinning ring of light around the sphere — the accretion disc edge. */
+.submit.submitPulling::after,
+.submit.submitHold::after {
+  content: '';
+  position: absolute; inset: -14px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.55);
+  border-top-color: rgba(255,255,255,0.95);
+  border-bottom-color: rgba(255,255,255,0.15);
+  filter: blur(0.5px);
+  animation: spinUp .8s linear infinite reverse;
+  pointer-events: none;
+}
+
+@keyframes spinUp {
+  from { rotate: 0deg; }
+  to   { rotate: 360deg; }
+}
+@keyframes tremble {
+  0%, 100% { translate: 0 0; }
+  25%  { translate: -3px 2px; }
+  50%  { translate: 3px -2px; }
+  75%  { translate: -2px -3px; }
+}
+@keyframes breathe {
+  0%, 100% { box-shadow: 0 0 0 2px rgba(255,255,255,0.85), 0 0 50px rgba(255,255,255,0.7), 0 0 120px rgba(255,255,255,0.3); }
+  50%      { box-shadow: 0 0 0 3px rgba(255,255,255,1),    0 0 70px rgba(255,255,255,0.9), 0 0 160px rgba(255,255,255,0.45); }
+}
+@keyframes collapse {
+  0%   { box-shadow: 0 0 60px rgba(255,255,255,0.9); transform: scale(1); background: #fff; }
+  30%  { box-shadow: 0 0 140px rgba(255,255,255,1), 0 0 260px rgba(255,255,255,0.6); transform: scale(1.35); background: #fff; }
+  100% { box-shadow: 0 0 0 rgba(255,255,255,0); transform: scale(1); background: #fff; }
+}
+
+/* ── Messages and links ───────────────────────────────────────────────── */
+.error {
+  margin-top: 2px;
+  padding: 11px 14px;
+  border: 1px solid var(--taken-border);
+  border-left-width: 3px;
+  border-radius: 6px;
+  background: var(--taken-bg);
+  color: var(--taken);
+  font-size: 12.5px; line-height: 1.55;
+}
+
+.notice { font-size: 12.5px; color: rgba(255,255,255,0.55); }
+
+.links {
+  margin-top: 22px;
+  display: flex; flex-direction: column; align-items: center; gap: 12px;
+  text-align: center;
+}
+.linkRow { font-size: 13px; color: rgba(255,255,255,0.4); }
+
+.textLink, .textLinkStrong {
+  background: none; border: none; padding: 0; cursor: pointer;
+  font-family: var(--font-body); font-size: 13px;
+  transition: color .25s;
+}
+.textLink { color: rgba(255,255,255,0.45); text-decoration: underline; }
+.textLink:hover { color: var(--white); }
+.textLinkStrong { color: var(--white); font-weight: 600; text-decoration: underline; }
+.textLinkStrong:hover { opacity: .75; }
+
+.doneMark {
+  width: 62px; height: 62px; margin: 0 auto 20px;
+  border: 1px solid rgba(255,255,255,0.5);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px; color: var(--white);
+  box-shadow: 0 0 40px rgba(255,255,255,0.25);
+  animation: breathe 2.4s ease-in-out infinite;
+}
+
+@media (max-width: 480px) {
+  .card { padding: 32px 20px 28px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .submitPulling, .submitHold, .submitCollapse, .doneMark { animation: none; }
+  .submit { transition: none; }
+}

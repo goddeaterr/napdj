@@ -1,8 +1,10 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useLang } from '../lib/LangContext'
 import { useScrollAnimation } from '../hooks/useScrollAnimation'
 import { CONTACT } from '../config/site'
 import { navigate } from '../lib/router'
+import { useAuth } from '../lib/AuthContext'
+import { BOOK_GATE } from './bookGateCopy'
 import styles from './BookingForm.module.css'
 import CalendarPicker from './CalendarPicker'
 
@@ -23,14 +25,22 @@ function toDateString(d: Date) {
 
 export default function BookingForm() {
   const { t, lang } = useLang()
+  const { user, ready, refresh, resendVerification } = useAuth()
+  const gate = BOOK_GATE[lang] ?? BOOK_GATE.en
   const [form,    setForm]    = useState<FormState>({ name:'', email:'', phone:'', plan:'', genre:'', message:'', date: null, time: null, noPreference: false, consent: false })
   const [errors,  setErrors]  = useState<Partial<Record<keyof FormState, string>>>({})
   const [status,  setStatus]  = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
   const [focused, setFocused] = useState<string | null>(null)
   const [honeypot, setHoneypot] = useState('')
+  const [verifySent, setVerifySent] = useState(false)
   /** Bumped to make the calendar refetch which slots are taken. */
   const [availabilityKey, setAvailabilityKey] = useState(0)
   const { ref: secRef, isVisible } = useScrollAnimation<HTMLDivElement>(0.05)
+
+  /* Prefill the phone we already have on the account. */
+  useEffect(() => {
+    if (user?.phone) setForm(f => (f.phone ? f : { ...f, phone: user.phone }))
+  }, [user?.phone])
 
   const set = (k: keyof FormState, v: string) => {
     setForm(f => ({ ...f, [k]: v }))
@@ -42,13 +52,11 @@ export default function BookingForm() {
     setErrors(e => ({ ...e, date: '' }))
   }
 
+  /* Name, e-mail and consent come from the signed-in account, so the form only
+     validates what the visitor actually fills in here. */
   const validate = () => {
     const e: typeof errors = {}
-    if (!form.name.trim())  e.name  = t('book_name') + ' — ' + t('book_required')
-    if (!form.email.trim()) e.email = t('book_email') + ' — ' + t('book_required')
-    else if (!/\S+@\S+\.\S+/.test(form.email)) e.email = t('book_email_invalid')
     if (!form.plan) e.plan = t('book_plan_required')
-    if (!form.consent) e.consent = t('book_consent_required')
     return e
   }
 
@@ -66,9 +74,8 @@ export default function BookingForm() {
       const res = await fetch('/api/send-booking', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
         body: JSON.stringify({
-          name:         form.name,
-          email:        form.email,
           phone:        form.phone,
           plan:         form.plan,
           genre:        form.genre,
@@ -76,7 +83,6 @@ export default function BookingForm() {
           time:         form.time,
           noPreference: form.noPreference,
           message:      form.message,
-          consent:      form.consent,
           company:      honeypot,
           lang,
         }),
@@ -90,6 +96,11 @@ export default function BookingForm() {
         setErrors(e => ({ ...e, date: t('book_slot_taken') }))
         setForm(f => ({ ...f, time: null }))
         setAvailabilityKey(k => k + 1)
+        setStatus('idle')
+      } else if (data.code === 'sign_in_required' || data.code === 'verify_email_required') {
+        // The session expired or the address is still unconfirmed — the gate
+        // above the form explains what to do next.
+        await refresh()
         setStatus('idle')
       } else {
         console.error('Booking error:', data.error)
@@ -160,7 +171,49 @@ export default function BookingForm() {
 
           {/* Right: form */}
           <div className={`${styles.right} ${isVisible ? styles.in : ''}`} style={{ transitionDelay: '0.2s' }}>
-            {status === 'success' ? (
+            {ready && !user ? (
+              <div className={styles.gate}>
+                <div className={styles.gateIcon} aria-hidden="true">
+                  <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                    <circle cx="20" cy="14" r="6.5" stroke="currentColor" strokeWidth="1.4"/>
+                    <path d="M7 33c0-6.6 5.8-11 13-11s13 4.4 13 11" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
+                  </svg>
+                </div>
+                <h3 className={styles.gateTitle}>{gate.title}</h3>
+                <p className={styles.gateBody}>{gate.body}</p>
+                <div className={styles.gateActions}>
+                  <button type="button" className="btn btn-primary" onClick={() => navigate('/signup')}>
+                    {gate.signUp}
+                  </button>
+                  <button type="button" className="btn btn-outline" onClick={() => navigate('/signin')}>
+                    {gate.signIn}
+                  </button>
+                </div>
+              </div>
+            ) : ready && user && !user.emailVerified ? (
+              <div className={styles.gate}>
+                <div className={styles.gateIcon} aria-hidden="true">
+                  <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                    <rect x="5" y="9" width="30" height="22" rx="3" stroke="currentColor" strokeWidth="1.4"/>
+                    <path d="M5 12l15 11 15-11" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
+                  </svg>
+                </div>
+                <h3 className={styles.gateTitle}>{gate.verifyTitle}</h3>
+                <p className={styles.gateBody}>{gate.verifyBody.replace('{email}', user.email)}</p>
+                <div className={styles.gateActions}>
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={async () => { await resendVerification(user.email); setVerifySent(true) }}
+                  >
+                    {verifySent ? gate.verifySent : gate.verifyResend}
+                  </button>
+                  <button type="button" className="btn btn-outline" onClick={() => navigate('/account')}>
+                    {gate.myAccount}
+                  </button>
+                </div>
+              </div>
+            ) : status === 'success' ? (
               <div className={styles.success}>
                 <div className={styles.successIcon}>
                   <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
@@ -218,15 +271,14 @@ export default function BookingForm() {
                   onChange={e => setHoneypot(e.target.value)}
                 />
 
-                {/* Name + Email row */}
-                <div className={styles.row}>
-                  <Field
-                    label={t('book_name')} type="text" value={form.name}
-                    error={errors.name} focused={focused === 'name'}
-                    placeholder={t('book_name')}
-                    onFocus={() => setFocused('name')} onBlur={() => setFocused(null)}
-                    onChange={v => set('name', v)}
-                  />
+                {/* Identity comes from the signed-in account, not the form */}
+                <div className={styles.identity}>
+                  <span className={styles.identityLabel}>{gate.bookingAs}</span>
+                  <span className={styles.identityName}>{user?.name}</span>
+                  <span className={styles.identityEmail}>{user?.email}</span>
+                </div>
+
+                <div className={styles.rowHidden}>
                   <Field
                     label={t('book_email')} type="email" value={form.email}
                     error={errors.email} focused={focused === 'email'}

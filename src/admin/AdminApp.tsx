@@ -5,6 +5,7 @@
    Access requires the password set in .env (ADMIN_PASSWORD_HASH).
 ============================================================================ */
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import Students from './Students'
 import styles from './Admin.module.css'
 
 const TOKEN_KEY = 'nap.admin.token'
@@ -126,6 +127,7 @@ function Dashboard({ token, onSignOut }: { token: string; onSignOut: () => void 
   const [filter, setFilter]     = useState<'all' | Status>('all')
   const [query, setQuery]       = useState('')
   const [openId, setOpenId]     = useState<string | null>(null)
+  const [tab, setTab]           = useState<'bookings' | 'students'>('bookings')
 
   const authed = useMemo(() => ({ Authorization: `Bearer ${token}` }), [token])
 
@@ -201,8 +203,20 @@ function Dashboard({ token, onSignOut }: { token: string; onSignOut: () => void 
     <div className={styles.page}>
       <header className={styles.header}>
         <div>
-          <h1 className={styles.title}>Reservations</h1>
-          <p className={styles.subtitle}>{counts.all} total · {counts.new} new</p>
+          <h1 className={styles.title}>{tab === 'bookings' ? 'Reservations' : 'Students'}</h1>
+          <p className={styles.subtitle}>
+            {tab === 'bookings' ? `${counts.all} total · ${counts.new} new` : 'Accounts and lesson credits'}
+          </p>
+          <div className={styles.tabs}>
+            <button
+              className={`${styles.tab} ${tab === 'bookings' ? styles.tabOn : ''}`}
+              onClick={() => setTab('bookings')}
+            >Reservations</button>
+            <button
+              className={`${styles.tab} ${tab === 'students' ? styles.tabOn : ''}`}
+              onClick={() => setTab('students')}
+            >Students</button>
+          </div>
         </div>
         <div className={styles.headerActions}>
           <button className={styles.ghostBtn} onClick={load}>Refresh</button>
@@ -211,6 +225,7 @@ function Dashboard({ token, onSignOut }: { token: string; onSignOut: () => void 
         </div>
       </header>
 
+      {tab === 'students' ? <Students token={token} /> : <>
       <div className={styles.toolbar}>
         <div className={styles.filters}>
           {(['all', ...STATUSES] as const).map(s => (
@@ -287,6 +302,7 @@ function Dashboard({ token, onSignOut }: { token: string; onSignOut: () => void 
           )
         })}
       </div>
+      </>}
     </div>
   )
 }
