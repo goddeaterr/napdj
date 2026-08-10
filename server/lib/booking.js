@@ -90,8 +90,15 @@ export async function submitBooking(body, ip) {
     booking = { id: `unsaved-${randomUUID()}`, createdAt: new Date().toISOString(), status: 'new', ...record }
   }
 
-  const owner  = await sendOwnerNotification(booking)
-  const client = await sendClientConfirmation(booking)
+  const owner = await sendOwnerNotification(booking)
+
+  /* Only promise the student a reply once the enquiry has actually landed
+     somewhere — in the database or in the owner's inbox. Confirming a booking
+     nobody can see would be worse than showing an honest error. */
+  const captured = !storageError || owner.sent
+  const client = captured
+    ? await sendClientConfirmation(booking)
+    : { sent: false, error: 'Skipped — the enquiry could not be recorded' }
 
   if (!storageError) {
     try {
@@ -110,6 +117,8 @@ export async function submitBooking(body, ip) {
       error: 'Could not process the booking',
       storageError,
       owner,
+      client,
+      stored: false,
     }
   }
 
