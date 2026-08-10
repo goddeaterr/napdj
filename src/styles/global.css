@@ -1,22 +1,28 @@
 /* ============================================================
-   neko art platform.lt — Design System v4
-   Visible improvements: gradients, glows, refined typography
+   neko art platform.lt — Design System v5 · Monochrome
+   Black & white palette. The three --tone-* values are the only
+   "colour" in the system: they are light greys used to keep the
+   old accent hierarchy readable without introducing any hue.
    ============================================================ */
 
 :root {
-  --black:         #080810;
+  --black:         #0A0A0A;
   --white:         #FFFFFF;
-  --purple:        #9B30FF;
-  --purple-bright: #BF5FFF;
-  --purple-dim:    #6B10CF;
-  --purple-glow:   rgba(155,48,255,0.45);
-  --purple-subtle: rgba(155,48,255,0.1);
-  --purple-micro:  rgba(155,48,255,0.06);
-  --green:         #39FF14;
-  --green-dim:     rgba(57,255,20,0.12);
-  --blue:          #00C8FF;
-  --blue-dim:      rgba(0,200,255,0.12);
-  --pink:          #FF2D78;
+
+  /* Primary accent — pure white on near-black */
+  --accent:        #FFFFFF;
+  --accent-hi:     #FFFFFF;
+  --accent-lo:     #8C8C8C;
+  --accent-glow:   rgba(255,255,255,0.45);
+  --accent-subtle: rgba(255,255,255,0.1);
+  --accent-micro:  rgba(255,255,255,0.06);
+
+  /* Secondary greys (previously green / blue / pink accents) */
+  --tone-1:        #E0E0E0;
+  --tone-1-dim:    rgba(224,224,224,0.12);
+  --tone-2:        #D2D2D2;
+  --tone-2-dim:    rgba(210,210,210,0.12);
+  --tone-3:        #C8C8C8;
 
   --font-display:   'Bebas Neue', 'Oswald', sans-serif;
   --font-condensed: 'Barlow Condensed', 'Oswald', sans-serif;
@@ -50,10 +56,10 @@ body {
 ::-webkit-scrollbar { width: 3px; }
 ::-webkit-scrollbar-track { background: var(--black); }
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(to bottom, var(--purple), var(--pink));
+  background: linear-gradient(to bottom, var(--accent), var(--tone-3));
   border-radius: 2px;
 }
-::selection { background: var(--purple); color: var(--white); }
+::selection { background: var(--accent); color: var(--black); }
 
 /* ── Layout ── */
 .container {
@@ -76,11 +82,11 @@ body {
   height: 1px;
   background: linear-gradient(90deg,
     transparent 0%,
-    rgba(155,48,255,0) 10%,
-    rgba(155,48,255,0.5) 40%,
-    rgba(255,45,120,0.3) 50%,
-    rgba(155,48,255,0.5) 60%,
-    rgba(155,48,255,0) 90%,
+    rgba(255,255,255,0) 10%,
+    rgba(255,255,255,0.5) 40%,
+    rgba(200,200,200,0.3) 50%,
+    rgba(255,255,255,0.5) 60%,
+    rgba(255,255,255,0) 90%,
     transparent 100%
   );
   background-size: 200% 100%;
@@ -101,7 +107,7 @@ body {
   font-weight: 700;
   letter-spacing: 0.32em;
   text-transform: uppercase;
-  color: var(--purple);
+  color: var(--accent);
   position: relative;
 }
 .label::before {
@@ -109,20 +115,20 @@ body {
   display: block;
   width: 6px; height: 6px;
   border-radius: 50%;
-  background: var(--purple);
-  box-shadow: 0 0 10px var(--purple), 0 0 20px rgba(155,48,255,0.4);
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent), 0 0 20px rgba(255,255,255,0.4);
   animation: labelDot 2s ease-in-out infinite;
   flex-shrink: 0;
 }
 @keyframes labelDot {
-  0%,100% { opacity: 1; transform: scale(1); box-shadow: 0 0 10px var(--purple); }
-  50%     { opacity: 0.5; transform: scale(0.7); box-shadow: 0 0 4px var(--purple); }
+  0%,100% { opacity: 1; transform: scale(1); box-shadow: 0 0 10px var(--accent); }
+  50%     { opacity: 0.5; transform: scale(0.7); box-shadow: 0 0 4px var(--accent); }
 }
 .label::after {
   content: '';
   display: block;
   width: 24px; height: 1px;
-  background: linear-gradient(90deg, var(--purple), transparent);
+  background: linear-gradient(90deg, var(--accent), transparent);
   flex-shrink: 0;
 }
 
@@ -137,7 +143,7 @@ body {
 
 /* Gradient text utility — use on accent spans */
 .gradient-text {
-  background: linear-gradient(135deg, var(--purple) 0%, var(--pink) 60%, var(--purple-bright) 100%);
+  background: linear-gradient(135deg, var(--accent) 0%, var(--tone-3) 60%, var(--accent-hi) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -189,15 +195,15 @@ body {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--purple) 0%, #7B1FE8 100%);
-  color: var(--white);
+  background: linear-gradient(135deg, var(--accent) 0%, #C9C9C9 100%);
+  color: var(--black);
   padding: 13px 28px;
   border-radius: 3px;
-  box-shadow: 0 4px 20px rgba(155,48,255,0.3);
+  box-shadow: 0 4px 20px rgba(255,255,255,0.3);
 }
 .btn-primary:hover {
   transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 8px 36px rgba(155,48,255,0.55), 0 0 0 1px rgba(155,48,255,0.4);
+  box-shadow: 0 8px 36px rgba(255,255,255,0.55), 0 0 0 1px rgba(255,255,255,0.4);
 }
 .btn-primary:active { transform: scale(0.98); }
 
@@ -209,35 +215,35 @@ body {
   border-radius: 3px;
 }
 .btn-outline:hover {
-  border-color: var(--purple);
+  border-color: var(--accent);
   color: var(--white);
   transform: translateY(-2px);
-  box-shadow: 0 6px 24px rgba(155,48,255,0.2), inset 0 0 16px rgba(155,48,255,0.05);
+  box-shadow: 0 6px 24px rgba(255,255,255,0.2), inset 0 0 16px rgba(255,255,255,0.05);
 }
 
 .btn-ghost {
   background: transparent;
-  color: var(--purple);
+  color: var(--accent);
   padding: 12px 28px;
-  border: 1px solid rgba(155,48,255,0.35);
+  border: 1px solid rgba(255,255,255,0.35);
   border-radius: 3px;
 }
 .btn-ghost:hover {
-  background: rgba(155,48,255,0.1);
-  border-color: var(--purple);
+  background: rgba(255,255,255,0.1);
+  border-color: var(--accent);
   transform: translateY(-2px);
-  box-shadow: 0 0 20px rgba(155,48,255,0.15);
+  box-shadow: 0 0 20px rgba(255,255,255,0.15);
 }
 
 /* ── Divider — animated gradient ── */
 .divider {
   height: 1px;
   background: linear-gradient(90deg,
-    transparent, rgba(155,48,255,0.15) 15%,
-    rgba(155,48,255,0.55) 40%,
-    rgba(255,45,120,0.3) 50%,
-    rgba(155,48,255,0.55) 60%,
-    rgba(155,48,255,0.15) 85%, transparent
+    transparent, rgba(255,255,255,0.15) 15%,
+    rgba(255,255,255,0.55) 40%,
+    rgba(200,200,200,0.3) 50%,
+    rgba(255,255,255,0.55) 60%,
+    rgba(255,255,255,0.15) 85%, transparent
   );
   position: relative;
 }
@@ -260,7 +266,7 @@ body {
 /* ── Neon card glow system ── */
 .neon-card {
   background: rgba(255,255,255,0.02);
-  border: 1px solid rgba(155,48,255,0.15);
+  border: 1px solid rgba(255,255,255,0.15);
   border-radius: 6px;
   position: relative;
   transition: border-color 0.45s cubic-bezier(0.16,1,0.3,1),
@@ -269,10 +275,10 @@ body {
   will-change: transform;
 }
 .neon-card:hover {
-  border-color: rgba(155,48,255,0.4);
-  box-shadow: 0 0 0 1px rgba(155,48,255,0.15),
-              0 16px 48px rgba(155,48,255,0.12),
-              inset 0 0 30px rgba(155,48,255,0.03);
+  border-color: rgba(255,255,255,0.4);
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.15),
+              0 16px 48px rgba(255,255,255,0.12),
+              inset 0 0 30px rgba(255,255,255,0.03);
   transform: translateY(-4px);
 }
 

@@ -9,10 +9,10 @@ export default function Learning() {
   const { ref: titleRef, isVisible: titleIn } = useScrollAnimation<HTMLDivElement>()
 
   const steps = [
-    { num: '01', icon: '◈', color: 'rgba(155,48,255,1)', title: t('step1_title'), desc: t('step1_desc'), deep: t('step1_deep'), tags: ['Beat Matching', 'Music Theory', 'CDJ Intro', 'Ear Training'] },
-    { num: '02', icon: '◉', color: 'rgba(0,200,255,1)',  title: t('step2_title'), desc: t('step2_desc'), deep: t('step2_deep'), tags: ['EQ Technique', 'Transitions', 'Loops & Cues', 'Harmonic Mix'] },
-    { num: '03', icon: '◎', color: 'rgba(57,255,20,1)',  title: t('step3_title'), desc: t('step3_desc'), deep: t('step3_deep'), tags: ['FX Chain', 'Crowd Reading', 'Layering', 'Identity'] },
-    { num: '04', icon: '◍', color: 'rgba(155,48,255,1)', title: t('step4_title'), desc: t('step4_desc'), deep: t('step4_deep'), tags: ['Live Set', 'Stage Presence', 'Real Audience', 'Recorded Set'], highlight: true, badge: t('step4_badge') },
+    { num: '01', icon: '◈', color: 'rgba(255,255,255,1)', title: t('step1_title'), desc: t('step1_desc'), deep: t('step1_deep'), tags: ['Beat Matching', 'Music Theory', 'CDJ Intro', 'Ear Training'] },
+    { num: '02', icon: '◉', color: 'rgba(210,210,210,1)',  title: t('step2_title'), desc: t('step2_desc'), deep: t('step2_deep'), tags: ['EQ Technique', 'Transitions', 'Loops & Cues', 'Harmonic Mix'] },
+    { num: '03', icon: '◎', color: 'rgba(224,224,224,1)',  title: t('step3_title'), desc: t('step3_desc'), deep: t('step3_deep'), tags: ['FX Chain', 'Crowd Reading', 'Layering', 'Identity'] },
+    { num: '04', icon: '◍', color: 'rgba(255,255,255,1)', title: t('step4_title'), desc: t('step4_desc'), deep: t('step4_deep'), tags: ['Live Set', 'Stage Presence', 'Real Audience', 'Recorded Set'], highlight: true, badge: t('step4_badge') },
   ]
 
   return (

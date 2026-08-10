@@ -113,7 +113,7 @@ export default function Hero() {
               intensity={3}
             />
             <svg className={styles.underlineSvg} viewBox="0 0 300 14" fill="none" aria-hidden>
-              <path d="M2 10 Q75 3 150 10 Q225 17 298 10" stroke="#9B30FF" strokeWidth="2.5" strokeLinecap="round" fill="none"/>
+              <path d="M2 10 Q75 3 150 10 Q225 17 298 10" stroke="#FFFFFF" strokeWidth="2.5" strokeLinecap="round" fill="none"/>
             </svg>
           </span>
 

@@ -8,9 +8,9 @@ interface Ripple {
 }
 
 const COLORS = [
-  'rgba(155,48,255,',
-  'rgba(255,45,155,',
-  'rgba(0,200,255,',
+  'rgba(255,255,255,',
+  'rgba(200,200,200,',
+  'rgba(210,210,210,',
 ]
 
 export default function ClickRipple() {

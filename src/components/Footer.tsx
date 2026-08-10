@@ -3,15 +3,20 @@ import { useState } from 'react'
 import NekoLogo from './NekoLogo'
 import { useLang } from '../lib/LangContext'
 import { useScrollAnimation } from '../hooks/useScrollAnimation'
+import { CONTACT, LINKS, HOURS_LABEL, socialLinks } from '../config/site'
+import { LEGAL_PAGES } from '../legal/pages'
+import { navigate } from '../lib/router'
 import styles from './Footer.module.css'
 
 export default function Footer() {
-  const { t } = useLang()
+  const { t, lang } = useLang()
   const [copied, setCopied] = useState(false)
   const { ref: topRef, isVisible: topIn } = useScrollAnimation<HTMLDivElement>()
 
+  const socials = socialLinks()
+
   const copyEmail = () => {
-    navigator.clipboard.writeText('napdjschool@gmail.com')
+    navigator.clipboard.writeText(CONTACT.email)
     setCopied(true)
     setTimeout(() => setCopied(false), 2200)
   }
@@ -55,7 +60,7 @@ export default function Footer() {
               className={`btn btn-outline ${styles.emailBtn} ${copied ? styles.copied : ''}`}
               onClick={copyEmail}
             >
-              {copied ? '✓ Copied!' : 'napdjschool@gmail.com'}
+              {copied ? '✓ Copied!' : CONTACT.email}
             </button>
           </div>
         </div>
@@ -108,10 +113,28 @@ export default function Footer() {
             <span className={styles.linkStatic}>{t('pricing_pro_name')} (€170)</span>
             <span className={styles.linkStatic}>{t('pricing_elite_name')} (€299)</span>
             <span className={styles.linkStatic}>{t('footer_trial')}</span>
-            <div className={styles.colTitle} style={{ marginTop:'24px' }}>{t('footer_follow')}</div>
-            <a href="https://instagram.com/napdjschool" className={styles.link} target="_blank" rel="noreferrer">Instagram</a>
-            <a href="https://soundcloud.com/napdjschool" className={styles.link} target="_blank" rel="noreferrer">SoundCloud</a>
-            <a href="https://facebook.com/napdjschool" className={styles.link} target="_blank" rel="noreferrer">Facebook</a>
+
+            {/* Social — only links that are filled in src/config/site.ts */}
+            {socials.length > 0 && (
+              <>
+                <div className={styles.colTitle} style={{ marginTop:'24px' }}>{t('footer_follow')}</div>
+                {socials.map(s => (
+                  <a key={s.label} href={s.url} className={styles.link} target="_blank" rel="noreferrer">{s.label}</a>
+                ))}
+              </>
+            )}
+
+            <div className={styles.colTitle} style={{ marginTop:'24px' }}>{t('footer_legal')}</div>
+            {LEGAL_PAGES.map(p => (
+              <a
+                key={p.path}
+                href={p.path}
+                className={styles.link}
+                onClick={e => { e.preventDefault(); navigate(p.path) }}
+              >
+                {p.title[lang]}
+              </a>
+            ))}
           </div>
 
           {/* Contact */}
@@ -119,15 +142,27 @@ export default function Footer() {
             <div className={styles.colTitle}>{t('footer_contact')}</div>
             <div className={styles.contactItem}>
               <span className={styles.contactIcon}>✉</span>
-              <a href="mailto:napdjschool@gmail.com" className={styles.contactLink}>napdjschool@gmail.com</a>
+              <a href={`mailto:${CONTACT.email}`} className={styles.contactLink}>{CONTACT.email}</a>
+            </div>
+            <div className={styles.contactItem}>
+              <span className={styles.contactIcon}>☎</span>
+              <a href={`tel:${CONTACT.phoneHref}`} className={styles.contactLink}>{CONTACT.phone}</a>
             </div>
             <div className={styles.contactItem}>
               <span className={styles.contactIcon}>📍</span>
-              <span className={styles.contactText}>Klaipėda, Lithuania</span>
+              {LINKS.googleMaps ? (
+                <a href={LINKS.googleMaps} className={styles.contactLink} target="_blank" rel="noreferrer">
+                  {CONTACT.address ? `${CONTACT.address}, ` : ''}{CONTACT.city}, {CONTACT.country}
+                </a>
+              ) : (
+                <span className={styles.contactText}>
+                  {CONTACT.address ? `${CONTACT.address}, ` : ''}{CONTACT.city}, {CONTACT.country}
+                </span>
+              )}
             </div>
             <div className={styles.contactItem}>
               <span className={styles.contactIcon}>🕐</span>
-              <span className={styles.contactText}>Mon–Sat, 10:00–22:00</span>
+              <span className={styles.contactText}>{t('footer_weekdays')}, {HOURS_LABEL}</span>
             </div>
             <div className={styles.contactItem}>
               <span className={styles.contactIcon}>🎓</span>
@@ -136,8 +171,8 @@ export default function Footer() {
 
             <div className={styles.hoursCard}>
               <div className={styles.hoursTitle}>{t('footer_hours_title')}</div>
-              <div className={styles.hoursRow}><span>{t('footer_weekdays')}</span><span>18:00–22:00</span></div>
-              <div className={styles.hoursRow}><span>{t('footer_weekends')}</span><span>10:00–18:00</span></div>
+              <div className={styles.hoursRow}><span>{t('footer_weekdays')}</span><span>{HOURS_LABEL}</span></div>
+              <div className={styles.hoursRow}><span>{t('footer_weekends')}</span><span>{t('footer_closed')}</span></div>
               <div className={styles.hoursRow}><span>{t('footer_trial')}</span><span>{t('footer_trial_val')}</span></div>
             </div>
           </div>

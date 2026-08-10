@@ -18,7 +18,7 @@
   font-weight: 700;
   letter-spacing: 0.4em;
   text-transform: uppercase;
-  color: rgba(155,48,255,0.4);
+  color: rgba(255,255,255,0.4);
   white-space: nowrap;
   z-index: 3;
   pointer-events: none;
@@ -45,11 +45,11 @@
   flex: 1;
   min-width: 1px;
   height: var(--base, 40%);
-  background: var(--col, var(--purple));
+  background: var(--col, var(--accent));
   border-radius: 1px 1px 0 0;
   opacity: 0.7;
   animation: beatBounce var(--dur, 0.6s) var(--del, 0s) ease-in-out infinite alternate;
-  box-shadow: 0 0 4px var(--col, var(--purple));
+  box-shadow: 0 0 4px var(--col, var(--accent));
   will-change: transform;
 }
 

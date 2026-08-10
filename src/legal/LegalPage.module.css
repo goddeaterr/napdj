@@ -1,0 +1,76 @@
+.page {
+  min-height: 100vh;
+  background: var(--black);
+  padding: 0 clamp(16px, 5vw, 40px) 80px;
+}
+
+.top {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px; max-width: 820px; margin: 0 auto;
+  padding: 28px 0; position: sticky; top: 0;
+  background: var(--black); z-index: 2;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.back {
+  background: none; border: none; cursor: pointer;
+  font-family: var(--font-condensed); font-size: 12px; font-weight: 700;
+  letter-spacing: .16em; text-transform: uppercase;
+  color: rgba(255,255,255,0.55); transition: color .25s;
+}
+.back:hover { color: var(--white); }
+
+.langs { display: flex; gap: 4px; }
+.langBtn {
+  background: none; border: 1px solid transparent; cursor: pointer;
+  font-family: var(--font-condensed); font-size: 11px; font-weight: 700;
+  letter-spacing: .14em; padding: 6px 10px; border-radius: 3px;
+  color: rgba(255,255,255,0.35); transition: color .25s, border-color .25s;
+}
+.langBtn:hover { color: var(--white); }
+.langActive { color: var(--white); border-color: rgba(255,255,255,0.2); }
+
+.body { max-width: 820px; margin: 0 auto; padding-top: 48px; }
+
+.title {
+  font-family: var(--font-display);
+  font-size: clamp(34px, 6vw, 60px);
+  line-height: 1; letter-spacing: .01em; text-transform: uppercase;
+  color: var(--white);
+}
+
+.intro {
+  margin-top: 18px; font-size: 16px; line-height: 1.75;
+  color: rgba(255,255,255,0.5); max-width: 68ch;
+}
+
+.rule { height: 1px; background: rgba(255,255,255,0.1); margin: 40px 0; }
+
+.section { margin-bottom: 34px; }
+
+.heading {
+  font-family: var(--font-condensed);
+  font-size: 14px; font-weight: 700; letter-spacing: .18em;
+  text-transform: uppercase; color: var(--white); margin-bottom: 12px;
+}
+
+.paragraph, .bullet {
+  font-size: 15px; line-height: 1.8;
+  color: rgba(255,255,255,0.55); max-width: 72ch; margin-bottom: 10px;
+}
+.bullet { padding-left: 14px; }
+
+.paragraph a, .bullet a {
+  color: var(--white); text-decoration: underline; text-underline-offset: 3px;
+}
+
+.otherPages {
+  display: flex; flex-wrap: wrap; gap: 22px; margin-top: 46px;
+  padding-top: 26px; border-top: 1px solid rgba(255,255,255,0.06);
+}
+.otherPages a {
+  font-family: var(--font-condensed); font-size: 12px; font-weight: 700;
+  letter-spacing: .14em; text-transform: uppercase;
+  color: rgba(255,255,255,0.4); text-decoration: none; transition: color .25s;
+}
+.otherPages a:hover { color: var(--white); }

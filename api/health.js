@@ -1,9 +1,12 @@
-export default function handler(req, res) {
-  const gmailReady = !!(
-    process.env.GMAIL_USER &&
-    process.env.GMAIL_APP_PASSWORD &&
-    !process.env.GMAIL_APP_PASSWORD.startsWith('xxxx')
-  )
+import { mailerStatus, OWNER } from '../server/lib/mailer.js'
+import { adminConfigured } from '../server/lib/auth.js'
+
+export default function handler(_req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*')
-  res.json({ ok: true, gmail: gmailReady, owner: process.env.OWNER_EMAIL })
+  res.json({
+    ok:     true,
+    resend: mailerStatus.resend,
+    owner:  OWNER,
+    admin:  adminConfigured,
+  })
 }

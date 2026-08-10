@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useLang } from '../lib/LangContext'
 import { useScrollAnimation } from '../hooks/useScrollAnimation'
+import { CONTACT } from '../config/site'
 import styles from './FAQ.module.css'
 
 export default function FAQ() {
@@ -35,8 +36,8 @@ export default function FAQ() {
             <p className={styles.sub}>{t('faq_sub')}</p>
             <div className={styles.contactNudge}>
               <span>{t('faq_nudge')}</span>
-              <a href="mailto:napdjschool@gmail.com" className={styles.contactLink}>
-                napdjschool@gmail.com
+              <a href={`mailto:${CONTACT.email}`} className={styles.contactLink}>
+                {CONTACT.email}
                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
                   <path d="M2 6H10M7 3L10 6L7 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>

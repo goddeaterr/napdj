@@ -4,6 +4,9 @@ node_modules/
 # Build output
 dist/
 
+# Stored bookings (personal data — never commit)
+data/
+
 # Environment variables — NEVER commit these
 .env
 .env.local

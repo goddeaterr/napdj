@@ -1,9 +1,9 @@
-.faq { border-top: 1px solid rgba(155,48,255,0.1); }
+.faq { border-top: 1px solid rgba(255,255,255,0.1); }
 
 .bgGlow {
   position: absolute; right: -100px; top: 50%; transform: translateY(-50%);
   width: 500px; height: 600px;
-  background: radial-gradient(circle at right, rgba(155,48,255,0.07), transparent 65%);
+  background: radial-gradient(circle at right, rgba(255,255,255,0.07), transparent 65%);
   pointer-events: none;
 }
 
@@ -25,7 +25,7 @@
 /* Left */
 .left { position: sticky; top: 120px; }
 .title { margin: 22px 0 20px; }
-.accent { color: var(--purple); }
+.accent { color: var(--accent); }
 .sub { font-size: 16px; color: rgba(255,255,255,0.42); line-height: 1.75; margin-bottom: 36px; }
 
 .contactNudge {
@@ -36,7 +36,7 @@
 }
 .contactLink {
   display: inline-flex; align-items: center; gap: 8px;
-  color: var(--purple); text-decoration: none; font-size: 13px;
+  color: var(--accent); text-decoration: none; font-size: 13px;
   letter-spacing: .08em; text-transform: none;
   transition: opacity .2s;
 }
@@ -50,7 +50,7 @@
   transition: border-color .3s;
 }
 .item:first-child { border-top: 1px solid rgba(255,255,255,0.06); }
-.itemOpen { border-color: rgba(155,48,255,0.2) !important; }
+.itemOpen { border-color: rgba(255,255,255,0.2) !important; }
 
 .question {
   width: 100%; display: flex; align-items: center; gap: 20px;
@@ -61,10 +61,10 @@
 
 .qNum {
   font-family: var(--font-display); font-size: 18px;
-  color: rgba(155,48,255,0.3); flex-shrink: 0; width: 28px;
+  color: rgba(255,255,255,0.3); flex-shrink: 0; width: 28px;
   transition: color .3s;
 }
-.itemOpen .qNum { color: var(--purple); }
+.itemOpen .qNum { color: var(--accent); }
 
 .qText {
   flex: 1; font-size: 16px; font-weight: 500;
@@ -75,11 +75,11 @@
 
 .qIcon {
   flex-shrink: 0;
-  color: rgba(155,48,255,0.5);
+  color: rgba(255,255,255,0.5);
   display: flex; align-items: center;
   transition: color .3s;
 }
-.itemOpen .qIcon { color: var(--purple); }
+.itemOpen .qIcon { color: var(--accent); }
 
 /* Expandable answer */
 .answer {
@@ -125,7 +125,7 @@
   font-family: var(--font-display);
   font-size: clamp(140px, 20vw, 260px);
   line-height: 1;
-  color: rgba(155,48,255,0.035);
+  color: rgba(255,255,255,0.035);
   pointer-events: none;
   z-index: 0;
   letter-spacing: -0.04em;

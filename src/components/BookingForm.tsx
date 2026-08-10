@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { useLang } from '../lib/LangContext'
 import { useScrollAnimation } from '../hooks/useScrollAnimation'
+import { CONTACT } from '../config/site'
+import { navigate } from '../lib/router'
 import styles from './BookingForm.module.css'
 import CalendarPicker from './CalendarPicker'
 
@@ -11,11 +13,17 @@ interface FormState {
   name: string; email: string; phone: string
   plan: Plan | ''; genre: Genre | ''; message: string
   date: Date | null; time: string | null; noPreference: boolean
+  consent: boolean
+}
+
+/** Calendar date in YYYY-MM-DD — no timezone shift on the way to the server. */
+function toDateString(d: Date) {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 }
 
 export default function BookingForm() {
   const { t, lang } = useLang()
-  const [form,    setForm]    = useState<FormState>({ name:'', email:'', phone:'', plan:'', genre:'', message:'', date: null, time: null, noPreference: false })
+  const [form,    setForm]    = useState<FormState>({ name:'', email:'', phone:'', plan:'', genre:'', message:'', date: null, time: null, noPreference: false, consent: false })
   const [errors,  setErrors]  = useState<Partial<Record<keyof FormState, string>>>({})
   const [status,  setStatus]  = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
   const [focused, setFocused] = useState<string | null>(null)
@@ -36,7 +44,13 @@ export default function BookingForm() {
     if (!form.email.trim()) e.email = t('book_email') + ' — ' + t('book_required')
     else if (!/\S+@\S+\.\S+/.test(form.email)) e.email = t('book_email_invalid')
     if (!form.plan) e.plan = t('book_plan_required')
+    if (!form.consent) e.consent = t('book_consent_required')
     return e
+  }
+
+  const toggleConsent = () => {
+    setForm(f => ({ ...f, consent: !f.consent }))
+    setErrors(e => ({ ...e, consent: '' }))
   }
 
   const submit = async (ev: React.FormEvent) => {
@@ -54,10 +68,11 @@ export default function BookingForm() {
           phone:        form.phone,
           plan:         form.plan,
           genre:        form.genre,
-          date:         form.date?.toISOString() ?? null,
+          date:         form.date ? toDateString(form.date) : null,
           time:         form.time,
           noPreference: form.noPreference,
           message:      form.message,
+          consent:      form.consent,
           lang,
         }),
       })
@@ -115,12 +130,18 @@ export default function BookingForm() {
 
             <div className={styles.directContact}>
               <div className={styles.dcLabel}>{t('book_direct')}</div>
-              <a href="mailto:napdjschool@gmail.com" className={styles.dcLink}>
+              <a href={`mailto:${CONTACT.email}`} className={styles.dcLink}>
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                   <rect x="2" y="3" width="12" height="10" rx="1.5" stroke="currentColor" strokeWidth="1.2"/>
                   <path d="M2 5L8 9L14 5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
                 </svg>
-                napdjschool@gmail.com
+                {CONTACT.email}
+              </a>
+              <a href={`tel:${CONTACT.phoneHref}`} className={styles.dcLink}>
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M3.5 2.5h2.2l1.1 2.7-1.4 1a8.5 8.5 0 0 0 3.4 3.4l1-1.4 2.7 1.1v2.2a1 1 0 0 1-1.1 1A11 11 0 0 1 2.5 3.6a1 1 0 0 1 1-1.1Z" stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round"/>
+                </svg>
+                {CONTACT.phone}
               </a>
             </div>
           </div>
@@ -131,8 +152,8 @@ export default function BookingForm() {
               <div className={styles.success}>
                 <div className={styles.successIcon}>
                   <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
-                    <circle cx="24" cy="24" r="22" stroke="#9B30FF" strokeWidth="1.5"/>
-                    <path d="M14 24L21 31L34 17" stroke="#9B30FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <circle cx="24" cy="24" r="22" stroke="#FFFFFF" strokeWidth="1.5"/>
+                    <path d="M14 24L21 31L34 17" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
                 </div>
                 <h3 className={styles.successTitle}>{t('book_success_title')}</h3>
@@ -154,12 +175,15 @@ export default function BookingForm() {
               <div className={styles.errorState}>
                 <div className={styles.errorIcon}>
                   <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
-                    <circle cx="24" cy="24" r="22" stroke="#FF2D78" strokeWidth="1.5"/>
-                    <path d="M24 14V26M24 32V34" stroke="#FF2D78" strokeWidth="2" strokeLinecap="round"/>
+                    <circle cx="24" cy="24" r="22" stroke="#C8C8C8" strokeWidth="1.5"/>
+                    <path d="M24 14V26M24 32V34" stroke="#C8C8C8" strokeWidth="2" strokeLinecap="round"/>
                   </svg>
                 </div>
                 <h3 className={styles.errorTitle}>{t('book_error_title')}</h3>
-                <p className={styles.errorText}>{t('book_error_text')}</p>
+                <p className={styles.errorText}>
+                  {t('book_error_text')}{' '}
+                  <a href={`mailto:${CONTACT.email}`} className={styles.errorLink}>{CONTACT.email}</a>
+                </p>
                 <button
                   type="button"
                   className={`btn btn-outline ${styles.errorRetry}`}
@@ -252,6 +276,39 @@ export default function BookingForm() {
                     onChange={e => set('message', e.target.value)}
                   />
                 </div>
+
+                {/* GDPR consent */}
+                <div className={`${styles.consent} ${errors.consent ? styles.consentError : ''}`}>
+                  <button
+                    type="button"
+                    role="checkbox"
+                    aria-checked={form.consent}
+                    className={`${styles.checkbox} ${form.consent ? styles.checkboxOn : ''}`}
+                    onClick={toggleConsent}
+                  >
+                    {form.consent && (
+                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                        <path d="M2 6.5L4.8 9L10 3.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    )}
+                  </button>
+                  <label className={styles.consentText} onClick={toggleConsent}>
+                    {t('book_consent').split(/(\{privacy\}|\{terms\})/).map((part, i) => {
+                      if (part === '{privacy}') return (
+                        <a key={i} href="/privacy" onClick={e => { e.preventDefault(); e.stopPropagation(); navigate('/privacy') }}>
+                          {t('book_consent_privacy')}
+                        </a>
+                      )
+                      if (part === '{terms}') return (
+                        <a key={i} href="/terms" onClick={e => { e.preventDefault(); e.stopPropagation(); navigate('/terms') }}>
+                          {t('book_consent_terms')}
+                        </a>
+                      )
+                      return <span key={i}>{part}</span>
+                    })}
+                  </label>
+                </div>
+                {errors.consent && <span className={styles.consentErrorMsg}>{errors.consent}</span>}
 
                 <button
                   type="submit"

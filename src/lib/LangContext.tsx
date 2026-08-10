@@ -13,11 +13,22 @@ const LangContext = createContext<LangCtx>({
   t: (k) => k,
 })
 
+const STORAGE_KEY = 'nap.lang'
+
+function storedLang(): Lang {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY)
+    if (saved === 'en' || saved === 'ru' || saved === 'lt') return saved
+  } catch { /* storage blocked — fall through */ }
+  return 'en'
+}
+
 export function LangProvider({ children }: { children: ReactNode }) {
-  const [lang, setLangState] = useState<Lang>('en')
+  const [lang, setLangState] = useState<Lang>(storedLang)
 
   const setLang = (l: Lang) => {
     setLangState(l)
+    try { localStorage.setItem(STORAGE_KEY, l) } catch { /* storage blocked */ }
     // Set data-lang on <html> for CSS font overrides
     document.documentElement.setAttribute('data-lang', l)
     // Also set lang attribute for semantic correctness
@@ -25,8 +36,9 @@ export function LangProvider({ children }: { children: ReactNode }) {
   }
 
   useEffect(() => {
-    document.documentElement.setAttribute('data-lang', 'en')
-  }, [])
+    document.documentElement.setAttribute('data-lang', lang)
+    document.documentElement.lang = lang
+  }, [lang])
 
   const t = (key: TranslationKey): string =>
     translations[lang][key] ?? translations.en[key] ?? key

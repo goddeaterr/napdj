@@ -17,8 +17,8 @@ export default function Pricing() {
       name: t('pricing_basic_name'),
       tagline: t('pricing_basic_tag'),
       price: 89,
-      color: 'rgba(0,200,255,1)',
-      colorDim: 'rgba(0,200,255,0.12)',
+      color: 'rgba(210,210,210,1)',
+      colorDim: 'rgba(210,210,210,0.12)',
       badge: null,
       desc: t('pricing_basic_desc'),
       includes: [
@@ -36,8 +36,8 @@ export default function Pricing() {
       name: t('pricing_pro_name'),
       tagline: t('pricing_pro_tag'),
       price: 170,
-      color: 'rgba(155,48,255,1)',
-      colorDim: 'rgba(155,48,255,0.12)',
+      color: 'rgba(255,255,255,1)',
+      colorDim: 'rgba(255,255,255,0.12)',
       badge: t('pricing_popular'),
       desc: t('pricing_pro_desc'),
       includes: [
@@ -58,8 +58,8 @@ export default function Pricing() {
       name: t('pricing_elite_name'),
       tagline: t('pricing_elite_tag'),
       price: 299,
-      color: 'rgba(255,45,120,1)',
-      colorDim: 'rgba(255,45,120,0.1)',
+      color: 'rgba(200,200,200,1)',
+      colorDim: 'rgba(200,200,200,0.1)',
       badge: t('pricing_best'),
       desc: t('pricing_elite_desc'),
       includes: [

@@ -1,14 +1,15 @@
 import { useState, useEffect } from 'react'
 import { useScrollAnimation } from '../hooks/useScrollAnimation'
+import { VENUE } from '../config/site'
 import styles from './Gallery.module.css'
 
 const items = [
-  { id:1, rot:-2,   label:'Studio A — Pioneer Setup',  sub:'CDJ-2000 NXS2 + DJM-900',    color:'#0d0020', accent:'#9B30FF', h:'55%', desc:'The main studio room with two Pioneer CDJ-2000 NXS2 players and a DJM-900 NXS2 mixer — identical to the setup found in Berghain, fabric, and every major club worldwide.' },
-  { id:2, rot:2.5,  label:'Live @ Club Noir',           sub:'Student debut night',         color:'#001020', accent:'#00C8FF', h:'65%', desc:'A student\'s Step 4 debut performance at Club Noir, Klaipėda. Real audience, real energy — exactly what the course builds toward from day one.' },
-  { id:3, rot:-1.5, label:'Mixing Workshop',            sub:'Week 2 techniques',           color:'#0d0020', accent:'#9B30FF', h:'45%', desc:'Hands-on EQ, filter and transition workshop during Step 2. Students build their first seamless 30-minute set using proper harmonic mixing.' },
-  { id:4, rot:3,    label:'Crowd Reading Session',      sub:'Week 3 masterclass',          color:'#001408', accent:'#39FF14', h:'60%', desc:'Step 3 masterclass on reading the room — tension, release, energy arc. The skill that separates DJs who just play music from those who control a crowd.' },
-  { id:5, rot:-2.5, label:'Graduation Night 2024',      sub:'12 new DJs born',             color:'#0d0020', accent:'#BF5FFF', h:'50%', desc:'2024 graduation night. 12 students each played a 15-minute set. Every one walked away with a recorded portfolio piece and a room full of supporters.' },
-  { id:6, rot:1.5,  label:'Studio B — Open Practice',  sub:'Between-lesson sessions',     color:'#1a0a00', accent:'#FFB830', h:'55%', desc:'Studio B is available for booked practice between lessons. Same professional gear, unlimited repetition — the real secret behind rapid improvement.' },
+  { id:1, rot:-2,   label:'Studio A — Pioneer Setup',  sub:'CDJ-2000 NXS2 + DJM-900',    color:'#101010', accent:'#FFFFFF', h:'55%', desc:'The main studio room with two Pioneer CDJ-2000 NXS2 players and a DJM-900 NXS2 mixer — identical to the setup found in Berghain, fabric, and every major club worldwide.' },
+  { id:2, rot:2.5,  label:`Live @ ${VENUE.name}`,       sub:'Student debut night',         color:'#101010', accent:'#D2D2D2', h:'65%', desc:`A student's Step 4 debut performance at ${VENUE.name}, ${VENUE.city}. Real audience, real energy — exactly what the course builds toward from day one.` },
+  { id:3, rot:-1.5, label:'Mixing Workshop',            sub:'Week 2 techniques',           color:'#101010', accent:'#FFFFFF', h:'45%', desc:'Hands-on EQ, filter and transition workshop during Step 2. Students build their first seamless 30-minute set using proper harmonic mixing.' },
+  { id:4, rot:3,    label:'Crowd Reading Session',      sub:'Week 3 masterclass',          color:'#101010', accent:'#E0E0E0', h:'60%', desc:'Step 3 masterclass on reading the room — tension, release, energy arc. The skill that separates DJs who just play music from those who control a crowd.' },
+  { id:5, rot:-2.5, label:'Graduation Night 2024',      sub:'12 new DJs born',             color:'#101010', accent:'#FFFFFF', h:'50%', desc:'2024 graduation night. 12 students each played a 15-minute set. Every one walked away with a recorded portfolio piece and a room full of supporters.' },
+  { id:6, rot:1.5,  label:'Studio B — Open Practice',  sub:'Between-lesson sessions',     color:'#101010', accent:'#BDBDBD', h:'55%', desc:'Studio B is available for booked practice between lessons. Same professional gear, unlimited repetition — the real secret behind rapid improvement.' },
 ]
 
 export default function Gallery() {

@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react'
 import { useLang } from '../lib/LangContext'
+import { SCHEDULE } from '../config/site'
 import styles from './CalendarPicker.module.css'
 
 interface Props {
@@ -9,12 +10,14 @@ interface Props {
   onChange: (date: Date | null, time: string | null, noPreference: boolean) => void
 }
 
-const WEEKDAY_SLOTS = ['10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00']
-const SATURDAY_SLOTS = ['10:00','11:00','12:00','13:00','14:00','15:00','16:00']
+/* Time slots are generated from the opening hours in src/config/site.ts */
+const DAY_SLOTS = Array.from(
+  { length: SCHEDULE.closeHour - SCHEDULE.openHour + 1 },
+  (_, i) => `${String(SCHEDULE.openHour + i).padStart(2, '0')}:00`,
+)
 
-function slotsForDay(d: Date) {
-  return d.getDay() === 6 ? SATURDAY_SLOTS : WEEKDAY_SLOTS
-}
+const OPEN_DAYS: readonly number[] = SCHEDULE.openDays
+const isOpenDay = (d: Date) => OPEN_DAYS.includes(d.getDay())
 
 function sameDay(a: Date | null, b: Date | null) {
   if (!a || !b) return false
@@ -47,7 +50,7 @@ export default function CalendarPicker({ selectedDate, selectedTime, noPreferenc
     return grid
   }, [year, month])
 
-  const isDisabled = (d: Date) => d < today || d.getDay() === 0
+  const isDisabled = (d: Date) => d < today || !isOpenDay(d)
   const isToday    = (d: Date) => sameDay(d, today)
 
   /* Navigation */
@@ -83,8 +86,7 @@ export default function CalendarPicker({ selectedDate, selectedTime, noPreferenc
   }
 
   /* Slot grouping */
-  const slots      = selectedDate ? slotsForDay(selectedDate) : []
-  const isSaturday = selectedDate?.getDay() === 6
+  const slots = selectedDate ? DAY_SLOTS : []
 
   const slotGroups = useMemo(() => {
     if (!slots.length) return []
@@ -137,7 +139,7 @@ export default function CalendarPicker({ selectedDate, selectedTime, noPreferenc
           {/* ── Day-of-week headers ── */}
           <div className={styles.dayHeaders}>
             {dayHeaders.map((h, i) => (
-              <div key={i} className={`${styles.dayHeader} ${i === 6 ? styles.dayHeaderSun : ''}`}>{h}</div>
+              <div key={i} className={`${styles.dayHeader} ${i >= 5 ? styles.dayHeaderSun : ''}`}>{h}</div>
             ))}
           </div>
 
@@ -146,8 +148,8 @@ export default function CalendarPicker({ selectedDate, selectedTime, noPreferenc
             {days.map((d, i) => {
               if (!d) return <div key={`e${i}`} className={styles.dayEmpty} />
               const disabled = isDisabled(d)
-              const selected = sameDay(d, selectedDate)
-              const isSun    = d.getDay() === 0
+              const selected  = sameDay(d, selectedDate)
+              const isWeekend = !isOpenDay(d)
               return (
                 <button
                   key={d.getTime()}
@@ -159,7 +161,7 @@ export default function CalendarPicker({ selectedDate, selectedTime, noPreferenc
                     disabled  ? styles.dayDisabled  : '',
                     selected  ? styles.daySelected  : '',
                     isToday(d)? styles.dayToday     : '',
-                    isSun     ? styles.daySun       : '',
+                    isWeekend ? styles.daySun       : '',
                   ].join(' ')}
                 >
                   {d.getDate()}
@@ -171,8 +173,8 @@ export default function CalendarPicker({ selectedDate, selectedTime, noPreferenc
 
           {/* ── Closed-day hints ── */}
           <div className={styles.hints}>
-            <span className={styles.hint}><span className={styles.hintDot} style={{ background: 'rgba(255,45,120,0.5)' }} />{t('cal_sunday_note')}</span>
-            {isSaturday && <span className={styles.hint}><span className={styles.hintDot} style={{ background: 'rgba(155,48,255,0.7)' }} />{t('cal_sat_note')}</span>}
+            <span className={styles.hint}><span className={styles.hintDot} style={{ background: 'rgba(200,200,200,0.5)' }} />{t('cal_sunday_note')}</span>
+            <span className={styles.hint}><span className={styles.hintDot} style={{ background: 'rgba(255,255,255,0.7)' }} />{t('cal_hours_note')}</span>
           </div>
 
           {/* ── Time slots ── */}

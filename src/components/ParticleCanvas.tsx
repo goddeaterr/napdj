@@ -19,8 +19,8 @@ interface Meteor {
   color: string
 }
 
-const COLORS=['rgba(155,48,255,','rgba(255,45,155,','rgba(0,245,255,','rgba(255,229,102,','rgba(191,95,255,']
-const PULSE_COLORS=['rgba(155,48,255,','rgba(155,48,255,','rgba(255,45,155,','rgba(0,245,255,']
+const COLORS=['rgba(255,255,255,','rgba(200,200,200,','rgba(210,210,210,','rgba(207,207,207,','rgba(255,255,255,']
+const PULSE_COLORS=['rgba(255,255,255,','rgba(255,255,255,','rgba(200,200,200,','rgba(210,210,210,']
 
 export default function ParticleCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -45,11 +45,11 @@ export default function ParticleCanvas() {
 
     const buildNebulae = ()=>{
       nebRef.current=[
-        {x:canvas.width*.10,y:canvas.height*.15,r:450,c:'rgba(155,48,255,',op:0.07,phase:0},
-        {x:canvas.width*.85,y:canvas.height*.75,r:360,c:'rgba(255,45,155,', op:0.05,phase:2.1},
-        {x:canvas.width*.50,y:canvas.height*.50,r:620,c:'rgba(155,48,255,', op:0.03,phase:1.2},
-        {x:canvas.width*.70,y:canvas.height*.10,r:290,c:'rgba(0,245,255,',  op:0.04,phase:3.5},
-        {x:canvas.width*.20,y:canvas.height*.85,r:330,c:'rgba(107,16,207,', op:0.05,phase:0.8},
+        {x:canvas.width*.10,y:canvas.height*.15,r:450,c:'rgba(255,255,255,',op:0.07,phase:0},
+        {x:canvas.width*.85,y:canvas.height*.75,r:360,c:'rgba(200,200,200,', op:0.05,phase:2.1},
+        {x:canvas.width*.50,y:canvas.height*.50,r:620,c:'rgba(255,255,255,', op:0.03,phase:1.2},
+        {x:canvas.width*.70,y:canvas.height*.10,r:290,c:'rgba(210,210,210,',  op:0.04,phase:3.5},
+        {x:canvas.width*.20,y:canvas.height*.85,r:330,c:'rgba(150,150,150,', op:0.05,phase:0.8},
       ]
     }
 
@@ -81,7 +81,7 @@ export default function ParticleCanvas() {
       const speed  = 8 + Math.random() * 12
       const startX = Math.random() * canvas.width * 1.2
       const startY = -20
-      const MCOLS  = ['rgba(155,48,255,','rgba(255,45,155,','rgba(0,245,255,']
+      const MCOLS  = ['rgba(255,255,255,','rgba(200,200,200,','rgba(210,210,210,']
       meteorRef.current.push({
         x: startX, y: startY,
         vx: Math.cos(angle) * speed,
@@ -233,7 +233,7 @@ export default function ParticleCanvas() {
             const boost=Math.max(ps[i].boost,ps[j].boost)
             const a=(1-d/CONN_DIST)*0.065*((ps[i].opacity+ps[j].opacity)/2)*8
             ctx.beginPath(); ctx.moveTo(ps[i].x,ps[i].y); ctx.lineTo(ps[j].x,ps[j].y)
-            ctx.strokeStyle=`rgba(155,48,255,${a+boost*.08})`
+            ctx.strokeStyle=`rgba(255,255,255,${a+boost*.08})`
             ctx.lineWidth=0.5+boost*.6; ctx.stroke()
           }
         }

@@ -219,7 +219,7 @@ function env(ctx: AudioContext, g: GainNode, at=0.005, sus=0.1, rel=0.3, vol=0.5
 export const NEKO_BANK: PadSound[] = [
   {
     name: 'Mew',
-    color: '#FF2D9B',
+    color: '#C8C8C8',
     synth(ctx, dest, v=1) {
       const osc = ctx.createOscillator()
       const g = ctx.createGain()
@@ -234,7 +234,7 @@ export const NEKO_BANK: PadSound[] = [
   },
   {
     name: 'Purr',
-    color: '#9B30FF',
+    color: '#FFFFFF',
     synth(ctx, dest, v=1) {
       const osc = ctx.createOscillator()
       const lfo = ctx.createOscillator()
@@ -251,7 +251,7 @@ export const NEKO_BANK: PadSound[] = [
   },
   {
     name: 'Scratch',
-    color: '#00F5FF',
+    color: '#D2D2D2',
     synth(ctx, dest, v=1) {
       const buf = ctx.createBuffer(1, ctx.sampleRate * 0.15, ctx.sampleRate)
       const d = buf.getChannelData(0)
@@ -267,7 +267,7 @@ export const NEKO_BANK: PadSound[] = [
   },
   {
     name: 'Hiss',
-    color: '#FFE566',
+    color: '#CFCFCF',
     synth(ctx, dest, v=1) {
       const buf = ctx.createBuffer(1, ctx.sampleRate * 0.08, ctx.sampleRate)
       const d = buf.getChannelData(0); for (let i=0; i<d.length; i++) d[i] = Math.random()*2-1
@@ -279,7 +279,7 @@ export const NEKO_BANK: PadSound[] = [
   },
   {
     name: 'Yowl',
-    color: '#FF6B30',
+    color: '#B0B0B0',
     synth(ctx, dest, v=1) {
       const osc = ctx.createOscillator()
       const g = ctx.createGain()
@@ -293,7 +293,7 @@ export const NEKO_BANK: PadSound[] = [
   },
   {
     name: 'Paw',
-    color: '#9B30FF',
+    color: '#FFFFFF',
     synth(ctx, dest, v=1) {
       const osc = ctx.createOscillator()
       const g = ctx.createGain()
@@ -305,7 +305,7 @@ export const NEKO_BANK: PadSound[] = [
   },
   {
     name: 'Bell',
-    color: '#00F5FF',
+    color: '#D2D2D2',
     synth(ctx, dest, v=1) {
       const freqs = [1000, 2756, 4100]
       const rev = mkRev(ctx, 2)
@@ -323,7 +323,7 @@ export const NEKO_BANK: PadSound[] = [
   },
   {
     name: 'Chirp',
-    color: '#FF2D9B',
+    color: '#C8C8C8',
     synth(ctx, dest, v=1) {
       const osc = ctx.createOscillator(); const g = ctx.createGain()
       osc.type = 'sine'; osc.frequency.value = 400
@@ -339,7 +339,7 @@ export const NEKO_BANK: PadSound[] = [
 export const SYNTH_BANK: PadSound[] = [
   {
     name: 'Acid',
-    color: '#00F5FF',
+    color: '#D2D2D2',
     synth(ctx, dest, v=1) {
       const osc = ctx.createOscillator(); const flt = ctx.createBiquadFilter(); const g = ctx.createGain()
       osc.type = 'sawtooth'; osc.frequency.value = 110
@@ -353,7 +353,7 @@ export const SYNTH_BANK: PadSound[] = [
   },
   {
     name: 'Laser',
-    color: '#9B30FF',
+    color: '#FFFFFF',
     synth(ctx, dest, v=1) {
       const osc = ctx.createOscillator(); const g = ctx.createGain()
       osc.type = 'sawtooth'; osc.frequency.setValueAtTime(2000, ctx.currentTime)
@@ -364,7 +364,7 @@ export const SYNTH_BANK: PadSound[] = [
   },
   {
     name: 'Stab',
-    color: '#FF2D9B',
+    color: '#C8C8C8',
     synth(ctx, dest, v=1) {
       const freqs = [220, 277, 330]
       freqs.forEach(f => {
@@ -377,7 +377,7 @@ export const SYNTH_BANK: PadSound[] = [
   },
   {
     name: 'Wobble',
-    color: '#FFE566',
+    color: '#CFCFCF',
     synth(ctx, dest, v=1) {
       const osc = ctx.createOscillator(); const lfo = ctx.createOscillator()
       const lfoG = ctx.createGain(); const flt = ctx.createBiquadFilter(); const g = ctx.createGain()
@@ -392,7 +392,7 @@ export const SYNTH_BANK: PadSound[] = [
   },
   {
     name: 'Pluck',
-    color: '#00F5FF',
+    color: '#D2D2D2',
     synth(ctx, dest, v=1) {
       const osc = ctx.createOscillator(); const g = ctx.createGain()
       osc.type = 'triangle'; osc.frequency.value = 440
@@ -404,7 +404,7 @@ export const SYNTH_BANK: PadSound[] = [
   },
   {
     name: 'Zap',
-    color: '#9B30FF',
+    color: '#FFFFFF',
     synth(ctx, dest, v=1) {
       const osc = ctx.createOscillator(); const g = ctx.createGain()
       osc.type = 'square'; osc.frequency.setValueAtTime(3000, ctx.currentTime)
@@ -415,7 +415,7 @@ export const SYNTH_BANK: PadSound[] = [
   },
   {
     name: 'Pad',
-    color: '#FF2D9B',
+    color: '#C8C8C8',
     synth(ctx, dest, v=1) {
       const freqs = [220, 261.6, 329.6]; const rev = mkRev(ctx, 3); rev.connect(dest)
       freqs.forEach(f => {
@@ -428,7 +428,7 @@ export const SYNTH_BANK: PadSound[] = [
   },
   {
     name: 'Glitch',
-    color: '#FFE566',
+    color: '#CFCFCF',
     synth(ctx, dest, v=1) {
       for (let i=0; i<6; i++) {
         setTimeout(() => {
@@ -447,7 +447,7 @@ export const SYNTH_BANK: PadSound[] = [
 export const KIT_BANK: PadSound[] = [
   {
     name: 'Kick',
-    color: '#9B30FF',
+    color: '#FFFFFF',
     synth(ctx, dest, v=1) {
       const osc = ctx.createOscillator(); const g = ctx.createGain()
       osc.type = 'sine'; osc.frequency.setValueAtTime(180, ctx.currentTime)
@@ -459,7 +459,7 @@ export const KIT_BANK: PadSound[] = [
   },
   {
     name: 'Snare',
-    color: '#FF2D9B',
+    color: '#C8C8C8',
     synth(ctx, dest, v=1) {
       const len = ctx.sampleRate*0.12; const buf = ctx.createBuffer(1,len,ctx.sampleRate)
       const d = buf.getChannelData(0); for (let i=0; i<len; i++) d[i] = Math.random()*2-1
@@ -481,7 +481,7 @@ export const KIT_BANK: PadSound[] = [
   },
   {
     name: 'Hi-Hat',
-    color: '#00F5FF',
+    color: '#D2D2D2',
     synth(ctx, dest, v=1) {
       const len = ctx.sampleRate*0.06; const buf = ctx.createBuffer(1,len,ctx.sampleRate)
       const d = buf.getChannelData(0); for (let i=0; i<len; i++) d[i] = Math.random()*2-1
@@ -493,7 +493,7 @@ export const KIT_BANK: PadSound[] = [
   },
   {
     name: 'Open HH',
-    color: '#FFE566',
+    color: '#CFCFCF',
     synth(ctx, dest, v=1) {
       const len = ctx.sampleRate*0.3; const buf = ctx.createBuffer(1,len,ctx.sampleRate)
       const d = buf.getChannelData(0); for (let i=0; i<len; i++) d[i] = Math.random()*2-1
@@ -507,7 +507,7 @@ export const KIT_BANK: PadSound[] = [
   },
   {
     name: 'Clap',
-    color: '#FF2D9B',
+    color: '#C8C8C8',
     synth(ctx, dest, v=1) {
       [0, 0.012, 0.028].forEach(delay => {
         setTimeout(() => {
@@ -523,7 +523,7 @@ export const KIT_BANK: PadSound[] = [
   },
   {
     name: 'Tom',
-    color: '#9B30FF',
+    color: '#FFFFFF',
     synth(ctx, dest, v=1) {
       const osc = ctx.createOscillator(); const g = ctx.createGain()
       osc.type='sine'; osc.frequency.setValueAtTime(200, ctx.currentTime)
@@ -535,7 +535,7 @@ export const KIT_BANK: PadSound[] = [
   },
   {
     name: 'Rim',
-    color: '#00F5FF',
+    color: '#D2D2D2',
     synth(ctx, dest, v=1) {
       const osc = ctx.createOscillator(); const g = ctx.createGain()
       const len = ctx.sampleRate*0.04; const buf = ctx.createBuffer(1,len,ctx.sampleRate)
@@ -551,7 +551,7 @@ export const KIT_BANK: PadSound[] = [
   },
   {
     name: 'Cymbal',
-    color: '#FFE566',
+    color: '#CFCFCF',
     synth(ctx, dest, v=1) {
       const freqs=[215.5, 355, 461, 715, 880, 1100]
       freqs.forEach(f => {
@@ -571,7 +571,7 @@ export const KIT_BANK: PadSound[] = [
 export const AMBIENT_BANK: PadSound[] = [
   {
     name: 'Space',
-    color: '#9B30FF',
+    color: '#FFFFFF',
     synth(ctx, dest, v=1) {
       const rev = mkRev(ctx, 5); rev.connect(dest)
       const freqs=[200,300,500]
@@ -586,7 +586,7 @@ export const AMBIENT_BANK: PadSound[] = [
   },
   {
     name: 'Rain',
-    color: '#00F5FF',
+    color: '#D2D2D2',
     synth(ctx, dest, v=1) {
       for (let i=0; i<20; i++) {
         setTimeout(() => {
@@ -603,7 +603,7 @@ export const AMBIENT_BANK: PadSound[] = [
   },
   {
     name: 'Chime',
-    color: '#FFE566',
+    color: '#CFCFCF',
     synth(ctx, dest, v=1) {
       const scale=[523,659,784,1047,1319]
       const rev=mkRev(ctx,3); rev.connect(dest)
@@ -621,7 +621,7 @@ export const AMBIENT_BANK: PadSound[] = [
   },
   {
     name: 'Tide',
-    color: '#FF2D9B',
+    color: '#C8C8C8',
     synth(ctx, dest, v=1) {
       const len=ctx.sampleRate*2; const buf=ctx.createBuffer(1,len,ctx.sampleRate)
       const d=buf.getChannelData(0); for (let i=0; i<len; i++) d[i]=Math.random()*2-1
@@ -639,7 +639,7 @@ export const AMBIENT_BANK: PadSound[] = [
   },
   {
     name: 'Forest',
-    color: '#9B30FF',
+    color: '#FFFFFF',
     synth(ctx, dest, v=1) {
       // Bird-like chirps
       for (let i=0; i<4; i++) {
@@ -656,7 +656,7 @@ export const AMBIENT_BANK: PadSound[] = [
   },
   {
     name: 'Cosmos',
-    color: '#00F5FF',
+    color: '#D2D2D2',
     synth(ctx, dest, v=1) {
       const rev=mkRev(ctx,6); rev.connect(dest)
       for (let i=0; i<5; i++) {
@@ -674,7 +674,7 @@ export const AMBIENT_BANK: PadSound[] = [
   },
   {
     name: 'Dream',
-    color: '#FF2D9B',
+    color: '#C8C8C8',
     synth(ctx, dest, v=1) {
       const rev=mkRev(ctx,4); rev.connect(dest)
       const freqs=[261.6,329.6,392,523.2]
@@ -689,7 +689,7 @@ export const AMBIENT_BANK: PadSound[] = [
   },
   {
     name: 'Portal',
-    color: '#FFE566',
+    color: '#CFCFCF',
     synth(ctx, dest, v=1) {
       const rev=mkRev(ctx,3); rev.connect(dest)
       for (let i=0; i<8; i++) {
@@ -707,8 +707,8 @@ export const AMBIENT_BANK: PadSound[] = [
 ]
 
 export const ALL_BANKS = [
-  { name: 'NEKO',    emoji: '🐾', color: '#FF2D9B', pads: NEKO_BANK    },
-  { name: 'SYNTH',   emoji: '🎛️',  color: '#00F5FF', pads: SYNTH_BANK  },
-  { name: 'KIT',     emoji: '🥁',  color: '#9B30FF', pads: KIT_BANK    },
-  { name: 'AMBIENT', emoji: '🌙', color: '#FFE566', pads: AMBIENT_BANK },
+  { name: 'NEKO',    emoji: '🐾', color: '#C8C8C8', pads: NEKO_BANK    },
+  { name: 'SYNTH',   emoji: '🎛️',  color: '#D2D2D2', pads: SYNTH_BANK  },
+  { name: 'KIT',     emoji: '🥁',  color: '#FFFFFF', pads: KIT_BANK    },
+  { name: 'AMBIENT', emoji: '🌙', color: '#CFCFCF', pads: AMBIENT_BANK },
 ]

@@ -170,9 +170,9 @@ export default function DJConsole({ audioCtx }: { audioCtx: AudioCtxRef }) {
             {/* Modes */}
             <div className={styles.modes}>
               {([
-                ['RND', random, setRandom, '#FFE566'],
-                ['GLT', glitch, setGlitch, '#FF2D9B'],
-                ['ARP', arp,    setArp,    '#00F5FF'],
+                ['RND', random, setRandom, '#CFCFCF'],
+                ['GLT', glitch, setGlitch, '#C8C8C8'],
+                ['ARP', arp,    setArp,    '#D2D2D2'],
               ] as Array<[string, boolean, (_: boolean) => void, string]>).map(([l, v, fn, c]) => (
                 <button
                   key={l}
@@ -207,7 +207,7 @@ export default function DJConsole({ audioCtx }: { audioCtx: AudioCtxRef }) {
                 className={styles.eqBar}
                 style={{
                   height: `${Math.max(4, h * 100)}%`,
-                  background: h > 0.7 ? '#FF2D9B' : h > 0.4 ? '#9B30FF' : '#4a0e8f',
+                  background: h > 0.7 ? '#C8C8C8' : h > 0.4 ? '#FFFFFF' : '#3A3A3A',
                 }}
               />
             ))}
@@ -228,7 +228,7 @@ export default function DJConsole({ audioCtx }: { audioCtx: AudioCtxRef }) {
                       ? `0 0 20px ${pad.color}90, 0 0 50px ${pad.color}40, inset 0 0 18px ${pad.color}20`
                       : undefined,
                     background: active
-                      ? `radial-gradient(circle at 50% 60%, ${pad.color}30 0%, transparent 70%), #0a0014`
+                      ? `radial-gradient(circle at 50% 60%, ${pad.color}30 0%, transparent 70%), #0C0C0C`
                       : undefined,
                   } as CSSProperties}
                   onMouseDown={() => hitPad(i)}

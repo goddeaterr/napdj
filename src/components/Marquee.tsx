@@ -1,3 +1,4 @@
+import { VENUE } from '../config/site'
 import styles from './Marquee.module.css'
 
 interface MarqueeProps {
@@ -33,16 +34,16 @@ export default function Marquee({ items, speed = 30, reverse = false, accent = f
 // Preset marquees
 export function GraduatesMarquee() {
   const names = [
-    'Marcus K.', 'Sofia R.', 'Tom W.', 'Aiyana L.', 'Darius M.', 'Elina V.',
-    'Lukas B.', 'Rasa T.', 'Mantas P.', 'Ineta J.', 'Karolis S.', 'Viktorija A.',
-    'Emil N.', 'Gintare K.', 'Jonas M.', 'Laura V.',
+    'Lukas B.', 'Gabija P.', 'Mantas J.', 'Rūta K.', 'Dovydas S.', 'Ieva M.',
+    'Tomas V.', 'Rasa T.', 'Karolis S.', 'Ineta J.', 'Justinas P.', 'Viktorija A.',
+    'Emilis N.', 'Gintarė K.', 'Jonas M.', 'Laura V.',
   ]
   return <Marquee items={names} speed={35} />
 }
 
 export function ClubsMarquee() {
   const clubs = [
-    'Club Noir', 'Studio 54 LT', 'Bazė', 'Žvejų Rūmai', 'Klaipėda Jazz Club',
+    VENUE.name, 'Studio 54 LT', 'Bazė', 'Žvejų Rūmai', 'Klaipėda Jazz Club',
     'Memelio Namų Šventė', 'Athos Club', 'Palanga Beach Events',
     'Smeltė Festival', 'Jūros Šventė', 'Open Air Klaipėda',
   ]

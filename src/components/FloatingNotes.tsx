@@ -26,7 +26,7 @@ export default function FloatingNotes() {
     delay:  (i * 1.37) % 7,
     dur:    5.5 + (i * 0.73) % 4,
     size:   14 + (i * 3) % 18,
-    color:  i % 3 === 0 ? '#9B30FF' : i % 3 === 1 ? '#FF2D78' : '#BF5FFF',
+    color:  i % 3 === 0 ? '#FFFFFF' : i % 3 === 1 ? '#C8C8C8' : '#FFFFFF',
     rotate: -20 + (i * 13) % 40,
   }))
 

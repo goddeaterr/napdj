@@ -10,10 +10,10 @@ const BARS = Array.from({ length: BAR_COUNT }, (_, i) => {
   // Color: purple left, pink center, cyan right
   const t    = i / (BAR_COUNT - 1)
   const color =
-    t < 0.33 ? '#9B30FF' :
-    t < 0.5  ? '#BF5FFF' :
-    t < 0.66 ? '#FF2D78' :
-               '#00C8FF'
+    t < 0.33 ? '#FFFFFF' :
+    t < 0.5  ? '#FFFFFF' :
+    t < 0.66 ? '#C8C8C8' :
+               '#D2D2D2'
   return { base, dur, del, color }
 })
 

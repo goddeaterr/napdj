@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "concurrently -n API,VITE -c magenta,cyan \"node server/index.js\" \"vite\"",
     "server": "node server/index.js",
+    "admin:password": "node scripts/hash-password.mjs",
     "build": "tsc && vite build",
     "preview": "vite preview"
   },
@@ -16,7 +17,6 @@
     "express": "^5.2.1",
     "framer-motion": "^11.3.0",
     "lucide-react": "^0.400.0",
-    "nodemailer": "^8.0.7",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "resend": "^6.12.2"
@@ -24,7 +24,6 @@
   "devDependencies": {
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
-    "@types/nodemailer": "^8.0.0",
     "@types/react": "^18.3.1",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.1",

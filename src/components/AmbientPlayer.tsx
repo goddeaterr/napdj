@@ -47,7 +47,7 @@ export default function AmbientPlayer({ audioCtx, compact = false }: Props) {
           <input
             type="range" min="0" max="1" step="0.01" value={vol}
             className={styles.volSlider}
-            style={{ '--c': '#9B30FF', '--v': `${vol * 100}%` } as React.CSSProperties}
+            style={{ '--c': '#FFFFFF', '--v': `${vol * 100}%` } as React.CSSProperties}
             onChange={e => changeVol(+e.target.value)}
           />
         )}
@@ -70,9 +70,9 @@ export default function AmbientPlayer({ audioCtx, compact = false }: Props) {
             style={{
               height: `${h}%`,
               background: on
-                ? (i % 3 === 0 ? '#9B30FF' : i % 3 === 1 ? '#FF2D78' : '#00F5FF')
+                ? (i % 3 === 0 ? '#FFFFFF' : i % 3 === 1 ? '#C8C8C8' : '#D2D2D2')
                 : 'rgba(255,255,255,0.1)',
-              boxShadow: on && h > 50 ? `0 0 5px ${i%3===0?'#9B30FF':i%3===1?'#FF2D78':'#00F5FF'}` : 'none',
+              boxShadow: on && h > 50 ? `0 0 5px ${i%3===0?'#FFFFFF':i%3===1?'#C8C8C8':'#D2D2D2'}` : 'none',
             }}
           />
         ))}
@@ -95,7 +95,7 @@ export default function AmbientPlayer({ audioCtx, compact = false }: Props) {
         <input
           type="range" min="0" max="1" step="0.01" value={vol}
           className={styles.volSlider}
-          style={{ '--c': '#9B30FF', '--v': `${vol * 100}%` } as React.CSSProperties}
+          style={{ '--c': '#FFFFFF', '--v': `${vol * 100}%` } as React.CSSProperties}
           onChange={e => changeVol(+e.target.value)}
           aria-label="Ambient volume"
         />

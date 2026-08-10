@@ -2,10 +2,10 @@
   width: 100%;
   overflow: hidden;
   padding: 14px 0;
-  border-top: 1px solid rgba(155,48,255,0.08);
-  border-bottom: 1px solid rgba(155,48,255,0.08);
+  border-top: 1px solid rgba(255,255,255,0.08);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
   position: relative;
-  background: rgba(155,48,255,0.02);
+  background: rgba(255,255,255,0.02);
 }
 
 .wrap::before, .wrap::after {
@@ -20,8 +20,8 @@
 .wrap::after  { right: 0; background: linear-gradient(-90deg, var(--black), transparent); }
 
 .accent {
-  background: rgba(155,48,255,0.04);
-  border-color: rgba(155,48,255,0.15);
+  background: rgba(255,255,255,0.04);
+  border-color: rgba(255,255,255,0.15);
 }
 
 .inner { position: relative; }
@@ -61,11 +61,11 @@
   transition: color 0.2s;
 }
 
-.accent .item { color: rgba(155,48,255,0.5); }
+.accent .item { color: rgba(255,255,255,0.5); }
 
 .dot {
   font-size: 7px;
-  color: var(--purple);
+  color: var(--accent);
   opacity: 0.5;
   flex-shrink: 0;
 }
@@ -73,17 +73,17 @@
 /* ── Enhanced marquee ── */
 .wrap {
   background: linear-gradient(90deg,
-    rgba(155,48,255,0.04),
-    rgba(255,45,120,0.02) 50%,
-    rgba(155,48,255,0.04)
+    rgba(255,255,255,0.04),
+    rgba(200,200,200,0.02) 50%,
+    rgba(255,255,255,0.04)
   ) !important;
 }
 .accent .item {
-  color: rgba(155,48,255,0.55) !important;
+  color: rgba(255,255,255,0.55) !important;
   letter-spacing: 0.18em !important;
 }
 .dot {
-  color: var(--pink) !important;
+  color: var(--tone-3) !important;
   opacity: 0.7;
   animation: dotPulseM 2s ease-in-out infinite;
 }
