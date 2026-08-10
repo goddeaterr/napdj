@@ -24,6 +24,13 @@
   --tone-2-dim:    rgba(210,210,210,0.12);
   --tone-3:        #C8C8C8;
 
+  /* The one colour in an otherwise black-and-white design: a slot that is
+     already booked. Reserved for that meaning only. */
+  --taken:        #FF4545;
+  --taken-border: rgba(255,69,69,0.55);
+  --taken-bg:     rgba(255,69,69,0.12);
+  --taken-glow:   rgba(255,69,69,0.35);
+
   --font-display:   'Bebas Neue', 'Oswald', sans-serif;
   --font-condensed: 'Barlow Condensed', 'Oswald', sans-serif;
   --font-body:      'Barlow', 'Inter', sans-serif;

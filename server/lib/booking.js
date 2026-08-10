@@ -4,7 +4,7 @@
    identically.
 ============================================================================ */
 import { randomUUID } from 'node:crypto'
-import { addBooking, markNotified } from './store.js'
+import { addBooking, markNotified, listTakenSlots } from './store.js'
 import { sendOwnerNotification, sendClientConfirmation, formatDateLabel } from './mailer.js'
 
 const LIMITS = { name: 120, email: 200, phone: 40, plan: 80, genre: 80, time: 10, message: 2000 }
@@ -40,7 +40,8 @@ function sanitise(body = {}) {
     genre:        trim(body.genre,   LIMITS.genre),
     time:         trim(body.time,    LIMITS.time),
     message:      trim(body.message, LIMITS.message),
-    date:         typeof body.date === 'string' ? body.date : null,
+    // Keep only the calendar part, so an ISO timestamp can never sneak through.
+    date:         typeof body.date === 'string' ? body.date.slice(0, 10) : null,
     noPreference: Boolean(body.noPreference),
     consent:      Boolean(body.consent),
     lang:         ['en', 'ru', 'lt'].includes(body.lang) ? body.lang : 'en',
@@ -75,6 +76,21 @@ export async function submitBooking(body, ip) {
   const data  = sanitise(body)
   const error = validate(data)
   if (error) return { ok: false, status: 400, error }
+
+  /* Refuse a slot somebody else already holds. The calendar greys these out,
+     but two people can still submit the same slot seconds apart, so the check
+     has to happen here as well. */
+  if (data.date && data.time && !data.noPreference) {
+    try {
+      const taken = await listTakenSlots(data.date)
+      if (taken.some(s => s.date === data.date && s.time === data.time)) {
+        return { ok: false, status: 409, code: 'slot_taken', error: 'That time slot has just been taken' }
+      }
+    } catch {
+      // If availability cannot be read, accept the booking rather than turn a
+      // real customer away — a duplicate is easier to fix than a lost enquiry.
+    }
+  }
 
   const record = { ...data, dateLabel: formatDateLabel(data) }
 

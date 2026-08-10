@@ -15,7 +15,7 @@ export default async function handler(req, res) {
   const result = await submitBooking(req.body, clientIp(req))
 
   if (!result.ok) {
-    res.status(result.status).json({ ok: false, error: result.error })
+    res.status(result.status).json({ ok: false, error: result.error, code: result.code })
     return
   }
 

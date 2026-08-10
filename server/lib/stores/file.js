@@ -43,6 +43,18 @@ export async function listBookings() {
   return rows.sort((a, b) => String(b.createdAt).localeCompare(String(a.createdAt)))
 }
 
+/**
+ * Slots that are already spoken for, from `fromDate` onwards.
+ * Returns only { date, time } — never any personal data, because this feeds a
+ * public endpoint.
+ */
+export async function listTakenSlots(fromDate) {
+  const rows = await readAll()
+  return rows
+    .filter(r => r.status !== 'cancelled' && r.date && r.time && r.date >= fromDate)
+    .map(r => ({ date: r.date, time: r.time }))
+}
+
 export async function addBooking(data) {
   return run(async () => {
     const rows = await readAll()

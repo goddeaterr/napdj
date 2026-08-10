@@ -28,6 +28,8 @@ export default function BookingForm() {
   const [status,  setStatus]  = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
   const [focused, setFocused] = useState<string | null>(null)
   const [honeypot, setHoneypot] = useState('')
+  /** Bumped to make the calendar refetch which slots are taken. */
+  const [availabilityKey, setAvailabilityKey] = useState(0)
   const { ref: secRef, isVisible } = useScrollAnimation<HTMLDivElement>(0.05)
 
   const set = (k: keyof FormState, v: string) => {
@@ -37,6 +39,7 @@ export default function BookingForm() {
 
   const setCalendar = (date: Date | null, time: string | null, noPreference: boolean) => {
     setForm(f => ({ ...f, date, time, noPreference }))
+    setErrors(e => ({ ...e, date: '' }))
   }
 
   const validate = () => {
@@ -81,8 +84,15 @@ export default function BookingForm() {
       const data = await res.json()
       if (data.ok) {
         setStatus('success')
+      } else if (data.code === 'slot_taken') {
+        // Somebody booked this slot between the page loading and submitting.
+        // Keep the filled-in form, just send them back to pick another time.
+        setErrors(e => ({ ...e, date: t('book_slot_taken') }))
+        setForm(f => ({ ...f, time: null }))
+        setAvailabilityKey(k => k + 1)
+        setStatus('idle')
       } else {
-        console.error('Email error:', data.error)
+        console.error('Booking error:', data.error)
         setStatus('error')
       }
     } catch (err) {
@@ -273,11 +283,13 @@ export default function BookingForm() {
                 </div>
 
                 {/* Calendar */}
+                {errors.date && <div className={styles.slotTakenNotice}>{errors.date}</div>}
                 <CalendarPicker
                   selectedDate={form.date}
                   selectedTime={form.time}
                   noPreference={form.noPreference}
                   onChange={setCalendar}
+                  refreshKey={availabilityKey}
                 />
 
                 {/* Message */}

@@ -3,6 +3,7 @@ import express from 'express'
 import cors    from 'cors'
 
 import { submitBooking }                 from './lib/booking.js'
+import { getAvailability }               from './lib/availability.js'
 import { mailerStatus, OWNER }           from './lib/mailer.js'
 import { loginHandler, bookingsHandler } from './lib/adminApi.js'
 import { adminConfigured, clientIp }      from './lib/auth.js'
@@ -33,13 +34,23 @@ app.get('/api/health', (_req, res) => res.json({
   persistent: storeIsPersistent,
 }))
 
+/* ── public availability (dates and times only) ── */
+app.get('/api/availability', async (_req, res) => {
+  try {
+    res.json(await getAvailability())
+  } catch (err) {
+    console.error('  ⚠️  availability:', err.message)
+    res.json({ ok: false, taken: {} })
+  }
+})
+
 /* ── public booking endpoint ── */
 app.post('/api/send-booking', async (req, res) => {
   const result = await submitBooking(req.body, clientIp(req))
 
   if (!result.ok) {
     console.error('  ❌ booking failed:', result.error, result.storageError || '')
-    return res.status(result.status).json({ ok: false, error: result.error })
+    return res.status(result.status).json({ ok: false, error: result.error, code: result.code })
   }
 
   if (result.discarded) return res.json({ ok: true })

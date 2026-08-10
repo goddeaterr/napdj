@@ -121,6 +121,28 @@
 .dayDisabled { opacity: .2; cursor: not-allowed; }
 .daySun { opacity: .15; cursor: not-allowed; }
 
+/* ── Already booked ──────────────────────────────────────────────────────
+   The only colour on an otherwise monochrome site, so "unavailable" reads
+   instantly and is never confused with "closed".                          */
+.dayFull {
+  background: var(--taken-bg) !important;
+  border-color: var(--taken-border) !important;
+  color: var(--taken) !important;
+  cursor: not-allowed;
+  box-shadow: 0 0 12px var(--taken-glow), inset 0 0 8px rgba(255,69,69,0.08);
+  text-decoration: line-through;
+  text-decoration-color: var(--taken-border);
+}
+.dayFull:hover { background: var(--taken-bg) !important; }
+
+/* A day with some slots gone — a small marker, not a full red cell. */
+.dayPartial {
+  position: absolute; top: 4px; right: 4px;
+  width: 4px; height: 4px; border-radius: 50%;
+  background: var(--taken);
+  box-shadow: 0 0 5px var(--taken-glow);
+}
+
 .dayDot {
   width: 4px; height: 4px; border-radius: 50%;
   background: var(--accent);
@@ -183,6 +205,18 @@
   color: rgba(255,255,255,0.85);
   background: rgba(255,255,255,0.07);
 }
+.slotTaken,
+.slotTaken:hover {
+  background: var(--taken-bg);
+  border-color: var(--taken-border);
+  color: var(--taken);
+  cursor: not-allowed;
+  text-decoration: line-through;
+  text-decoration-color: var(--taken-border);
+  box-shadow: 0 0 10px var(--taken-glow);
+  transform: none;
+}
+
 .slotActive {
   background: rgba(255,255,255,0.18) !important;
   border-color: var(--accent) !important;

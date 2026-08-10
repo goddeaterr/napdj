@@ -148,6 +148,19 @@
   line-height: 1.4;
 }
 
+/* Shown when the chosen slot was booked by someone else mid-form */
+.slotTakenNotice {
+  margin-bottom: 10px;
+  padding: 10px 14px;
+  border: 1px solid var(--taken-border);
+  border-left-width: 3px;
+  border-radius: 6px;
+  background: var(--taken-bg);
+  color: var(--taken);
+  font-size: 12.5px;
+  line-height: 1.55;
+}
+
 /* Honeypot — off-screen, never announced to screen readers */
 .honeypot {
   position: absolute;

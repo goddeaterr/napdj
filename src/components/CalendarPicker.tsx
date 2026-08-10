@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useLang } from '../lib/LangContext'
 import { SCHEDULE } from '../config/site'
 import styles from './CalendarPicker.module.css'
@@ -8,7 +8,12 @@ interface Props {
   selectedTime: string | null
   noPreference: boolean
   onChange: (date: Date | null, time: string | null, noPreference: boolean) => void
+  /** Bumping this refetches availability — used after a slot-taken error. */
+  refreshKey?: number
 }
+
+/** Slots already booked, keyed by YYYY-MM-DD. */
+type TakenMap = Record<string, string[]>
 
 /* Time slots are generated from the opening hours in src/config/site.ts */
 const DAY_SLOTS = Array.from(
@@ -19,6 +24,12 @@ const DAY_SLOTS = Array.from(
 const OPEN_DAYS: readonly number[] = SCHEDULE.openDays
 const isOpenDay = (d: Date) => OPEN_DAYS.includes(d.getDay())
 
+/** Local calendar date as YYYY-MM-DD — never via toISOString, which shifts. */
+function toKey(d: Date) {
+  const pad = (n: number) => String(n).padStart(2, '0')
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
+}
+
 function sameDay(a: Date | null, b: Date | null) {
   if (!a || !b) return false
   return a.getFullYear() === b.getFullYear() &&
@@ -26,8 +37,28 @@ function sameDay(a: Date | null, b: Date | null) {
          a.getDate()     === b.getDate()
 }
 
-export default function CalendarPicker({ selectedDate, selectedTime, noPreference, onChange }: Props) {
+export default function CalendarPicker({ selectedDate, selectedTime, noPreference, onChange, refreshKey = 0 }: Props) {
   const { lang, t } = useLang()
+
+  /* Slots other people already booked. Availability is derived from the
+     bookings themselves, so a reservation the admin deletes or cancels frees
+     its slot here automatically. */
+  const [taken, setTaken] = useState<TakenMap>({})
+
+  useEffect(() => {
+    let cancelled = false
+    fetch('/api/availability')
+      .then(r => r.json())
+      .then(data => { if (!cancelled && data?.taken) setTaken(data.taken) })
+      // A failed lookup just means nothing is greyed out — the server still
+      // rejects a double booking on submit.
+      .catch(() => {})
+    return () => { cancelled = true }
+  }, [refreshKey])
+
+  const takenFor  = (d: Date) => taken[toKey(d)] ?? []
+  const isSlotTaken = (d: Date, slot: string) => takenFor(d).includes(slot)
+  const isDayFull = (d: Date) => DAY_SLOTS.every(s => takenFor(d).includes(s))
 
   const today = useMemo(() => {
     const d = new Date(); d.setHours(0, 0, 0, 0); return d
@@ -147,18 +178,22 @@ export default function CalendarPicker({ selectedDate, selectedTime, noPreferenc
           <div className={styles.dayGrid}>
             {days.map((d, i) => {
               if (!d) return <div key={`e${i}`} className={styles.dayEmpty} />
-              const disabled = isDisabled(d)
+              const closed    = isDisabled(d)
+              const full      = !closed && isDayFull(d)
               const selected  = sameDay(d, selectedDate)
               const isWeekend = !isOpenDay(d)
+              const partly    = !closed && !full && takenFor(d).length > 0
               return (
                 <button
                   key={d.getTime()}
                   type="button"
-                  disabled={disabled}
+                  disabled={closed || full}
+                  title={full ? t('cal_day_full') : undefined}
                   onClick={() => handleDay(d)}
                   className={[
                     styles.day,
-                    disabled  ? styles.dayDisabled  : '',
+                    closed    ? styles.dayDisabled  : '',
+                    full      ? styles.dayFull      : '',
                     selected  ? styles.daySelected  : '',
                     isToday(d)? styles.dayToday     : '',
                     isWeekend ? styles.daySun       : '',
@@ -166,6 +201,7 @@ export default function CalendarPicker({ selectedDate, selectedTime, noPreferenc
                 >
                   {d.getDate()}
                   {selected && <span className={styles.dayDot} />}
+                  {partly   && <span className={styles.dayPartial} />}
                 </button>
               )
             })}
@@ -175,6 +211,7 @@ export default function CalendarPicker({ selectedDate, selectedTime, noPreferenc
           <div className={styles.hints}>
             <span className={styles.hint}><span className={styles.hintDot} style={{ background: 'rgba(200,200,200,0.5)' }} />{t('cal_sunday_note')}</span>
             <span className={styles.hint}><span className={styles.hintDot} style={{ background: 'rgba(255,255,255,0.7)' }} />{t('cal_hours_note')}</span>
+            <span className={styles.hint}><span className={styles.hintDot} style={{ background: 'var(--taken)' }} />{t('cal_taken_note')}</span>
           </div>
 
           {/* ── Time slots ── */}
@@ -189,16 +226,25 @@ export default function CalendarPicker({ selectedDate, selectedTime, noPreferenc
                 <div key={group.label} className={styles.slotGroup}>
                   <div className={styles.slotGroupLabel}>{group.label}</div>
                   <div className={styles.slotRow}>
-                    {group.slots.map(slot => (
-                      <button
-                        key={slot}
-                        type="button"
-                        className={`${styles.slot} ${selectedTime === slot ? styles.slotActive : ''}`}
-                        onClick={() => handleTime(slot)}
-                      >
-                        {slot}
-                      </button>
-                    ))}
+                    {group.slots.map(slot => {
+                      const busy = isSlotTaken(selectedDate, slot)
+                      return (
+                        <button
+                          key={slot}
+                          type="button"
+                          disabled={busy}
+                          title={busy ? t('cal_taken_note') : undefined}
+                          className={[
+                            styles.slot,
+                            busy ? styles.slotTaken : '',
+                            selectedTime === slot ? styles.slotActive : '',
+                          ].join(' ')}
+                          onClick={() => handleTime(slot)}
+                        >
+                          {slot}
+                        </button>
+                      )
+                    })}
                   </div>
                 </div>
               ))}

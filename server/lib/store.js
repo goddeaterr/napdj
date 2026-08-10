@@ -24,8 +24,9 @@ export const storeDescription = backend.description
 /** True when bookings survive a restart of the hosting environment. */
 export const storeIsPersistent = useSupabase || !process.env.VERCEL
 
-export const listBookings = backend.listBookings
-export const addBooking   = backend.addBooking
+export const listBookings   = backend.listBookings
+export const addBooking     = backend.addBooking
+export const listTakenSlots = backend.listTakenSlots
 
 /** Admin edits — only status and note may be changed. */
 export async function updateBooking(id, patch) {

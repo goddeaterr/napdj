@@ -93,6 +93,25 @@ export async function listBookings() {
   return (rows || []).map(fromRow)
 }
 
+/**
+ * Slots that are already spoken for, from `fromDate` onwards.
+ * Selects only the two date columns — no personal data ever leaves the
+ * database for this query, because it feeds a public endpoint.
+ */
+export async function listTakenSlots(fromDate) {
+  const query = [
+    'select=session_date,session_time',
+    'status=neq.cancelled',
+    'session_time=not.is.null',
+    `session_date=gte.${encodeURIComponent(fromDate)}`,
+  ].join('&')
+
+  const rows = await request(`${ENDPOINT}?${query}`, { headers: headers() })
+  return (rows || [])
+    .filter(r => r.session_date && r.session_time)
+    .map(r => ({ date: r.session_date, time: r.session_time }))
+}
+
 export async function addBooking(data) {
   const rows = await request(ENDPOINT, {
     method: 'POST',
