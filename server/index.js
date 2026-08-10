@@ -26,9 +26,11 @@ app.use(express.json({ limit: '64kb' }))
 /* ── health ── */
 app.get('/api/health', (_req, res) => res.json({
   ok:     true,
-  resend: mailerStatus.resend,
-  owner:  OWNER,
-  admin:  adminConfigured,
+  resend:     mailerStatus.resend,
+  owner:      OWNER,
+  admin:      adminConfigured,
+  store:      storeName,
+  persistent: storeIsPersistent,
 }))
 
 /* ── public booking endpoint ── */
@@ -36,13 +38,14 @@ app.post('/api/send-booking', async (req, res) => {
   const result = await submitBooking(req.body, clientIp(req))
 
   if (!result.ok) {
-    console.error('  ❌ booking rejected:', result.error)
+    console.error('  ❌ booking failed:', result.error, result.storageError || '')
     return res.status(result.status).json({ ok: false, error: result.error })
   }
 
   if (result.discarded) return res.json({ ok: true })
 
   console.log(`📬  ${result.booking.name} <${result.booking.email}> · ${result.booking.plan} · ${result.booking.dateLabel}`)
+  console.log(`  ${result.stored ? `✅ stored (${storeName})` : `❌ NOT stored: ${result.warning}`}`)
   console.log(`  ${result.owner.sent  ? `✅ owner  (${result.owner.via})`  : `❌ owner: ${result.owner.error}`}`)
   console.log(`  ${result.client.sent ? `✅ client (${result.client.via})` : `⚠️  client: ${result.client.error}`}`)
 

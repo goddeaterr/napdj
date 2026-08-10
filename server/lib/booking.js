@@ -3,6 +3,7 @@
    Shared by the Express server and the Vercel function so both behave
    identically.
 ============================================================================ */
+import { randomUUID } from 'node:crypto'
 import { addBooking, markNotified } from './store.js'
 import { sendOwnerNotification, sendClientConfirmation, formatDateLabel } from './mailer.js'
 
@@ -75,22 +76,46 @@ export async function submitBooking(body, ip) {
   const error = validate(data)
   if (error) return { ok: false, status: 400, error }
 
+  const record = { ...data, dateLabel: formatDateLabel(data) }
+
+  /* Storage and e-mail are two independent ways of not losing an enquiry.
+     Either one succeeding is enough to accept the booking, so a misconfigured
+     database never turns a real customer away. */
   let booking
+  let storageError
   try {
-    booking = await addBooking({ ...data, dateLabel: formatDateLabel(data) })
+    booking = await addBooking(record)
   } catch (err) {
-    return { ok: false, status: 500, error: `Could not save the booking: ${err.message}` }
+    storageError = err.message
+    booking = { id: `unsaved-${randomUUID()}`, createdAt: new Date().toISOString(), status: 'new', ...record }
   }
 
   const owner  = await sendOwnerNotification(booking)
   const client = await sendClientConfirmation(booking)
 
-  try {
-    await markNotified(booking.id, {
-      owner:  owner.sent  ? { via: owner.via }  : { failed: owner.error },
-      client: client.sent ? { via: client.via } : { failed: client.error },
-    })
-  } catch { /* delivery bookkeeping is best-effort */ }
+  if (!storageError) {
+    try {
+      await markNotified(booking.id, {
+        owner:  owner.sent  ? { via: owner.via }  : { failed: owner.error },
+        client: client.sent ? { via: client.via } : { failed: client.error },
+      })
+    } catch { /* delivery bookkeeping is best-effort */ }
+  }
+
+  // Nothing recorded and nobody notified — this one really did fail.
+  if (storageError && !owner.sent) {
+    return {
+      ok: false,
+      status: 500,
+      error: 'Could not process the booking',
+      storageError,
+      owner,
+    }
+  }
+
+  const warnings = []
+  if (storageError) warnings.push(`Booking was NOT stored: ${storageError}`)
+  if (!owner.sent)  warnings.push(`Owner notification failed: ${owner.error}`)
 
   return {
     ok: true,
@@ -98,8 +123,7 @@ export async function submitBooking(body, ip) {
     booking,
     owner,
     client,
-    // The request is stored and visible in the admin panel even when e-mail
-    // delivery fails, so the visitor is never asked to submit twice.
-    warning: owner.sent ? undefined : `Owner notification failed: ${owner.error}`,
+    stored: !storageError,
+    warning: warnings.length ? warnings.join(' · ') : undefined,
   }
 }
