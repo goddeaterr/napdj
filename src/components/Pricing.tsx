@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { useLang } from '../lib/LangContext'
 import { useScrollAnimation } from '../hooks/useScrollAnimation'
 import styles from './Pricing.module.css'
-import TiltCard from './TiltCard'
+import CardSparks from './CardSparks'
 
 export default function Pricing() {
   const { t } = useLang()
@@ -133,7 +133,7 @@ function PricingCard({ plan, delay, isHovered: _isHovered, otp, onHover, onLeave
   const isPro = plan.id === 'pro'
 
   return (
-    <TiltCard maxTilt={isPro ? 12 : 8} glareOpacity={isPro ? 0.2 : 0.12} scale={1.02}>
+    <CardSparks>
     <div
       ref={ref}
       className={`${styles.card} ${isPro ? styles.cardPro : ''} ${isVisible ? styles.cardIn : ''}`}
@@ -142,7 +142,7 @@ function PricingCard({ plan, delay, isHovered: _isHovered, otp, onHover, onLeave
       onMouseLeave={onLeave}
     >
       {plan.badge && (
-        <div className={styles.badge} style={{ background: plan.color }}>{plan.badge}</div>
+        <div className={styles.badge}>{plan.badge}</div>
       )}
 
       <div className={styles.planTop}>
@@ -184,6 +184,6 @@ function PricingCard({ plan, delay, isHovered: _isHovered, otp, onHover, onLeave
         </svg>
       </button>
     </div>
-    </TiltCard>
+    </CardSparks>
   )
 }

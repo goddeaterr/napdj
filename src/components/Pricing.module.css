@@ -32,19 +32,24 @@
   box-shadow: 0 0 30px rgba(255,255,255,0.1);
 }
 
-/* cardGlowTop and proGlow removed from JSX — they escaped overflow:hidden
-   due to TiltCard's preserve-3d (now fixed). Accent is handled by ::before shimmer bar. */
+/* The Pro accent is the ::before shimmer bar further down. */
 
 /* Pro card gets a subtle top-edge gradient via its own rule */
 .cardPro {
   background: linear-gradient(180deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.03) 40%, rgba(255,255,255,0.02) 100%) !important;
 }
 
+/* Always dark on light. It used to take the plan's colour as its background
+   while keeping white text, and the Pro plan's colour is pure white — so the
+   label disappeared and the badge read as a blank white bar over the title. */
 .badge {
   position: absolute; top: 20px; right: 20px;
+  width: fit-content; max-width: calc(100% - 40px);
+  white-space: nowrap;
   font-family: var(--font-condensed); font-size: 10px; font-weight: 700;
   letter-spacing: 0.2em; text-transform: uppercase;
-  padding: 5px 12px; border-radius: 2px; color: var(--white);
+  padding: 5px 12px; border-radius: 2px;
+  background: var(--white); color: var(--black);
 }
 
 .planTop { margin-bottom: 28px; }
@@ -89,7 +94,7 @@
 }
 
 /* ── Enhanced card effects ── */
-/* NOTE: preserve-3d intentionally removed — TiltCard handles 3D transforms.
+/* NOTE: no 3D transforms here — the cards no longer tilt.
    Having preserve-3d here breaks pseudo-element z-index (3D stacking ignores
    CSS z-index, so ::before/::after at z-index:0 render above children at z-index:1). */
 .card {
