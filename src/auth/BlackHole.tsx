@@ -17,6 +17,7 @@ interface Particle {
   depth: number
   size: number
   glyph: string
+  glyphIndex: number
   alpha: number
   baseAlpha: number
   spin: number
@@ -87,6 +88,7 @@ export default function BlackHole({ phase, target }: Props) {
     let canvasTop = 0
 
     const spawn = (seedAnywhere = true): Particle => {
+      const gi = Math.floor(Math.random() * GLYPHS.length)
       const depth = 0.35 + Math.random() * 0.8
       const baseAlpha = (0.10 + Math.random() * 0.34) * (0.55 + depth * 0.6)
       return {
@@ -96,7 +98,8 @@ export default function BlackHole({ phase, target }: Props) {
         vy: ((Math.random() - 0.5) * 0.3 - 0.06) * depth,
         depth,
         size: (7 + Math.random() * 13) * (0.6 + depth * 0.7),
-        glyph: GLYPHS[Math.floor(Math.random() * GLYPHS.length)],
+        glyph: GLYPHS[gi],
+        glyphIndex: gi,
         alpha: baseAlpha,
         baseAlpha,
         spin: Math.random() * Math.PI * 2,
@@ -114,6 +117,40 @@ export default function BlackHole({ phase, target }: Props) {
         extra: false,
         font: '',
       }
+    }
+
+    /* Rain only falls on success. The canvas cannot see the server's answer,
+       but only the success path passes through 'hold' — so that is the cue. */
+    interface Drop { x: number; y: number; vy: number; len: number; alpha: number }
+    let drops: Drop[] = []
+    let raining = false
+
+    const makeDrop = (fromTop: boolean): Drop => ({
+      x: Math.random() * width,
+      y: fromTop ? -20 - Math.random() * height * 0.6 : Math.random() * height,
+      vy: 2.6 + Math.random() * 5.4,
+      len: 8 + Math.random() * 16,
+      alpha: 0.12 + Math.random() * 0.3,
+    })
+
+    let sprites: HTMLCanvasElement[] = []
+    let spriteSize = 0
+
+    const buildSprites = (size: number) => {
+      spriteSize = Math.ceil(size * 1.9)
+      sprites = GLYPHS.map(g => {
+        const c = document.createElement('canvas')
+        c.width = spriteSize
+        c.height = spriteSize
+        const cx = c.getContext('2d')
+        if (!cx) return c
+        cx.font = `${size}px "Bebas Neue", Georgia, serif`
+        cx.textAlign = 'center'
+        cx.textBaseline = 'middle'
+        cx.fillStyle = '#FFFFFF'
+        cx.fillText(g, spriteSize / 2, spriteSize / 2)
+        return c
+      })
     }
 
     const withFont = (p: Particle) => {
@@ -181,7 +218,7 @@ export default function BlackHole({ phase, target }: Props) {
 
       const { data } = octx.getImageData(0, 0, off.width, off.height)
       const points: Array<{ x: number; y: number }> = []
-      const step = 4
+      const step = 6
       for (let y = 0; y < off.height; y += step) {
         for (let x = 0; x < off.width; x += step) {
           if (data[(y * off.width + x) * 4 + 3] > 128) points.push({ x, y })
@@ -205,7 +242,7 @@ export default function BlackHole({ phase, target }: Props) {
 
       // A sparse word is unreadable, so top up — the extras burst out of the
       // hole, which is where the eye already is.
-      const wanted = Math.min(points.length, 700)
+      const wanted = Math.min(points.length, 520)
       while (parts.length < wanted) {
         const p = withFont(spawn())
         const angle = Math.random() * Math.PI * 2
@@ -251,6 +288,7 @@ export default function BlackHole({ phase, target }: Props) {
         const count = Math.round(Math.min(170, Math.max(80, (width * height) / 11000)))
         parts = Array.from({ length: count }, () => withFont(spawn()))
         cachedWord = null
+        buildSprites(15)
         // Sample the word now, while nothing is animating.
         if (width > 0 && height > 0) setTimeout(() => wordPoints('NEKO'), 0)
       }
@@ -276,7 +314,13 @@ export default function BlackHole({ phase, target }: Props) {
           const b = target()
           formWord('NEKO', b ? b.x - canvasLeft : width / 2, b ? b.y - canvasTop : height / 2)
         }
+        if (currentPhase === 'hold') {
+          raining = true
+          drops = Array.from({ length: 70 }, () => makeDrop(true))
+        }
         if (currentPhase === 'drift') {
+          raining = false
+          drops = []
           // Drop the extras that were spawned just for the word.
           parts = parts.filter(p => !p.extra)
           for (const p of parts) p.dead = p.dead || false
@@ -496,19 +540,35 @@ export default function BlackHole({ phase, target }: Props) {
 
       /* One path per brightness band, so several hundred dots cost four fill
          calls rather than four hundred draw calls with a font set each time. */
-      if (currentPhase === 'text') {
+      if (currentPhase === 'text' && sprites.length) {
+        const half = spriteSize / 2
         for (let b = 0; b < dotBands.length; b++) {
           const band = dotBands[b]
           if (!band.length) continue
-          ctx.fillStyle = `rgba(255,255,255,${0.28 + b * 0.24})`
-          ctx.beginPath()
+          ctx.globalAlpha = 0.34 + b * 0.22
           for (const p of band) {
-            const r = 1.5 + p.depth * 1.3
-            ctx.moveTo(p.x + r, p.y)
-            ctx.arc(p.x, p.y, r, 0, Math.PI * 2)
+            ctx.drawImage(sprites[p.glyphIndex], p.x - half, p.y - half)
           }
-          ctx.fill()
         }
+        ctx.globalAlpha = 1
+      }
+
+      /* Rain. A single path for the whole shower — one stroke call. */
+      if (raining && drops.length) {
+        ctx.strokeStyle = 'rgba(255,255,255,0.34)'
+        ctx.lineWidth = 1
+        ctx.lineCap = 'round'
+        ctx.beginPath()
+        for (const d of drops) {
+          d.y += d.vy
+          if (d.y - d.len > height) {
+            d.y = -d.len - Math.random() * 60
+            d.x = Math.random() * width
+          }
+          ctx.moveTo(d.x, d.y - d.len)
+          ctx.lineTo(d.x, d.y)
+        }
+        ctx.stroke()
       }
 
       /* Flashes and the collapse shockwave. */
