@@ -36,7 +36,11 @@ function Root() {
   }
 
   const authMode = AUTH_ROUTES[path]
-  if (authMode) return <AuthPage mode={authMode} />
+  // Keyed by mode so moving between the auth screens remounts the component.
+  // Without it React reuses the instance and every piece of state survives the
+  // navigation — a finished panel keeps rendering over the next screen, and the
+  // button keeps the sphere styling from the animation that just ran.
+  if (authMode) return <AuthPage key={authMode} mode={authMode} />
 
   const legal = findLegalPage(path)
   if (legal) return <LegalPageView page={legal} />

@@ -35,6 +35,18 @@ export default function AuthPage({ mode }: { mode: AuthMode }) {
 
   const buttonRef = useRef<HTMLButtonElement>(null)
 
+  /* Belt and braces: the route keys this component by mode so it remounts,
+     but if that key is ever removed a stale panel or phase must not leak into
+     the next screen. */
+  useEffect(() => {
+    setPhase('drift')
+    setBusy(false)
+    setError(null)
+    setDone(null)
+    setResent(false)
+    setResendable(false)
+  }, [mode])
+
   /** Where the particles are dragged to — the centre of the submit button. */
   const target = useCallback(() => {
     const el = buttonRef.current
