@@ -37,6 +37,22 @@ export default function ParticleCanvas() {
     const canvas = canvasRef.current!
     const ctx    = canvas.getContext('2d')!
 
+    /* A single glow sprite, drawn once and blitted for every particle.
+       createRadialGradient allocates on each call, and calling it per particle
+       per frame was the main cost on this page. */
+    const glow=document.createElement('canvas')
+    glow.width=glow.height=64
+    {
+      const g=glow.getContext('2d')
+      if(g){
+        const gr=g.createRadialGradient(32,32,0,32,32,32)
+        gr.addColorStop(0,'rgba(255,255,255,1)')
+        gr.addColorStop(.35,'rgba(255,255,255,0.6)')
+        gr.addColorStop(1,'rgba(255,255,255,0)')
+        g.fillStyle=gr; g.fillRect(0,0,64,64)
+      }
+    }
+
     const resize = ()=>{
       canvas.width = window.innerWidth
       canvas.height= window.innerHeight
@@ -54,10 +70,10 @@ export default function ParticleCanvas() {
     }
 
     resize()
-    window.addEventListener('resize',resize)
+    window.addEventListener('resize',resize,{passive:true})
 
     // Particles
-    const count=Math.min(120,Math.floor(window.innerWidth/14))
+    const count=Math.min(80,Math.floor(window.innerWidth/22))
     partsRef.current=Array.from({length:count},(_,i)=>{
       const type:Particle['type']=i%18===0?'ring':i%28===0?'cross':i%40===0?'paw':'dot'
       const maxOp=type==='dot'?Math.random()*.42+.05:Math.random()*.28+.06
@@ -73,7 +89,7 @@ export default function ParticleCanvas() {
     })
 
     const onMouse=(e:MouseEvent)=>{mouseRef.current={x:e.clientX,y:e.clientY}}
-    window.addEventListener('mousemove',onMouse)
+    window.addEventListener('mousemove',onMouse,{passive:true})
 
 
     const spawnMeteor = () => {
@@ -154,13 +170,15 @@ export default function ParticleCanvas() {
         n.phase+=.0018
         const px=n.x+Math.sin(n.phase)*70; const py=n.y+Math.cos(n.phase*.7)*50
         const op=n.op*(0.75+0.25*Math.sin(ts*.0005+n.phase))
+        // Rebuilt per frame because the nebula drifts; kept cheap by there
+        // being only a handful of them.
         const g=ctx.createRadialGradient(px,py,0,px,py,n.r)
         g.addColorStop(0,`${n.c}${op})`); g.addColorStop(.5,`${n.c}${op*.4})`); g.addColorStop(1,`${n.c}0)`)
         ctx.fillStyle=g; ctx.beginPath(); ctx.arc(px,py,n.r,0,Math.PI*2); ctx.fill()
       })
 
       // 2. Spawn pulses on interval (every 2.2–3.5s)
-      const pulseInterval=2200+Math.sin(ts*.0003)*650
+      const pulseInterval=Number.POSITIVE_INFINITY   // pulses removed
       if(ts-lastPulse.current>pulseInterval){
         spawnPulse(ts); lastPulse.current=ts
         // Occasionally spawn a second pulse close behind
@@ -276,9 +294,7 @@ export default function ParticleCanvas() {
 
         if(p.type==='dot'){
           const r=p.size*(4+p.boost*5)
-          const gr=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,r)
-          gr.addColorStop(0,`${p.color}1)`); gr.addColorStop(.35,`${p.color}0.6)`); gr.addColorStop(1,`${p.color}0)`)
-          ctx.fillStyle=gr; ctx.beginPath(); ctx.arc(p.x,p.y,r,0,Math.PI*2); ctx.fill()
+          ctx.drawImage(glow,p.x-r,p.y-r,r*2,r*2)
           ctx.fillStyle=`${p.color}1)`; ctx.beginPath(); ctx.arc(p.x,p.y,p.size*.6,0,Math.PI*2); ctx.fill()
           if(p.boost>.25){
             ctx.globalAlpha=dispOp*p.boost*.5

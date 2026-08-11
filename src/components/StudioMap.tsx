@@ -12,9 +12,11 @@ const COPY: Record<string, { title: string; show: string; open: string; note: st
         note: 'Įkėlus žemėlapį prisijungiama prie Google.' },
 }
 
-const QUERY = `${CONTACT.address}, ${CONTACT.city}, ${CONTACT.country}`
-const EMBED  = `https://www.google.com/maps?q=${encodeURIComponent(QUERY)}&z=16&output=embed`
-const LINK   = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(QUERY)}`
+/* Pin the coordinates, not the street address — geocoding a street number can
+   put the marker anywhere along the building. */
+const PIN   = `${CONTACT.coords.lat},${CONTACT.coords.lon}`
+const EMBED = `https://www.google.com/maps?q=${PIN}&z=17&output=embed`
+const LINK  = `https://www.google.com/maps/search/?api=1&query=${PIN}`
 
 /**
  * Studio location.

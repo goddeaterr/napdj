@@ -1,6 +1,5 @@
 import { useRef } from 'react'
 import type { AudioCtxRef } from './lib/audio'
-import ClickRipple     from './components/ClickRipple'
 import ScrollProgress  from './components/ScrollProgress'
 import ParticleCanvas  from './components/ParticleCanvas'
 import Navbar          from './components/Navbar'
@@ -23,7 +22,6 @@ export default function App() {
   return (
     <>
       {/* Global visual effects */}
-      <ClickRipple />
       <ScrollProgress />
 
       {/* Background */}

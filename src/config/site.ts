@@ -29,6 +29,12 @@ export const CONTACT = {
 
   /** Studio street address — where students actually come. */
   address: 'Naujojo Uosto g. 3',
+  /**
+   * Exact studio position, 55°42'33.08"N 21°07'27.89"E as decimal degrees.
+   * The map pins these rather than the street address: geocoding a street
+   * number can land the pin anywhere along the building.
+   */
+  coords: { lat: 55.709189, lon: 21.124414 },
 } as const
 
 /* ── External links ──────────────────────────────────────────────────────────
