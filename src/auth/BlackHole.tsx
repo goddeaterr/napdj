@@ -35,6 +35,8 @@ interface Particle {
   wobbleAmp: number
   /** Extras spawned for the word, trimmed again afterwards. */
   extra: boolean
+  /** Prebuilt font string — assigning ctx.font reparses it every time. */
+  font: string
 }
 
 /** A short bright flash where a note crosses the event horizon. */
@@ -110,7 +112,13 @@ export default function BlackHole({ phase, target }: Props) {
         wobbleFreq: 0.0009 + Math.random() * 0.0016,
         wobbleAmp: 1.6 + Math.random() * 3.4,
         extra: false,
+        font: '',
       }
+    }
+
+    const withFont = (p: Particle) => {
+      p.font = `${Math.round(p.size)}px "Bebas Neue", Georgia, serif`
+      return p
     }
 
     /**
@@ -173,7 +181,7 @@ export default function BlackHole({ phase, target }: Props) {
 
       const { data } = octx.getImageData(0, 0, off.width, off.height)
       const points: Array<{ x: number; y: number }> = []
-      const step = 7
+      const step = 4
       for (let y = 0; y < off.height; y += step) {
         for (let x = 0; x < off.width; x += step) {
           if (data[(y * off.width + x) * 4 + 3] > 128) points.push({ x, y })
@@ -197,9 +205,9 @@ export default function BlackHole({ phase, target }: Props) {
 
       // A sparse word is unreadable, so top up — the extras burst out of the
       // hole, which is where the eye already is.
-      const wanted = Math.min(points.length, 420)
+      const wanted = Math.min(points.length, 700)
       while (parts.length < wanted) {
-        const p = spawn()
+        const p = withFont(spawn())
         const angle = Math.random() * Math.PI * 2
         const force = 6 + Math.random() * 16
         p.x = holeX; p.y = holeY
@@ -226,7 +234,7 @@ export default function BlackHole({ phase, target }: Props) {
     }
 
     const resize = () => {
-      dpr = Math.min(window.devicePixelRatio || 1, 2)
+      dpr = Math.min(window.devicePixelRatio || 1, 1.5)
       const nextW = canvas.clientWidth  || window.innerWidth
       const nextH = canvas.clientHeight || window.innerHeight
       const changed = Math.abs(nextW - width) > 2 || Math.abs(nextH - height) > 2
@@ -240,8 +248,8 @@ export default function BlackHole({ phase, target }: Props) {
       // Re-seed on a real size change: the pane can lay out at zero size on the
       // first frame, and particles seeded then would sit in the corner forever.
       if (changed && !reduced) {
-        const count = Math.round(Math.min(240, Math.max(100, (width * height) / 7200)))
-        parts = Array.from({ length: count }, () => spawn())
+        const count = Math.round(Math.min(170, Math.max(80, (width * height) / 11000)))
+        parts = Array.from({ length: count }, () => withFont(spawn()))
         cachedWord = null
         // Sample the word now, while nothing is animating.
         if (width > 0 && height > 0) setTimeout(() => wordPoints('NEKO'), 0)
@@ -285,7 +293,8 @@ export default function BlackHole({ phase, target }: Props) {
       ctx.globalCompositeOperation = 'source-over'
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
 
-      const glow = active && parts.length <= 260
+      const glow = active && parts.length <= 200
+      let lastFont = ''
 
       const box = target()
       const tx = box ? box.x - canvasLeft : width / 2
@@ -307,6 +316,8 @@ export default function BlackHole({ phase, target }: Props) {
         ctx.fill()
         ctx.globalCompositeOperation = 'source-over'
       }
+
+      const dotBands: Particle[][] = [[], [], [], []]
 
       for (const p of parts) {
         if (p.dead) continue
@@ -430,27 +441,30 @@ export default function BlackHole({ phase, target }: Props) {
         if (currentPhase === 'text') {
           /* Spring each note to its place in the word. The pull ramps in so
              they coast outward from the burst first, then gather. */
-          const t = Math.min(1, elapsed / 900)
-          const k = 0.012 + 0.10 * easeOutCubic(t)
+          const t = Math.min(1, elapsed / 600)
+          const k = 0.02 + 0.20 * easeOutCubic(t)
 
-          // Never perfectly still: every note breathes around its own point on
-          // its own frequency, so the word stays alive rather than printed.
-          const wob = p.wobbleAmp * (0.35 + 0.65 * t)
-          const ox = Math.cos(now * p.wobbleFreq + p.wobblePhase) * wob
-          const oy = Math.sin(now * p.wobbleFreq * 1.3 + p.wobblePhase * 1.7) * wob
-
-          const dx = (p.targetX + ox) - p.x
-          const dy = (p.targetY + oy) - p.y
-          p.vx = (p.vx + dx * k) * 0.86
-          p.vy = (p.vy + dy * k) * 0.86
+          /* The letters hold their shape. Earlier the notes orbited their own
+             points, which at this density read as the whole word vibrating and
+             smeared the letterforms. They settle exactly on target now and the
+             life comes from brightness alone, further down. */
+          const dx = p.targetX - p.x
+          const dy = p.targetY - p.y
+          p.vx = (p.vx + dx * k) * 0.78
+          p.vy = (p.vy + dy * k) * 0.78
           p.x += p.vx
           p.y += p.vy
 
-          p.alpha += (Math.min(0.95, 0.5 + p.depth * 0.45) - p.alpha) * 0.07
-          p.spin += p.spinRate * 0.4
-          speed = Math.hypot(p.vx, p.vy)
-          heading = Math.atan2(p.vy, p.vx)
-          aligned = speed > 2.5
+          // Slow, per-particle brightness drift — alive without moving.
+          const shimmer = 0.78 + Math.sin(now * 0.0011 + p.wobblePhase) * 0.2
+          p.alpha += (shimmer - p.alpha) * 0.06
+        }
+
+        if (currentPhase === 'text') {
+          // Collected below and drawn in one pass per brightness band.
+          const band = Math.min(3, Math.max(0, Math.round(p.alpha * 3)))
+          dotBands[band].push(p)
+          continue
         }
 
         /* Draw. Fast notes align to their heading and stretch into streaks;
@@ -465,7 +479,8 @@ export default function BlackHole({ phase, target }: Props) {
         }
         ctx.globalAlpha = Math.max(0, Math.min(1, p.alpha))
         ctx.fillStyle = '#FFFFFF'
-        ctx.font = `${p.size}px "Bebas Neue", Georgia, serif`
+        const font = p.font
+        if (font !== lastFont) { ctx.font = font; lastFont = font }
         ctx.textAlign = 'center'
         ctx.textBaseline = 'middle'
         /* Canvas shadowBlur is costly per draw call. It is affordable on the
@@ -477,6 +492,23 @@ export default function BlackHole({ phase, target }: Props) {
         }
         ctx.fillText(p.glyph, 0, 0)
         ctx.restore()
+      }
+
+      /* One path per brightness band, so several hundred dots cost four fill
+         calls rather than four hundred draw calls with a font set each time. */
+      if (currentPhase === 'text') {
+        for (let b = 0; b < dotBands.length; b++) {
+          const band = dotBands[b]
+          if (!band.length) continue
+          ctx.fillStyle = `rgba(255,255,255,${0.28 + b * 0.24})`
+          ctx.beginPath()
+          for (const p of band) {
+            const r = 1.5 + p.depth * 1.3
+            ctx.moveTo(p.x + r, p.y)
+            ctx.arc(p.x, p.y, r, 0, Math.PI * 2)
+          }
+          ctx.fill()
+        }
       }
 
       /* Flashes and the collapse shockwave. */
@@ -499,7 +531,7 @@ export default function BlackHole({ phase, target }: Props) {
       // Quietly restock whatever the hole ate or the collapse blew away.
       if (currentPhase === 'drift') {
         for (let i = 0; i < parts.length; i++) {
-          if (parts[i].dead) parts[i] = spawn()
+          if (parts[i].dead) parts[i] = withFont(spawn())
         }
       }
 

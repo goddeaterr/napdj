@@ -14,7 +14,7 @@ const HOLD_MS     = 620
 /** Burst out of the hole. */
 const BURST_MS    = 520
 /** The word holds — long enough to read it and watch it breathe. */
-const WORD_MS     = 3600
+const WORD_MS     = 6500
 
 const wait = (ms: number) => new Promise(r => setTimeout(r, ms))
 
