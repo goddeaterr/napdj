@@ -63,6 +63,7 @@ const privacy: LegalPage = {
         '• Resend — delivery of booking notification and confirmation e-mails.',
         '• Our website hosting provider — storage and delivery of the site.',
         '• Google Fonts — fonts are loaded from Google servers when you open the site, which means Google receives your IP address. If you prefer this not to happen, the fonts can be self-hosted on request.',
+        '• Google Maps — the studio map is not loaded until you press "Show map". Only then does your browser contact Google, which receives your IP address and may set its own cookies. Leave it unloaded and nothing is sent.',
         'Some of these providers are located outside the EU/EEA. Where that is the case, transfers are covered by the European Commission’s Standard Contractual Clauses or an adequacy decision.',
       ]},
       { heading: '6. Your rights', body: [
@@ -105,6 +106,7 @@ const privacy: LegalPage = {
         'Мы не продаём и не сдаём персональные данные. Мы передаём их только поставщикам услуг, которые помогают нам работать:',
         '• Resend — доставка уведомлений о записи и писем-подтверждений.',
         '• Хостинг-провайдер сайта — хранение и отдача сайта.',
+        '• Google Maps — карта студии не загружается, пока вы не нажмёте «Показать карту». Только после этого браузер обращается к Google, который получает ваш IP-адрес и может установить свои cookie. Если карту не загружать — ничего не отправляется.',
         '• Google Fonts — шрифты загружаются с серверов Google при открытии сайта, поэтому Google получает ваш IP-адрес. По запросу шрифты можно разместить локально.',
         'Некоторые из этих поставщиков находятся за пределами ЕС/ЕЭЗ. В таких случаях передача защищена стандартными договорными положениями Еврокомиссии или решением об адекватности.',
       ]},
@@ -148,6 +150,7 @@ const privacy: LegalPage = {
         'Asmens duomenų neparduodame ir nenuomojame. Juos perduodame tik paslaugų teikėjams, padedantiems mums dirbti:',
         '• Resend — registracijos pranešimų ir patvirtinimo laiškų pristatymas.',
         '• Svetainės prieglobos teikėjas — svetainės saugojimas ir pateikimas.',
+        '• Google Maps — studijos žemėlapis neužkraunamas, kol nepaspaudžiate „Rodyti žemėlapį“. Tik tada naršyklė susisiekia su Google, kuris gauna jūsų IP adresą ir gali įrašyti savo slapukus. Neužkrovus žemėlapio niekas nesiunčiama.',
         '• Google Fonts — šriftai atsiunčiami iš Google serverių atidarius svetainę, todėl Google gauna jūsų IP adresą. Pageidaujant šriftus galima talpinti vietoje.',
         'Kai kurie teikėjai yra už ES/EEE ribų. Tokiais atvejais perdavimas grindžiamas Europos Komisijos standartinėmis sutarčių sąlygomis arba sprendimu dėl tinkamumo.',
       ]},

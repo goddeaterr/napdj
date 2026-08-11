@@ -27,8 +27,8 @@ export const CONTACT = {
   city: 'Klaipėda',
   country: 'Lithuania',
 
-  /** Street address. Leave '' to show only the city. */
-  address: '',
+  /** Studio street address — where students actually come. */
+  address: 'Naujojo Uosto g. 3',
 } as const
 
 /* ── External links ──────────────────────────────────────────────────────────

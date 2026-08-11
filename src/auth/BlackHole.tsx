@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 
-export type HolePhase = 'drift' | 'pull' | 'hold' | 'collapse'
+export type HolePhase = 'drift' | 'pull' | 'hold' | 'collapse' | 'text'
 
 interface Props {
   phase: HolePhase
@@ -26,6 +26,15 @@ interface Particle {
   orbitSpeed: number
   captured: boolean
   dead: boolean
+  /** Where this note belongs in the word, once it is forming. */
+  targetX: number
+  targetY: number
+  /** Per-particle wobble, so the finished word breathes instead of freezing. */
+  wobblePhase: number
+  wobbleFreq: number
+  wobbleAmp: number
+  /** Extras spawned for the word, trimmed again afterwards. */
+  extra: boolean
 }
 
 /** A short bright flash where a note crosses the event horizon. */
@@ -95,7 +104,78 @@ export default function BlackHole({ phase, target }: Props) {
         orbitSpeed: 0,
         captured: false,
         dead: false,
+        targetX: 0,
+        targetY: 0,
+        wobblePhase: Math.random() * Math.PI * 2,
+        wobbleFreq: 0.0009 + Math.random() * 0.0016,
+        wobbleAmp: 1.6 + Math.random() * 3.4,
+        extra: false,
       }
+    }
+
+    /**
+     * Samples the pixels of the word and returns points to aim particles at.
+     * Drawing the text to an offscreen canvas and reading it back is far
+     * simpler than hand-plotting letterforms, and it follows whatever font
+     * actually loaded.
+     */
+    const wordPoints = (word: string): Array<{ x: number; y: number }> => {
+      const off = document.createElement('canvas')
+      off.width = Math.max(1, Math.floor(width))
+      off.height = Math.max(1, Math.floor(height))
+      const octx = off.getContext('2d', { willReadFrequently: true })
+      if (!octx) return []
+
+      const size = Math.min(width * 0.24, height * 0.42, 260)
+      octx.fillStyle = '#fff'
+      octx.textAlign = 'center'
+      octx.textBaseline = 'middle'
+      octx.font = `${size}px "Bebas Neue", Impact, "Arial Black", sans-serif`
+      octx.fillText(word, width / 2, height / 2)
+
+      const { data } = octx.getImageData(0, 0, off.width, off.height)
+      const points: Array<{ x: number; y: number }> = []
+      const step = 5
+      for (let y = 0; y < off.height; y += step) {
+        for (let x = 0; x < off.width; x += step) {
+          if (data[(y * off.width + x) * 4 + 3] > 128) points.push({ x, y })
+        }
+      }
+      // Shuffle so particles do not fill the word left to right in bands.
+      for (let i = points.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1))
+        ;[points[i], points[j]] = [points[j], points[i]]
+      }
+      return points
+    }
+
+    /** Gives every particle a home in the word, adding more if the word needs them. */
+    const formWord = (word: string, holeX: number, holeY: number) => {
+      const points = wordPoints(word)
+      if (!points.length) return
+
+      // A sparse word is unreadable, so top up — the extras burst out of the
+      // hole, which is where the eye already is.
+      const wanted = Math.min(points.length, 460)
+      while (parts.length < wanted) {
+        const p = spawn()
+        const angle = Math.random() * Math.PI * 2
+        const force = 6 + Math.random() * 16
+        p.x = holeX; p.y = holeY
+        p.vx = Math.cos(angle) * force
+        p.vy = Math.sin(angle) * force
+        p.alpha = 0.7
+        p.extra = true
+        parts.push(p)
+      }
+
+      const live = parts.filter(p => !p.dead)
+      live.forEach((p, i) => {
+        const pt = points[i % points.length]
+        p.targetX = pt.x
+        p.targetY = pt.y
+        p.captured = false
+      })
     }
 
     const measure = () => {
@@ -140,8 +220,17 @@ export default function BlackHole({ phase, target }: Props) {
       const active = currentPhase !== 'drift'
 
       if (currentPhase !== lastPhase) {
-        // Fire the shockwave the moment a collapse begins.
-        if (currentPhase === 'collapse') flashes.push({ x: -1, y: -1, age: 0, life: 620, size: 0 })
+        if (currentPhase === 'collapse') {
+          // Shockwave, and set up the word the burst will settle into.
+          flashes.push({ x: -1, y: -1, age: 0, life: 620, size: 0 })
+          const b = target()
+          formWord('NEKO', b ? b.x - canvasLeft : width / 2, b ? b.y - canvasTop : height / 2)
+        }
+        if (currentPhase === 'drift') {
+          // Drop the extras that were spawned just for the word.
+          parts = parts.filter(p => !p.extra)
+          for (const p of parts) p.dead = p.dead || false
+        }
         lastPhase = currentPhase
       }
 
@@ -292,6 +381,32 @@ export default function BlackHole({ phase, target }: Props) {
           heading = Math.atan2(p.vy, p.vx)
           aligned = speed > 2
           if (p.alpha < 0.02) p.dead = true
+        }
+
+        if (currentPhase === 'text') {
+          /* Spring each note to its place in the word. The pull ramps in so
+             they coast outward from the burst first, then gather. */
+          const t = Math.min(1, elapsed / 900)
+          const k = 0.012 + 0.10 * easeOutCubic(t)
+
+          // Never perfectly still: every note breathes around its own point on
+          // its own frequency, so the word stays alive rather than printed.
+          const wob = p.wobbleAmp * (0.35 + 0.65 * t)
+          const ox = Math.cos(now * p.wobbleFreq + p.wobblePhase) * wob
+          const oy = Math.sin(now * p.wobbleFreq * 1.3 + p.wobblePhase * 1.7) * wob
+
+          const dx = (p.targetX + ox) - p.x
+          const dy = (p.targetY + oy) - p.y
+          p.vx = (p.vx + dx * k) * 0.86
+          p.vy = (p.vy + dy * k) * 0.86
+          p.x += p.vx
+          p.y += p.vy
+
+          p.alpha += (Math.min(0.95, 0.5 + p.depth * 0.45) - p.alpha) * 0.07
+          p.spin += p.spinRate * 0.4
+          speed = Math.hypot(p.vx, p.vy)
+          heading = Math.atan2(p.vy, p.vx)
+          aligned = speed > 2.5
         }
 
         /* Draw. Fast notes align to their heading and stretch into streaks;

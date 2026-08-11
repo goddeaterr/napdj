@@ -5,6 +5,7 @@ import { useLang } from '../lib/LangContext'
 import { useScrollAnimation } from '../hooks/useScrollAnimation'
 import { CONTACT, LINKS, LEGAL, HOURS_LABEL, socialLinks } from '../config/site'
 import { LEGAL_PAGES } from '../legal/pages'
+import StudioMap from './StudioMap'
 import { navigate } from '../lib/router'
 import styles from './Footer.module.css'
 
@@ -167,6 +168,8 @@ export default function Footer() {
               <span className={styles.contactIcon}>🎓</span>
               <span className={styles.contactText}>Teaching Since 2020</span>
             </div>
+
+            <StudioMap />
 
             <div className={styles.hoursCard}>
               <div className={styles.hoursTitle}>{t('footer_hours_title')}</div>

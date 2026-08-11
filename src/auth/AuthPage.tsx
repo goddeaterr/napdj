@@ -10,8 +10,11 @@ export type AuthMode = 'signin' | 'signup' | 'forgot' | 'reset' | 'verify'
 
 /** How long the collapse/hold animation is allowed to play before we move on. */
 const PULL_MIN_MS = 950
-const HOLD_MS     = 900
-const COLLAPSE_MS = 1000
+const HOLD_MS     = 620
+/** Burst out of the hole. */
+const BURST_MS    = 520
+/** Long enough to read NEKO and see it breathing. */
+const WORD_MS     = 1500
 
 const wait = (ms: number) => new Promise(r => setTimeout(r, ms))
 
@@ -66,19 +69,22 @@ export default function AuthPage({ mode }: { mode: AuthMode }) {
     ;(async () => {
       const [err] = await Promise.all([auth.verifyEmail(token), wait(PULL_MIN_MS)])
       if (cancelled) return
-      if (err) {
-        setError(authError(lang, err))
-        setPhase('collapse')
-        await wait(COLLAPSE_MS)
-        if (!cancelled) setPhase('drift')
-      } else {
-        setPhase('hold')
-        await wait(HOLD_MS)
-        // Back to drift before the panel swaps in, or its button would keep
-        // the sphere styling and sit there invisible.
-        if (!cancelled) { setPhase('drift'); setDone('verified') }
-      }
-      if (!cancelled) setBusy(false)
+      if (err) setError(authError(lang, err))
+      else { setPhase('hold'); await wait(HOLD_MS) }
+      if (cancelled) return
+
+      setPhase('collapse')
+      await wait(BURST_MS)
+      if (cancelled) return
+      setPhase('text')
+      await wait(WORD_MS)
+      if (cancelled) return
+
+      // Back to drift before the panel swaps in, or its button would keep the
+      // sphere styling and sit there invisible.
+      setPhase('drift')
+      if (!err) setDone('verified')
+      setBusy(false)
     })()
     return () => { cancelled = true }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -93,23 +99,25 @@ export default function AuthPage({ mode }: { mode: AuthMode }) {
     // Never finish before the pull has had time to read as an animation.
     const [err] = await Promise.all([action(), wait(PULL_MIN_MS)])
 
+    /* Both outcomes end the same way visually: the hole throws everything back
+       out and the notes gather into the studio name. The card says which it
+       was — the error appears while the word is still forming, so nobody waits
+       on the animation to find out. */
     if (err) {
-      setPhase('collapse')
       setError(authError(lang, err))
-      await wait(COLLAPSE_MS)
-      setPhase('drift')
-      setBusy(false)
-      return
+    } else {
+      setPhase('hold')
+      await wait(HOLD_MS)
     }
 
-    setPhase('hold')
-    await wait(HOLD_MS)
-    // Settle before handing over. When onSuccess swaps in a finished panel
-    // rather than navigating away, leaving the phase on 'hold' would leave its
-    // button stuck as the invisible sphere.
+    setPhase('collapse')
+    await wait(BURST_MS)
+    setPhase('text')
+    await wait(WORD_MS)
+
     setPhase('drift')
     setBusy(false)
-    onSuccess()
+    if (!err) onSuccess()
   }
 
   const submit = (e: React.FormEvent) => {
@@ -351,6 +359,9 @@ const phaseClass = (phase: HolePhase, s: Record<string, string>) => ({
   pull: s.submitPulling,
   hold: s.submitHold,
   collapse: s.submitCollapse,
+  // While the word forms the button is a normal button again — the hole has
+  // already thrown everything out.
+  text: '',
 }[phase] || '')
 
 /* ── Small pieces ───────────────────────────────────────────────────────── */
