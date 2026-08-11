@@ -10,6 +10,7 @@ import {
   createUser, findUserByEmail, findUserById, updateUser,
   createAuthToken, findAuthToken, useAuthToken, deleteAuthTokens,
   addLessonEntry, listLessonEntries, lessonBalances, listBookingsForUser,
+  listBookings, updateBooking,
 } from './store.js'
 import {
   hashPassword, checkPassword, passwordProblem,
@@ -289,4 +290,51 @@ export async function adjustLessons({ userId, delta, kind, note, createdBy }) {
   })
 
   return { ok: true, status: 200, balance: await lessonBalance(userId) }
+}
+
+/* ── Cancelling a lesson ──────────────────────────────────────────────── */
+
+/** Notice a student must give, matching what the refunds policy promises. */
+const CANCEL_NOTICE_MS = 24 * 60 * 60 * 1000
+
+/**
+ * Cancels a booking on behalf of the signed-in student.
+ *
+ * The ownership check is the reason this lives on the server. Without it any
+ * signed-in account could cancel anyone's lesson by guessing an id, so the
+ * booking's userId is compared against the session before anything is written.
+ *
+ * The row is marked cancelled rather than deleted: availability is derived
+ * from bookings and already ignores cancelled ones, so the calendar slot frees
+ * itself, and the studio keeps its own record of what happened.
+ */
+export async function cancelBooking(bookingId, user) {
+  if (!user) return { ok: false, status: 401, error: 'sign_in_required' }
+
+  const all = await listBookings()
+  const booking = all.find(b => b.id === bookingId)
+
+  // Same answer for "does not exist" and "belongs to somebody else", so this
+  // cannot be used to discover which booking ids are real.
+  if (!booking || booking.userId !== user.id) {
+    return { ok: false, status: 404, error: 'booking_not_found' }
+  }
+
+  if (booking.status === 'cancelled') return { ok: true, status: 200, already: true }
+  if (booking.status === 'done') {
+    return { ok: false, status: 409, error: 'already_taken' }
+  }
+
+  // The refunds policy promises 24 hours' notice; the code has to agree with it.
+  if (booking.date && booking.time) {
+    const [y, m, d] = String(booking.date).split('-').map(Number)
+    const [hh, mm] = String(booking.time).split(':').map(Number)
+    const startsAt = new Date(y, (m || 1) - 1, d || 1, hh || 0, mm || 0).getTime()
+    if (Number.isFinite(startsAt) && startsAt - Date.now() < CANCEL_NOTICE_MS) {
+      return { ok: false, status: 409, error: 'too_late' }
+    }
+  }
+
+  const updated = await updateBooking(bookingId, { status: 'cancelled' })
+  return { ok: true, status: 200, booking: updated }
 }

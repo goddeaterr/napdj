@@ -8,7 +8,7 @@
 ============================================================================ */
 import {
   register, verifyEmail, login, requestPasswordReset, resetPassword,
-  resendVerification, currentUser, accountOverview, publicUser,
+  resendVerification, currentUser, accountOverview, publicUser, cancelBooking,
 } from './accounts.js'
 import { sessionCookie, clearCookie } from './accountAuth.js'
 import { clientIp } from './auth.js'
@@ -81,6 +81,13 @@ export async function handleAuth(action, req, res) {
       if (!result.ok) return send(res, result.status, { ok: false, error: result.error })
       res.setHeader('Set-Cookie', sessionCookie(result.session))
       return send(res, 200, { ok: true, user: result.user })
+    }
+
+    case 'cancel': {
+      const user = await currentUser(req)
+      const result = await cancelBooking(String(body.id || ''), user)
+      if (!result.ok) return send(res, result.status, { ok: false, error: result.error })
+      return send(res, 200, { ok: true })
     }
 
     case 'me': {
