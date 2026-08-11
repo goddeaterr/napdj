@@ -335,3 +335,26 @@ export async function sendPasswordChangedEmail({ email, name, lang }) {
     `),
   })
 }
+
+/** New account notice for the studio. A registration is a lead worth knowing. */
+export async function sendNewAccountNotice({ name, email, phone, lang }) {
+  return send({
+    to: OWNER,
+    replyTo: email,
+    subject: `New account — ${name}`,
+    html: shell('New account', `
+      <p style="margin:0 0 22px;font-size:14px;color:rgba(255,255,255,0.45);line-height:1.75;">
+        Someone created an account. They have not booked yet.
+      </p>
+      <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.14);
+                  border-radius:10px;padding:22px 24px;">
+        <table width="100%" cellpadding="0" cellspacing="0">
+          ${row('Name',     esc(name))}
+          ${row('E-mail',   `<a href="mailto:${esc(email)}" style="color:#FFFFFF;">${esc(email)}</a>`)}
+          ${row('Phone',    phone ? `<a href="tel:${esc(phone)}" style="color:#FFFFFF;">${esc(phone)}</a>` : '—')}
+          ${row('Language', esc((lang || 'en').toUpperCase()))}
+        </table>
+      </div>
+    `),
+  })
+}

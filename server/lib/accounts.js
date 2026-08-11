@@ -23,6 +23,7 @@ import {
 } from './accountAuth.js'
 import {
   sendVerificationEmail, sendPasswordResetEmail, sendPasswordChangedEmail,
+  sendNewAccountNotice,
 } from './mailer.js'
 
 const SITE_URL = (process.env.PUBLIC_SITE_URL || 'https://napdj.com').replace(/\/+$/, '')
@@ -78,6 +79,8 @@ export async function register({ name, email, password, phone, lang, consent }, 
   })
 
   await issueVerification(user)
+  // Best effort: a failed notice must never fail the registration.
+  sendNewAccountNotice(user).catch(() => {})
   return { ok: true, status: 201, created: true }
 }
 

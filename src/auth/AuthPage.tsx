@@ -254,6 +254,12 @@ export default function AuthPage({ mode }: { mode: AuthMode }) {
       <h1 className={styles.title}>{titles[0]}</h1>
       <p className={styles.sub}>{titles[1]}</p>
 
+      {/* The animation runs for seconds with no visible text changing, so
+          screen readers are told what is happening and how it ended. */}
+      <p className={styles.srOnly} role="status" aria-live="polite">
+        {busy ? c.working : error ? error : ''}
+      </p>
+
       <form className={styles.form} onSubmit={submit} noValidate>
         {mode === 'signup' && (
           <Field label={c.name} value={name} onChange={setName} autoComplete="name" required />

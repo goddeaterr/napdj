@@ -3,6 +3,7 @@ import type { Lang } from '../lib/i18n'
 /** Auth copy lives here rather than in i18n.ts, which is already enormous. */
 export const AUTH_COPY = {
   en: {
+    working: 'Checking your details…',
     signInTitle: 'Welcome back',
     signInSub: 'Sign in to manage your lessons and bookings.',
     signUpTitle: 'Create your account',
@@ -70,6 +71,7 @@ export const AUTH_COPY = {
   },
 
   ru: {
+    working: 'Проверяем данные…',
     signInTitle: 'С возвращением',
     signInSub: 'Войдите, чтобы управлять уроками и записями.',
     signUpTitle: 'Создайте аккаунт',
@@ -137,6 +139,7 @@ export const AUTH_COPY = {
   },
 
   lt: {
+    working: 'Tikriname duomenis…',
     signInTitle: 'Sveiki sugrįžę',
     signInSub: 'Prisijunkite, kad valdytumėte pamokas ir registracijas.',
     signUpTitle: 'Sukurkite paskyrą',
