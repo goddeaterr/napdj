@@ -148,31 +148,37 @@ export function clearCookie() {
 
 /* ── Rate limiting ────────────────────────────────────────────────────── */
 
-const buckets = new Map()
-
 /**
- * Sliding counter keyed by whatever you pass — an IP, an e-mail, or both.
- * In-memory, so on serverless it is per instance. It blunts automated abuse;
- * the per-account lockout below is what actually protects a single account.
+ * Counter shared by every instance.
+ *
+ * The counts live in the database because in-memory ones are per serverless
+ * instance: a caller can walk around them just by being routed elsewhere. The
+ * increment happens inside a Postgres function so two parallel requests cannot
+ * both read the same value and each think they are under the limit.
+ *
+ * It fails open. If the table cannot be reached the request is allowed —
+ * losing rate limiting for a moment is better than locking every customer out
+ * of sign-in, and the per-account lockout in the users table still applies.
  */
-export function throttle(key, { max = 10, windowMs = 15 * 60 * 1000 } = {}) {
-  const now = Date.now()
-  const entry = buckets.get(key)
-
-  if (!entry || now > entry.resetAt) {
-    buckets.set(key, { count: 1, resetAt: now + windowMs })
+export async function throttle(key, { max = 10, windowMs = 15 * 60 * 1000 } = {}) {
+  try {
+    const { bumpRateLimit } = await import('./store.js')
+    const count = await bumpRateLimit(key, windowMs)
+    if (count > max) {
+      return { allowed: false, retryAfterSeconds: Math.ceil(windowMs / 1000) }
+    }
+    return { allowed: true }
+  } catch (err) {
+    console.error('rate limit unavailable, allowing request:', err.message)
     return { allowed: true }
   }
-
-  entry.count++
-  if (entry.count > max) {
-    return { allowed: false, retryAfterSeconds: Math.ceil((entry.resetAt - now) / 1000) }
-  }
-  return { allowed: true }
 }
 
-export function clearThrottle(key) {
-  buckets.delete(key)
+export async function clearThrottle(key) {
+  try {
+    const { clearRateLimit } = await import('./store.js')
+    await clearRateLimit(key)
+  } catch { /* best effort */ }
 }
 
 /* ── Account lockout ──────────────────────────────────────────────────── */

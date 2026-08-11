@@ -221,3 +221,22 @@ export async function listBookingsForUser(userId) {
     .filter(b => b.userId === userId)
     .sort((a, b) => String(b.createdAt).localeCompare(String(a.createdAt)))
 }
+
+/* ── Rate limiting ─────────────────────────────────────────────────────────
+   In memory here: the file backend only ever runs as a single process. */
+const limits = new Map()
+
+export async function bumpRateLimit(key, windowMs) {
+  const now = Date.now()
+  const entry = limits.get(key)
+  if (!entry || now > entry.resetAt) {
+    limits.set(key, { count: 1, resetAt: now + windowMs })
+    return 1
+  }
+  entry.count++
+  return entry.count
+}
+
+export async function clearRateLimit(key) {
+  limits.delete(key)
+}

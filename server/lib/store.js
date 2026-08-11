@@ -60,3 +60,6 @@ export const listLessonEntries   = backend.listLessonEntries
 export const lessonBalances      = backend.lessonBalances
 export const deleteLessonEntry   = backend.deleteLessonEntry
 export const listBookingsForUser = backend.listBookingsForUser
+
+export const bumpRateLimit  = backend.bumpRateLimit
+export const clearRateLimit = backend.clearRateLimit

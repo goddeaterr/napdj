@@ -84,3 +84,38 @@ create index if not exists bookings_user_idx on public.bookings (user_id);
 alter table public.users          enable row level security;
 alter table public.auth_tokens    enable row level security;
 alter table public.lesson_entries enable row level security;
+
+-- ── Rate limiting ──────────────────────────────────────────────────────────
+-- Counters live in the database so they hold across serverless instances.
+-- In-memory counters are per instance, which means a caller can walk around
+-- them simply by being routed somewhere else.
+create table if not exists public.rate_limits (
+  key       text primary key,
+  count     integer not null default 0,
+  reset_at  timestamptz not null
+);
+
+alter table public.rate_limits enable row level security;
+
+-- Atomic increment. Doing select-then-write from the server would race, and a
+-- race in a rate limiter is a rate limiter that can be beaten by parallelism.
+create or replace function public.bump_rate_limit(k text, window_seconds integer)
+returns integer
+language plpgsql
+as $$
+declare
+  current_count integer;
+begin
+  insert into public.rate_limits (key, count, reset_at)
+  values (k, 1, now() + make_interval(secs => window_seconds))
+  on conflict (key) do update
+    set count    = case when public.rate_limits.reset_at < now() then 1
+                        else public.rate_limits.count + 1 end,
+        reset_at = case when public.rate_limits.reset_at < now()
+                        then now() + make_interval(secs => window_seconds)
+                        else public.rate_limits.reset_at end
+  returning count into current_count;
+
+  return current_count;
+end;
+$$;

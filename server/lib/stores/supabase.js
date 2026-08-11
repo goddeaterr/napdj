@@ -327,3 +327,20 @@ export async function listBookingsForUser(userId) {
   )
   return (rows || []).map(fromRow)
 }
+
+/* ── Rate limiting ─────────────────────────────────────────────────────── */
+
+export async function bumpRateLimit(key, windowMs) {
+  const count = await request(`${URL}/rest/v1/rpc/bump_rate_limit`, {
+    method: 'POST',
+    headers: headers(),
+    body: JSON.stringify({ k: key, window_seconds: Math.round(windowMs / 1000) }),
+  })
+  return Number(count) || 1
+}
+
+export async function clearRateLimit(key) {
+  await request(`${URL}/rest/v1/rate_limits?key=eq.${encodeURIComponent(key)}`, {
+    method: 'DELETE', headers: headers(),
+  })
+}

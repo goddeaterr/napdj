@@ -49,7 +49,7 @@ export function publicUser(user) {
 /* ── Registration ─────────────────────────────────────────────────────── */
 
 export async function register({ name, email, password, phone, lang, consent }, ip) {
-  const limit = throttle(`register:${ip}`, { max: 5, windowMs: 60 * 60 * 1000 })
+  const limit = await throttle(`register:${ip}`, { max: 5, windowMs: 60 * 60 * 1000 })
   if (!limit.allowed) return { ok: false, status: 429, error: 'too_many_requests' }
 
   const cleanEmail = normaliseEmail(email)
@@ -98,7 +98,7 @@ async function issueVerification(user) {
 }
 
 export async function resendVerification(email, ip) {
-  const limit = throttle(`resend:${ip}`, { max: 5, windowMs: 60 * 60 * 1000 })
+  const limit = await throttle(`resend:${ip}`, { max: 5, windowMs: 60 * 60 * 1000 })
   if (!limit.allowed) return { ok: false, status: 429, error: 'too_many_requests' }
 
   const user = await findUserByEmail(normaliseEmail(email))
@@ -126,10 +126,10 @@ export async function verifyEmail(token) {
 export async function login({ email, password }, ip) {
   const cleanEmail = normaliseEmail(email)
 
-  const byIp = throttle(`login-ip:${ip}`, { max: 20, windowMs: 15 * 60 * 1000 })
+  const byIp = await throttle(`login-ip:${ip}`, { max: 20, windowMs: 15 * 60 * 1000 })
   if (!byIp.allowed) return { ok: false, status: 429, error: 'too_many_requests' }
 
-  const byAccount = throttle(`login-acct:${cleanEmail}`, { max: 10, windowMs: 15 * 60 * 1000 })
+  const byAccount = await throttle(`login-acct:${cleanEmail}`, { max: 10, windowMs: 15 * 60 * 1000 })
   if (!byAccount.allowed) return { ok: false, status: 429, error: 'too_many_requests' }
 
   const user = await findUserByEmail(cleanEmail)
@@ -162,7 +162,7 @@ export async function login({ email, password }, ip) {
     lastLoginAt: new Date().toISOString(),
   }) || user
 
-  clearThrottle(`login-acct:${cleanEmail}`)
+  await clearThrottle(`login-acct:${cleanEmail}`)
 
   return { ok: true, status: 200, user: publicUser(fresh), session: createSession(fresh) }
 }
@@ -170,7 +170,7 @@ export async function login({ email, password }, ip) {
 /* ── Password recovery ────────────────────────────────────────────────── */
 
 export async function requestPasswordReset(email, ip) {
-  const limit = throttle(`reset-req:${ip}`, { max: 5, windowMs: 60 * 60 * 1000 })
+  const limit = await throttle(`reset-req:${ip}`, { max: 5, windowMs: 60 * 60 * 1000 })
   if (!limit.allowed) return { ok: false, status: 429, error: 'too_many_requests' }
 
   const user = await findUserByEmail(normaliseEmail(email))
@@ -220,7 +220,7 @@ export async function resetPassword({ token, password }) {
   // Someone who forgot their password has usually just burned the sign-in
   // limit guessing. Proving control of the inbox clears it, otherwise they
   // would be locked out of the account they just recovered.
-  clearThrottle(`login-acct:${user.email}`)
+  await clearThrottle(`login-acct:${user.email}`)
 
   sendPasswordChangedEmail(updated).catch(() => {})
 
