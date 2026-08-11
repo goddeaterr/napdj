@@ -259,8 +259,10 @@
   50%      { box-shadow: 0 0 0 3px rgba(255,255,255,1),    0 0 52px rgba(255,255,255,0.9), 0 0 120px rgba(255,255,255,0.45); }
 }
 @keyframes collapse {
-  0%   { box-shadow: 0 0 45px rgba(255,255,255,0.9); transform: scale(1); background: #fff; }
-  30%  { box-shadow: 0 0 105px rgba(255,255,255,1), 0 0 200px rgba(255,255,255,0.6); transform: scale(1.3); background: #fff; }
+  /* A single soft flash. The expanding ring that used to be here read as a
+     second burst just before the word formed. */
+  0%   { box-shadow: 0 0 40px rgba(255,255,255,0.85); transform: scale(1); background: #fff; }
+  35%  { box-shadow: 0 0 70px rgba(255,255,255,0.9); transform: scale(1.12); background: #fff; }
   100% { box-shadow: 0 0 0 rgba(255,255,255,0); transform: scale(1); background: #fff; }
 }
 

@@ -119,7 +119,15 @@ export default function BlackHole({ phase, target }: Props) {
      * simpler than hand-plotting letterforms, and it follows whatever font
      * actually loaded.
      */
+    let cachedWord: Array<{ x: number; y: number }> | null = null
+    let cachedWordKey = ''
+
     const wordPoints = (word: string): Array<{ x: number; y: number }> => {
+      /* Reading back a full-canvas getImageData costs several milliseconds.
+         Doing it on the frame the burst fires is exactly the wrong moment, so
+         the result is cached per size and reused. */
+      const key = `${word}:${Math.round(width)}x${Math.round(height)}`
+      if (cachedWord && cachedWordKey === key) return cachedWord
       const off = document.createElement('canvas')
       off.width = Math.max(1, Math.floor(width))
       off.height = Math.max(1, Math.floor(height))
@@ -135,7 +143,7 @@ export default function BlackHole({ phase, target }: Props) {
 
       const { data } = octx.getImageData(0, 0, off.width, off.height)
       const points: Array<{ x: number; y: number }> = []
-      const step = 5
+      const step = 7
       for (let y = 0; y < off.height; y += step) {
         for (let x = 0; x < off.width; x += step) {
           if (data[(y * off.width + x) * 4 + 3] > 128) points.push({ x, y })
@@ -146,6 +154,8 @@ export default function BlackHole({ phase, target }: Props) {
         const j = Math.floor(Math.random() * (i + 1))
         ;[points[i], points[j]] = [points[j], points[i]]
       }
+      cachedWord = points
+      cachedWordKey = key
       return points
     }
 
@@ -156,7 +166,7 @@ export default function BlackHole({ phase, target }: Props) {
 
       // A sparse word is unreadable, so top up — the extras burst out of the
       // hole, which is where the eye already is.
-      const wanted = Math.min(points.length, 460)
+      const wanted = Math.min(points.length, 330)
       while (parts.length < wanted) {
         const p = spawn()
         const angle = Math.random() * Math.PI * 2
@@ -201,6 +211,9 @@ export default function BlackHole({ phase, target }: Props) {
       if (changed && !reduced) {
         const count = Math.round(Math.min(240, Math.max(100, (width * height) / 7200)))
         parts = Array.from({ length: count }, () => spawn())
+        cachedWord = null
+        // Sample the word now, while nothing is animating.
+        if (width > 0 && height > 0) setTimeout(() => wordPoints('NEKO'), 0)
       }
     }
 
@@ -221,8 +234,6 @@ export default function BlackHole({ phase, target }: Props) {
 
       if (currentPhase !== lastPhase) {
         if (currentPhase === 'collapse') {
-          // Shockwave, and set up the word the burst will settle into.
-          flashes.push({ x: -1, y: -1, age: 0, life: 620, size: 0 })
           const b = target()
           formWord('NEKO', b ? b.x - canvasLeft : width / 2, b ? b.y - canvasTop : height / 2)
         }
@@ -242,6 +253,8 @@ export default function BlackHole({ phase, target }: Props) {
       ctx.fillRect(0, 0, canvas.width, canvas.height)
       ctx.globalCompositeOperation = 'source-over'
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+
+      const glow = active && parts.length <= 260
 
       const box = target()
       const tx = box ? box.x - canvasLeft : width / 2
@@ -424,9 +437,12 @@ export default function BlackHole({ phase, target }: Props) {
         ctx.font = `${p.size}px "Bebas Neue", Georgia, serif`
         ctx.textAlign = 'center'
         ctx.textBaseline = 'middle'
-        if (active) {
+        /* Canvas shadowBlur is costly per draw call. It is affordable on the
+           small drifting field but not on the several hundred notes that make
+           up the word, which is what was dropping frames on the burst. */
+        if (glow) {
           ctx.shadowColor = 'rgba(255,255,255,0.95)'
-          ctx.shadowBlur = currentPhase === 'collapse' ? 20 : 14
+          ctx.shadowBlur = 14
         }
         ctx.fillText(p.glyph, 0, 0)
         ctx.restore()
@@ -439,21 +455,11 @@ export default function BlackHole({ phase, target }: Props) {
           f.age += 16.7
           const k = Math.min(1, f.age / f.life)
           const fade = 1 - k
-          if (f.x < 0) {
-            // Shockwave: a ring sweeping out from the hole.
-            const r = easeOutCubic(k) * Math.max(width, height) * 0.55
-            ctx.strokeStyle = `rgba(255,255,255,${0.34 * fade * fade})`
-            ctx.lineWidth = 2 + 10 * fade
-            ctx.beginPath()
-            ctx.arc(tx, ty, r, 0, Math.PI * 2)
-            ctx.stroke()
-          } else {
-            const r = f.size * (0.5 + k * 2.4)
-            ctx.fillStyle = `rgba(255,255,255,${0.5 * fade})`
-            ctx.beginPath()
-            ctx.arc(f.x, f.y, r, 0, Math.PI * 2)
-            ctx.fill()
-          }
+          const r = f.size * (0.5 + k * 2.4)
+          ctx.fillStyle = `rgba(255,255,255,${0.5 * fade})`
+          ctx.beginPath()
+          ctx.arc(f.x, f.y, r, 0, Math.PI * 2)
+          ctx.fill()
         }
         flashes = flashes.filter(f => f.age < f.life)
         ctx.globalCompositeOperation = 'source-over'

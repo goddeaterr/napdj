@@ -13,8 +13,8 @@ const PULL_MIN_MS = 950
 const HOLD_MS     = 620
 /** Burst out of the hole. */
 const BURST_MS    = 520
-/** Long enough to read NEKO and see it breathing. */
-const WORD_MS     = 1500
+/** The word holds — long enough to read it and watch it breathe. */
+const WORD_MS     = 3600
 
 const wait = (ms: number) => new Promise(r => setTimeout(r, ms))
 
