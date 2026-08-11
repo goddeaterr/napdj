@@ -14,9 +14,13 @@ interface Spark {
 }
 
 /**
- * Wraps a card and throws a few music notes off it when the pointer arrives or
- * clicks — the same family of motion as the black hole on the auth screens,
+ * Wraps a card and throws music notes off its outline when the pointer arrives
+ * or clicks — the same family of motion as the black hole on the auth screens,
  * scaled down to a gesture.
+ *
+ * The notes leave from points along the card's edge and travel outward, so the
+ * canvas is deliberately larger than the card: it extends PAD pixels past every
+ * side, otherwise anything leaving the border would be clipped immediately.
  *
  * The canvas only runs while sparks are alive. With nothing on screen the loop
  * stops completely, so a page of these costs nothing at rest.
@@ -38,11 +42,13 @@ export default function CardSparks({ children }: { children: ReactNode }) {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
 
     const dpr = Math.min(window.devicePixelRatio || 1, 1.5)
+    /** How far past the card the notes are allowed to travel. */
+    const PAD = 110
     let w = 0, h = 0
 
     const resize = () => {
-      w = host.clientWidth
-      h = host.clientHeight
+      w = host.clientWidth + PAD * 2
+      h = host.clientHeight + PAD * 2
       canvas.width = Math.floor(w * dpr)
       canvas.height = Math.floor(h * dpr)
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
@@ -57,9 +63,8 @@ export default function CardSparks({ children }: { children: ReactNode }) {
       for (const s of sparks.current) {
         s.x += s.vx
         s.y += s.vy
-        s.vy += 0.06          // a little weight, so they arc rather than fly flat
-        s.vx *= 0.985
-        s.vy *= 0.985
+        s.vx *= 0.972
+        s.vy *= 0.972
         s.spin += s.spinRate
         s.life -= 0.016
 
@@ -86,14 +91,38 @@ export default function CardSparks({ children }: { children: ReactNode }) {
       }
     }
 
-    const emit = (count: number, x: number, y: number, force: number) => {
+    /**
+     * Picks a random point on the card's border and the outward direction at
+     * that point, in canvas coordinates. The card sits inset by PAD, so its
+     * edges run from PAD to PAD + cardWidth / cardHeight.
+     */
+    const pointOnOutline = () => {
+      const cw = host.clientWidth
+      const ch = host.clientHeight
+      const perimeter = (cw + ch) * 2
+      let d = Math.random() * perimeter
+
+      if (d < cw) return { x: PAD + d, y: PAD, nx: 0, ny: -1 }                 // top
+      d -= cw
+      if (d < ch) return { x: PAD + cw, y: PAD + d, nx: 1, ny: 0 }             // right
+      d -= ch
+      if (d < cw) return { x: PAD + cw - d, y: PAD + ch, nx: 0, ny: 1 }        // bottom
+      d -= cw
+      return { x: PAD, y: PAD + ch - d, nx: -1, ny: 0 }                        // left
+    }
+
+    const emit = (count: number, force: number) => {
       for (let i = 0; i < count; i++) {
-        const angle = Math.random() * Math.PI * 2
-        const speed = (0.8 + Math.random() * force)
+        const p = pointOnOutline()
+        // Mostly straight out from the edge, with a little spread either side.
+        const spread = (Math.random() - 0.5) * 1.1
+        const angle = Math.atan2(p.ny, p.nx) + spread
+        const speed = 1.2 + Math.random() * force
+
         sparks.current.push({
-          x, y,
+          x: p.x, y: p.y,
           vx: Math.cos(angle) * speed,
-          vy: Math.sin(angle) * speed - 0.6,
+          vy: Math.sin(angle) * speed,
           life: 0.7 + Math.random() * 0.6,
           size: 9 + Math.random() * 9,
           glyph: GLYPHS[Math.floor(Math.random() * GLYPHS.length)],
@@ -107,14 +136,10 @@ export default function CardSparks({ children }: { children: ReactNode }) {
       }
     }
 
-    const localPoint = (e: PointerEvent) => {
-      const r = host.getBoundingClientRect()
-      return { x: e.clientX - r.left, y: e.clientY - r.top }
-    }
-
-    // A handful on arrival, a bigger scatter on click.
-    const onEnter = (e: PointerEvent) => { const p = localPoint(e); emit(7, p.x, p.y, 2.2) }
-    const onDown  = (e: PointerEvent) => { const p = localPoint(e); emit(16, p.x, p.y, 4.5) }
+    // A handful on arrival, a bigger scatter on click. Both leave from the
+    // outline rather than the pointer, so the whole card reacts.
+    const onEnter = () => emit(10, 2.4)
+    const onDown  = () => emit(26, 5.0)
 
     host.addEventListener('pointerenter', onEnter)
     host.addEventListener('pointerdown', onDown)
