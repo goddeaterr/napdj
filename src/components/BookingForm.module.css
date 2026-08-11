@@ -312,3 +312,32 @@
 /* The e-mail field stays in the DOM for the form state but is not shown —
    the address always comes from the account. */
 .rowHidden { display: none; }
+
+/* ── Account gate motion ──────────────────────────────────────────────── */
+.gate { animation: gateIn .6s cubic-bezier(0.16,1,0.3,1) both; }
+@keyframes gateIn {
+  from { opacity: 0; transform: translateY(14px) scale(0.985); }
+  to   { opacity: 1; transform: none; }
+}
+.gateIcon {
+  animation: gateHalo 3.4s ease-in-out infinite;
+  transition: border-color .35s, color .35s;
+}
+@keyframes gateHalo {
+  0%, 100% { box-shadow: 0 0 40px rgba(255,255,255,0.08); }
+  50%      { box-shadow: 0 0 58px rgba(255,255,255,0.16); }
+}
+.gate:hover .gateIcon { border-color: rgba(255,255,255,0.4); color: var(--white); }
+
+.identity { animation: gateIn .5s cubic-bezier(0.16,1,0.3,1) both; }
+.slotTakenNotice { animation: noticeIn .4s cubic-bezier(0.16,1,0.3,1) both; }
+@keyframes noticeIn {
+  0%   { opacity: 0; transform: translateY(-5px); }
+  60%  { opacity: 1; transform: translateX(3px); }
+  80%  { transform: translateX(-2px); }
+  100% { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gate, .gateIcon, .identity, .slotTakenNotice { animation: none !important; }
+}

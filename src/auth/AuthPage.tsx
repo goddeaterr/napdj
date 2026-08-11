@@ -171,7 +171,22 @@ export default function AuthPage({ mode }: { mode: AuthMode }) {
 
     return (
       <Shell phase={phase} target={target} lang={lang} setLang={setLang}>
-        <div className={styles.doneMark} aria-hidden="true">✓</div>
+        {/* Ring and tick draw themselves in, which lands better than a static
+            glyph appearing all at once. */}
+        <svg className={styles.doneRing} viewBox="0 0 60 60" fill="none" aria-hidden="true">
+          <circle
+            className={styles.doneRingCircle}
+            cx="30" cy="30" r="28"
+            stroke="rgba(255,255,255,0.55)" strokeWidth="1.5"
+            transform="rotate(-90 30 30)"
+          />
+          <path
+            className={styles.doneRingTick}
+            d="M19 30.5L26.5 38L41 23"
+            stroke="#FFFFFF" strokeWidth="2.4"
+            strokeLinecap="round" strokeLinejoin="round"
+          />
+        </svg>
         <h1 className={styles.title}>{panels.title}</h1>
         <p className={styles.sub}>{panels.body}</p>
         <button

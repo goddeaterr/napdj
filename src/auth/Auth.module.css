@@ -313,3 +313,119 @@
   .submitPulling, .submitHold, .submitCollapse, .doneMark { animation: none; }
   .submit { transition: none; }
 }
+
+/* ============================================================================
+   Motion polish
+   ---------------------------------------------------------------------------
+   Everything here is opacity/transform only, so it composites on the GPU and
+   never triggers layout. All of it is switched off under reduced motion at the
+   bottom of the file.
+============================================================================ */
+
+/* ── Entrance ─────────────────────────────────────────────────────────── */
+.card {
+  animation: cardIn .72s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(22px) scale(0.97); filter: blur(6px); }
+  to   { opacity: 1; transform: none;                        filter: blur(0); }
+}
+
+/* Children arrive one after another rather than all at once. */
+.brand   { animation: riseIn .6s cubic-bezier(0.16,1,0.3,1) .06s both; }
+.title   { animation: riseIn .6s cubic-bezier(0.16,1,0.3,1) .12s both; }
+.sub     { animation: riseIn .6s cubic-bezier(0.16,1,0.3,1) .17s both; }
+/* Scoped to the inputs on purpose. If the button carried this animation too,
+   removing a phase class would change its animation-name back to riseIn and
+   the browser would replay it — the button would re-rise after every failed
+   sign-in. The nth-child delays below only set timing, so they are harmless
+   on the button. */
+.form > .field, .form > .consent { animation: riseIn .55s cubic-bezier(0.16,1,0.3,1) both; }
+.form > *:nth-child(1) { animation-delay: .20s; }
+.form > *:nth-child(2) { animation-delay: .25s; }
+.form > *:nth-child(3) { animation-delay: .30s; }
+.form > *:nth-child(4) { animation-delay: .35s; }
+.form > *:nth-child(5) { animation-delay: .40s; }
+.form > *:nth-child(6) { animation-delay: .45s; }
+.links   { animation: riseIn .6s cubic-bezier(0.16,1,0.3,1) .5s both; }
+
+@keyframes riseIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ── Fields ───────────────────────────────────────────────────────────── */
+.field { position: relative; }
+
+/* A line that wipes in from the centre on focus. */
+.input { position: relative; z-index: 1; }
+.field::after {
+  content: '';
+  position: absolute; left: 0; right: 0; bottom: 0;
+  height: 2px; border-radius: 2px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.9), transparent);
+  transform: scaleX(0);
+  transition: transform .45s cubic-bezier(0.16,1,0.3,1);
+  pointer-events: none;
+}
+.fieldFocused::after { transform: scaleX(1); }
+.fieldFocused .input { background: rgba(255,255,255,0.08); }
+
+/* ── Error ────────────────────────────────────────────────────────────── */
+.error { animation: errorIn .45s cubic-bezier(0.16,1,0.3,1) both; }
+@keyframes errorIn {
+  0%   { opacity: 0; transform: translateY(-6px); }
+  60%  { opacity: 1; transform: translateX(4px); }
+  75%  { transform: translateX(-3px); }
+  88%  { transform: translateX(2px); }
+  100% { opacity: 1; transform: none; }
+}
+
+/* ── The check mark on a finished panel ───────────────────────────────── */
+.doneRing {
+  width: 66px; height: 66px; margin: 0 auto 20px;
+  display: block;
+  filter: drop-shadow(0 0 22px rgba(255,255,255,0.4));
+}
+.doneRingCircle {
+  stroke-dasharray: 176;
+  stroke-dashoffset: 176;
+  animation: drawRing .7s cubic-bezier(0.16,1,0.3,1) .1s forwards;
+}
+.doneRingTick {
+  stroke-dasharray: 40;
+  stroke-dashoffset: 40;
+  animation: drawTick .4s cubic-bezier(0.16,1,0.3,1) .6s forwards;
+}
+@keyframes drawRing { to { stroke-dashoffset: 0; } }
+@keyframes drawTick { to { stroke-dashoffset: 0; } }
+
+/* ── Buttons and links ────────────────────────────────────────────────── */
+.textLink, .textLinkStrong { position: relative; }
+.textLink::after, .textLinkStrong::after {
+  content: '';
+  position: absolute; left: 0; right: 0; bottom: -2px; height: 1px;
+  background: currentColor;
+  transform: scaleX(0); transform-origin: right;
+  transition: transform .3s cubic-bezier(0.16,1,0.3,1);
+}
+.textLink:hover::after, .textLinkStrong:hover::after { transform: scaleX(1); transform-origin: left; }
+
+.langBtn { position: relative; }
+.langActive::after {
+  content: '';
+  position: absolute; left: 8px; right: 8px; bottom: 2px; height: 1px;
+  background: currentColor;
+  animation: riseIn .35s ease both;
+}
+
+.check { transform: scale(1); transition: transform .25s cubic-bezier(0.34,1.56,0.64,1), background .2s, border-color .2s; }
+.checkOn { transform: scale(1.06); }
+
+@media (prefers-reduced-motion: reduce) {
+  .card, .brand, .title, .sub, .form > *, .links,
+  .error, .doneRingCircle, .doneRingTick, .langActive::after {
+    animation: none !important;
+  }
+  .field::after, .textLink::after, .textLinkStrong::after { transition: none; }
+}

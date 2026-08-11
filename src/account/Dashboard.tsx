@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useCountUp } from '../hooks/useCountUp'
 import { useLang } from '../lib/LangContext'
 import { useAuth, type LessonEntry } from '../lib/AuthContext'
 import { navigate } from '../lib/router'
@@ -11,6 +12,8 @@ export default function Dashboard() {
   const { user, ready, balance, lessons, bookings, signOut, resendVerification } = useAuth()
   const c = DASH_COPY[lang] ?? DASH_COPY.en
   const [resent, setResent] = useState(false)
+  // Counts up once the data lands, so the number arrives rather than blinks in.
+  const shownBalance = useCountUp(balance, ready && !!user, 1100)
 
   /* Not signed in → the sign-in screen, once we actually know. */
   useEffect(() => {
@@ -19,7 +22,14 @@ export default function Dashboard() {
 
   useEffect(() => { document.title = `${c.title} — neko art platform` }, [c.title])
 
-  if (!ready) return <div className={styles.loading} />
+  // A quiet placeholder beats a black screen while /me resolves.
+  if (!ready) return (
+    <div className={styles.loading}>
+      <span className={styles.loadingDot} />
+      <span className={styles.loadingDot} />
+      <span className={styles.loadingDot} />
+    </div>
+  )
   if (!user) return null
 
   const fmtDate = (iso: string | null, time?: string) => {
@@ -69,7 +79,7 @@ export default function Dashboard() {
         {/* ── Lesson balance ── */}
         <section className={styles.balanceCard}>
           <div className={styles.balanceMain}>
-            <span className={styles.balanceNum}>{balance}</span>
+            <span className={styles.balanceNum}>{shownBalance}</span>
             <span className={styles.balanceLabel}>{balance === 1 ? c.lessonLeftOne : c.lessonsLeft}</span>
           </div>
           <p className={styles.balanceNote}>
@@ -88,8 +98,8 @@ export default function Dashboard() {
               <p className={styles.empty}>{c.noBookings}</p>
             ) : (
               <ul className={styles.list}>
-                {bookings.map(b => (
-                  <li key={b.id} className={styles.item}>
+                {bookings.map((b, i) => (
+                  <li key={b.id} className={styles.item} style={{ animationDelay: `${0.28 + i * 0.05}s` }}>
                     <div className={styles.itemMain}>
                       <span className={styles.itemTitle}>{b.plan}</span>
                       <span className={styles.itemMeta}>
@@ -112,8 +122,8 @@ export default function Dashboard() {
               <p className={styles.empty}>{c.noLessons}</p>
             ) : (
               <ul className={styles.list}>
-                {lessons.map((e: LessonEntry) => (
-                  <li key={e.id} className={styles.item}>
+                {lessons.map((e: LessonEntry, i) => (
+                  <li key={e.id} className={styles.item} style={{ animationDelay: `${0.34 + i * 0.05}s` }}>
                     <div className={styles.itemMain}>
                       <span className={styles.itemTitle}>
                         {e.note || c.kinds[e.kind] || c.kinds.adjustment}

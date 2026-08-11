@@ -274,3 +274,42 @@
   letter-spacing: .14em; text-transform: uppercase; color: var(--taken);
 }
 .deleteBtn:hover:not(:disabled) { background: rgba(255,69,69,0.14); }
+
+/* ── Motion ───────────────────────────────────────────────────────────── */
+.card { transition: border-color .3s, background .3s, transform .3s cubic-bezier(0.16,1,0.3,1); }
+.card:hover { border-color: rgba(255,255,255,0.22); }
+
+/* The expanded body unrolls instead of appearing. */
+.cardBody { animation: bodyIn .38s cubic-bezier(0.16,1,0.3,1) both; overflow: hidden; }
+@keyframes bodyIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.list > * { animation: rowIn .45s cubic-bezier(0.16,1,0.3,1) both; }
+.list > *:nth-child(1) { animation-delay: .02s; }
+.list > *:nth-child(2) { animation-delay: .05s; }
+.list > *:nth-child(3) { animation-delay: .08s; }
+.list > *:nth-child(4) { animation-delay: .11s; }
+.list > *:nth-child(5) { animation-delay: .14s; }
+.list > *:nth-child(n+6) { animation-delay: .17s; }
+@keyframes rowIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.grantBtn { transition: background .2s, border-color .2s, transform .18s cubic-bezier(0.34,1.56,0.64,1); }
+.grantBtn:hover:not(:disabled) { transform: translateY(-2px); }
+.grantBtn:active:not(:disabled) { transform: translateY(0) scale(0.96); }
+
+/* The balance is what the admin is actually changing — let it react. */
+.balancePill { transition: transform .3s cubic-bezier(0.34,1.56,0.64,1), border-color .3s, box-shadow .3s; }
+.card:hover .balancePill { border-color: rgba(255,255,255,0.6); box-shadow: 0 0 18px rgba(255,255,255,0.12); }
+
+.tab { transition: border-color .25s, color .25s, background .25s, transform .2s; }
+.tab:hover { transform: translateY(-1px); }
+
+@media (prefers-reduced-motion: reduce) {
+  .cardBody, .list > * { animation: none !important; }
+  .grantBtn:hover:not(:disabled), .tab:hover { transform: none; }
+}
