@@ -181,12 +181,12 @@
 
 /* Pull: shrink to a sphere and start spinning up. */
 .submit.submitPulling {
-  width: 76px; height: 76px;
+  width: 58px; height: 58px;
   border-radius: 50%;
   margin: 6px auto 0;
   background: #fff;
-  box-shadow: 0 0 40px rgba(255,255,255,0.55), 0 0 90px rgba(255,255,255,0.25);
-  filter: blur(0.6px) drop-shadow(0 0 26px rgba(255,255,255,0.9));
+  box-shadow: 0 0 30px rgba(255,255,255,0.55), 0 0 68px rgba(255,255,255,0.25);
+  filter: blur(0.5px) drop-shadow(0 0 20px rgba(255,255,255,0.9));
   animation: spinUp .38s linear infinite, tremble .22s ease-in-out 4;
 }
 .submit.submitPulling .submitLabel { opacity: 0; }
@@ -194,14 +194,14 @@
 
 /* Hold: a stable, bright accretion ring. */
 .submit.submitHold {
-  width: 76px; height: 76px;
+  width: 58px; height: 58px;
   border-radius: 50%;
   margin: 6px auto 0;
   box-shadow:
     0 0 0 2px rgba(255,255,255,0.9),
-    0 0 60px rgba(255,255,255,0.8),
-    0 0 140px rgba(255,255,255,0.4);
-  filter: drop-shadow(0 0 30px rgba(255,255,255,0.85));
+    0 0 44px rgba(255,255,255,0.8),
+    0 0 105px rgba(255,255,255,0.4);
+  filter: drop-shadow(0 0 22px rgba(255,255,255,0.85));
   animation: spinUp .6s linear infinite, breathe 1.4s ease-in-out infinite;
 }
 .submit.submitHold .submitLabel { opacity: 0; }
@@ -209,10 +209,10 @@
 
 /* Collapse: one violent flash outward, then back to a normal button. */
 .submit.submitCollapse {
-  width: 76px; height: 76px;
+  width: 58px; height: 58px;
   border-radius: 50%;
   margin: 6px auto 0;
-  filter: blur(1px) drop-shadow(0 0 40px rgba(255,255,255,1));
+  filter: blur(1px) drop-shadow(0 0 30px rgba(255,255,255,1));
   animation: collapse .85s cubic-bezier(0.3, 0, 0.2, 1) forwards, spinUp .25s linear infinite;
 }
 .submit.submitCollapse .submitLabel { opacity: 0; }
@@ -224,7 +224,7 @@
 .submit.submitPulling::after,
 .submit.submitHold::after {
   content: '';
-  position: absolute; inset: -14px;
+  position: absolute; inset: -10px;
   border-radius: 50%;
   border: 1px solid rgba(255,255,255,0.55);
   border-top-color: rgba(255,255,255,0.95);
@@ -245,12 +245,12 @@
   75%  { translate: -2px -3px; }
 }
 @keyframes breathe {
-  0%, 100% { box-shadow: 0 0 0 2px rgba(255,255,255,0.85), 0 0 50px rgba(255,255,255,0.7), 0 0 120px rgba(255,255,255,0.3); }
-  50%      { box-shadow: 0 0 0 3px rgba(255,255,255,1),    0 0 70px rgba(255,255,255,0.9), 0 0 160px rgba(255,255,255,0.45); }
+  0%, 100% { box-shadow: 0 0 0 2px rgba(255,255,255,0.85), 0 0 38px rgba(255,255,255,0.7), 0 0 90px rgba(255,255,255,0.3); }
+  50%      { box-shadow: 0 0 0 3px rgba(255,255,255,1),    0 0 52px rgba(255,255,255,0.9), 0 0 120px rgba(255,255,255,0.45); }
 }
 @keyframes collapse {
-  0%   { box-shadow: 0 0 60px rgba(255,255,255,0.9); transform: scale(1); background: #fff; }
-  30%  { box-shadow: 0 0 140px rgba(255,255,255,1), 0 0 260px rgba(255,255,255,0.6); transform: scale(1.35); background: #fff; }
+  0%   { box-shadow: 0 0 45px rgba(255,255,255,0.9); transform: scale(1); background: #fff; }
+  30%  { box-shadow: 0 0 105px rgba(255,255,255,1), 0 0 200px rgba(255,255,255,0.6); transform: scale(1.3); background: #fff; }
   100% { box-shadow: 0 0 0 rgba(255,255,255,0); transform: scale(1); background: #fff; }
 }
 

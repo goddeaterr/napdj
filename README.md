@@ -158,6 +158,7 @@ See `.env.example` for the complete, commented list.
 | Variable | Purpose |
 |---|---|
 | `OWNER_EMAIL` | Who receives booking notifications |
+| `AUTH_SECRET` | Signs student session cookies (required in production) |
 | `RESEND_API_KEY` | Resend API key |
 | `FROM_EMAIL` | Sender address (must be on a verified Resend domain) |
 | `ADMIN_PASSWORD_HASH` | scrypt hash of the admin password |

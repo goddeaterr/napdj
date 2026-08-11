@@ -135,14 +135,14 @@ export default function BlackHole({ phase, target }: Props) {
       // Glowing accretion disc under everything once the hole is live.
       if (currentPhase === 'pull' || currentPhase === 'hold') {
         const grow = currentPhase === 'hold' ? 1 : Math.min(1, elapsed / 700)
-        const g = ctx.createRadialGradient(tx, ty, 0, tx, ty, 150 * grow)
+        const g = ctx.createRadialGradient(tx, ty, 0, tx, ty, 115 * grow)
         g.addColorStop(0, 'rgba(255,255,255,0.16)')
         g.addColorStop(0.45, 'rgba(255,255,255,0.04)')
         g.addColorStop(1, 'rgba(255,255,255,0)')
         ctx.globalCompositeOperation = 'lighter'
         ctx.fillStyle = g
         ctx.beginPath()
-        ctx.arc(tx, ty, 150 * grow, 0, Math.PI * 2)
+        ctx.arc(tx, ty, 115 * grow, 0, Math.PI * 2)
         ctx.fill()
         ctx.globalCompositeOperation = 'source-over'
       }
@@ -195,9 +195,9 @@ export default function BlackHole({ phase, target }: Props) {
           p.vx = Math.cos(a) * -carry
           p.vy = Math.sin(a) * -carry
 
-          if (r < 24) {
+          if (r < 18) {
             p.captured = true
-            p.orbitR = 9 + Math.random() * 15
+            p.orbitR = 7 + Math.random() * 11
             p.orbitA = a
             p.orbitSpeed = 0.18 + Math.random() * 0.14
             p.alpha *= 0.99
@@ -206,7 +206,7 @@ export default function BlackHole({ phase, target }: Props) {
 
         if (currentPhase === 'pull' && p.captured) {
           p.orbitA += p.orbitSpeed
-          p.orbitR += (12 - p.orbitR) * 0.08
+          p.orbitR += (9 - p.orbitR) * 0.08
           p.x = tx + Math.cos(p.orbitA) * p.orbitR
           p.y = ty + Math.sin(p.orbitA) * p.orbitR
         }
@@ -217,15 +217,15 @@ export default function BlackHole({ phase, target }: Props) {
             const dist = Math.hypot(dx, dy) || 1
             p.x += (dx / dist) * 4
             p.y += (dy / dist) * 4
-            if (dist < 32) {
+            if (dist < 24) {
               p.captured = true
-              p.orbitR = 11 + Math.random() * 18
+              p.orbitR = 8 + Math.random() * 13
               p.orbitA = Math.random() * Math.PI * 2
               p.orbitSpeed = 0.14 + Math.random() * 0.12
             }
           } else {
             p.orbitA += p.orbitSpeed
-            p.orbitR += (15 - p.orbitR) * 0.06
+            p.orbitR += (11 - p.orbitR) * 0.06
             p.x = tx + Math.cos(p.orbitA) * p.orbitR
             p.y = ty + Math.sin(p.orbitA) * p.orbitR
             p.alpha += (0.85 - p.alpha) * 0.09
