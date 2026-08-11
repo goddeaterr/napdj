@@ -46,8 +46,12 @@
   box-shadow: 0 30px 80px rgba(0,0,0,0.6);
   transition: border-color .5s, box-shadow .5s, transform .5s var(--ease-out);
 }
-/* While the hole is active the card recedes slightly, so the eye goes to the sphere. */
+/* While the hole is active the card recedes and thins out. The particle field
+   stays behind the card at all times, so letting a little more light through
+   the glass is what makes the swirl readable — putting the canvas in front
+   instead meant the collapse burst sprayed across the interface. */
 .cardBusy {
+  background: rgba(14,14,14,0.66);
   border-color: rgba(255,255,255,0.2);
   box-shadow: 0 30px 90px rgba(0,0,0,0.75), 0 0 60px rgba(255,255,255,0.05);
   transform: scale(0.985);

@@ -35,10 +35,6 @@ interface Particle {
  * one. Cheaper than a real blur filter and it reads as speed.
  */
 export default function BlackHole({ phase, target }: Props) {
-  /* The card is opaque and sits above the drifting field. Once the hole is
-     live the particles have to pass over it, otherwise everything vanishes
-     behind the card exactly when it converges on the button. */
-  const above = phase !== 'drift'
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const phaseRef  = useRef<HolePhase>(phase)
   const sinceRef  = useRef<number>(performance.now())
@@ -298,8 +294,9 @@ export default function BlackHole({ phase, target }: Props) {
       aria-hidden="true"
       style={{
         position: 'absolute', inset: 0, width: '100%', height: '100%',
-        pointerEvents: 'none',
-        zIndex: above ? 5 : 0,
+        // Always behind the card. Lifting it above during the animation put
+        // the collapse burst over the interface, which reads as a glitch.
+        pointerEvents: 'none', zIndex: 0,
       }}
     />
   )
