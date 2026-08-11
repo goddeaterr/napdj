@@ -65,11 +65,13 @@ export default function Hero() {
     }
   }, [])
 
+  /* Only figures that can be stood behind. The student count and the 97%
+     satisfaction rate were placeholder numbers, and the site now names a
+     registered company, so stating them as fact is not something to leave in. */
   const counters = [
-    { end: 143, suffix: '+',   label: t('hero_stat1_label') },
-    { end: 5,   suffix: 'yrs', label: t('hero_stat2_label') },
-    { end: 4,   suffix: '',    label: t('hero_stat3_label') },
-    { end: 97,  suffix: '%',   label: t('hero_stat4_label') },
+    { end: 4,    suffix: '',    label: t('hero_stat3_label') },
+    { end: 2021, suffix: '',    label: t('hero_stat2_label') },
+    { end: 1,    suffix: '-on-1', label: t('hero_stat1_label') },
   ]
 
   return (

@@ -33,12 +33,15 @@ export default function Marquee({ items, speed = 30, reverse = false, accent = f
 
 // Preset marquees
 export function GraduatesMarquee() {
-  const names = [
-    'Lukas B.', 'Gabija P.', 'Mantas J.', 'Rūta K.', 'Dovydas S.', 'Ieva M.',
-    'Tomas V.', 'Rasa T.', 'Karolis S.', 'Ineta J.', 'Justinas P.', 'Viktorija A.',
-    'Emilis N.', 'Gintarė K.', 'Jonas M.', 'Laura V.',
+  /* This used to scroll invented student names. It shows what is taught
+     instead — true, and more useful to someone deciding. */
+  const items = [
+    'Beatmatching by ear', 'Harmonic mixing', 'EQ & filters', 'Phrasing',
+    'Reading the room', 'Effects chains', 'Track selection', 'Live performance',
+    'Pioneer CDJ-2000 NXS2', 'DJM-900 NXS2', 'Techno', 'House',
+    'Hip-Hop', 'Drum & Bass', 'Afro House',
   ]
-  return <Marquee items={names} speed={35} />
+  return <Marquee items={items} speed={35} />
 }
 
 export function ClubsMarquee() {

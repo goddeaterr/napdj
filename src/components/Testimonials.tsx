@@ -1,16 +1,16 @@
 import { useState, useEffect } from 'react'
 import { useLang } from '../lib/LangContext'
-import { VENUE } from '../config/site'
 import { useScrollAnimation } from '../hooks/useScrollAnimation'
 import styles from './Testimonials.module.css'
 
+/* Real reviews, given by the studio. Roles are kept vague on purpose: we know
+   what these people said, not what year they graduated, and inventing that
+   detail is how the previous placeholder testimonials went wrong. */
 const PEOPLE = [
-  { name:'Lukas B.',   role:`Resident DJ, ${VENUE.name}`, since:'Graduate 2022', initials:'LB', color:'#FFFFFF', key:'test_t1' as const },
-  { name:'Gabija P.',  role:'Festival DJ & Freelance',    since:'Graduate 2023', initials:'GP', color:'#D2D2D2', key:'test_t2' as const },
-  { name:'Mantas J.',  role:'Private Events DJ',          since:'Graduate 2022', initials:'MJ', color:'#FFFFFF', key:'test_t3' as const },
-  { name:'Rūta K.',    role:'DJ & Producer',              since:'Graduate 2023', initials:'RK', color:'#E0E0E0', key:'test_t4' as const },
-  { name:'Dovydas S.', role:'Club DJ, resident',          since:'Graduate 2024', initials:'DS', color:'#C8C8C8', key:'test_t5' as const },
-  { name:'Ieva M.',    role:'DJ & Event Curator',         since:'Graduate 2024', initials:'IM', color:'#FFFFFF', key:'test_t6' as const },
+  { name:'Artemij S.', role:'Student, now teaching', initials:'AS', color:'#9B30FF', key:'test_t1' as const },
+  { name:'Lana G.',    role:'Student',               initials:'LG', color:'#00C8FF', key:'test_t2' as const },
+  { name:'Veronika B.',role:'Student',               initials:'VB', color:'#BF5FFF', key:'test_t3' as const },
+  { name:'Danil P.',   role:'Student',               initials:'DP', color:'#39FF14', key:'test_t4' as const },
 ]
 
 export default function Testimonials() {
@@ -55,7 +55,6 @@ export default function Testimonials() {
                 <div>
                   <div className={styles.featuredName}>{current.name}</div>
                   <div className={styles.featuredRole}>{current.role}</div>
-                  <div className={styles.since}>{current.since}</div>
                 </div>
               </div>
             </div>

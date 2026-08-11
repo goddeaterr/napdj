@@ -10,8 +10,6 @@ export default function About() {
   const { ref: timeRef, isVisible: timeIn } = useScrollAnimation<HTMLDivElement>(0.1)
 
   // Count-up animations for the stat pills — start once the right panel scrolls in
-  const count143 = useCountUp(143, rightIn, 1800)
-  const count48  = useCountUp(4.8, rightIn, 1200, 1)
   const count4   = useCountUp(4,   rightIn,  900)
 
   const features = [
@@ -71,13 +69,13 @@ export default function About() {
                 <div className={styles.vinylReflect} />
               </div>
               <div className={styles.tonearm} />
-              {/* Realistic numbers */}
+              {/* Facts about how lessons run — no invented figures */}
               <div className={`${styles.pill} ${styles.pill1}`}>
-                <span className={styles.pillNum}>{count143}+</span>
+                <span className={styles.pillNum}>1-on-1</span>
                 <span className={styles.pillLabel}>{t('about_pill1')}</span>
               </div>
               <div className={`${styles.pill} ${styles.pill2}`}>
-                <span className={styles.pillNum}>{count48}★</span>
+                <span className={styles.pillNum}>NXS2</span>
                 <span className={styles.pillLabel}>{t('about_pill2')}</span>
               </div>
               <div className={`${styles.pill} ${styles.pill3}`}>

@@ -82,15 +82,15 @@ export default function Footer() {
             <p className={styles.brandDesc}>{t('footer_desc')}</p>
             <div className={styles.badges}>
               <div className={styles.badge}>
-                <span className={styles.badgeNum}>143+</span>
+                <span className={styles.badgeNum}>1-on-1</span>
                 <span className={styles.badgeLabel}>{t('footer_students')}</span>
               </div>
               <div className={styles.badge}>
-                <span className={styles.badgeNum}>4.8★</span>
+                <span className={styles.badgeNum}>Mon–Fri</span>
                 <span className={styles.badgeLabel}>{t('footer_rating')}</span>
               </div>
               <div className={styles.badge}>
-                <span className={styles.badgeNum}>2020</span>
+                <span className={styles.badgeNum}>2021</span>
                 <span className={styles.badgeLabel}>{t('footer_founded')}</span>
               </div>
             </div>
@@ -166,7 +166,7 @@ export default function Footer() {
             </div>
             <div className={styles.contactItem}>
               <span className={styles.contactIcon}>🎓</span>
-              <span className={styles.contactText}>Teaching Since 2020</span>
+              <span className={styles.contactText}>Neko muzika, VšĮ · since 2021</span>
             </div>
 
             <StudioMap />
