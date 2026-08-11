@@ -192,7 +192,7 @@ export default function Footer() {
               </span>
             )}
           </span>
-          <span className={styles.bottomCenter}>Klaipėda · Lithuania · Est. 2020</span>
+          <span className={styles.bottomCenter}>Klaipėda · Lithuania · Est. 2021</span>
           <span className={styles.madeWith}>{t('footer_tagline')}</span>
         </div>
       </div>

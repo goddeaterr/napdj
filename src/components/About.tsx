@@ -20,7 +20,7 @@ export default function About() {
   ]
 
   const timeline = [
-    { year: '2020', event: t('about_tl1') },
+    { year: '2021', event: t('about_tl1') },
     { year: '2021', event: t('about_tl2') },
     { year: '2022', event: t('about_tl3') },
     { year: '2024', event: t('about_tl4') },
