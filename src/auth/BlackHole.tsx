@@ -35,6 +35,10 @@ interface Particle {
  * one. Cheaper than a real blur filter and it reads as speed.
  */
 export default function BlackHole({ phase, target }: Props) {
+  /* The card is opaque and sits above the drifting field. Once the hole is
+     live the particles have to pass over it, otherwise everything vanishes
+     behind the card exactly when it converges on the button. */
+  const above = phase !== 'drift'
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const phaseRef  = useRef<HolePhase>(phase)
   const sinceRef  = useRef<number>(performance.now())
@@ -152,32 +156,54 @@ export default function BlackHole({ phase, target }: Props) {
         }
 
         if (currentPhase === 'pull') {
-          const dx = tx - p.x
-          const dy = ty - p.y
-          const dist = Math.hypot(dx, dy) || 1
+          /* Polar motion around the hole rather than force accumulation.
+             Inverse-square gravity looks right on paper but barely moves a
+             particle 400px away inside one second, so the radius is driven
+             directly: it shrinks a little faster every frame, and the angle
+             advances faster the closer the particle gets — which is what makes
+             it read as an orbit collapsing rather than a straight fall. */
+          const dx = p.x - tx
+          const dy = p.y - ty
+          let r = Math.hypot(dx, dy) || 1
+          let a = Math.atan2(dy, dx)
 
-          // Shake in place first, then fall — harder the closer they get.
-          const shake = elapsed < 340 ? (1 - elapsed / 340) * 5 : 0
-          const gravity = Math.min(0.75, 320 / (dist * dist + 380)) * (elapsed < 340 ? 0.3 : 1)
+          const t = Math.min(1, elapsed / 900)
+          const shake = elapsed < 300 ? (1 - elapsed / 300) * 4 : 0
 
-          // Sideways kick, so they spiral in rather than falling straight.
-          const swirl = 0.55
-          p.vx += (dx / dist) * gravity + (-dy / dist) * gravity * swirl
-          p.vy += (dy / dist) * gravity + ( dx / dist) * gravity * swirl
-          p.vx *= 0.945
-          p.vy *= 0.945
+          /* The inward step is proportional to the radius, so a particle in a
+             far corner covers ground as fast as a near one and the whole field
+             lands within the pull. Cubed ramp keeps the first moments slow, so
+             the shake reads before the fall. */
+          const inward  = (0.02 + 0.14 * t * t * t) * r + (1 + 7 * t)
+          const angular = (0.012 + 0.12 * t) * (1 + 160 / (r + 90))
 
-          p.x += p.vx + (Math.random() - 0.5) * shake
-          p.y += p.vy + (Math.random() - 0.5) * shake
-          p.spinRate += 0.02          // spin up hard
+          r = Math.max(0, r - inward)
+          a += angular
 
-          if (dist < 30) {
+          p.x = tx + Math.cos(a) * r + (Math.random() - 0.5) * shake
+          p.y = ty + Math.sin(a) * r + (Math.random() - 0.5) * shake
+          p.spinRate += 0.02
+
+          // Remember which way it was heading, capped, so a collapse can fling
+          // it back out without inheriting a huge inward step.
+          const carry = Math.min(inward, 14)
+          p.vx = Math.cos(a) * -carry
+          p.vy = Math.sin(a) * -carry
+
+          if (r < 24) {
             p.captured = true
-            p.orbitR = 9 + Math.random() * 16
-            p.orbitA = Math.atan2(p.y - ty, p.x - tx)
-            p.orbitSpeed = 0.16 + Math.random() * 0.14
-            p.alpha *= 0.985
+            p.orbitR = 9 + Math.random() * 15
+            p.orbitA = a
+            p.orbitSpeed = 0.18 + Math.random() * 0.14
+            p.alpha *= 0.99
           }
+        }
+
+        if (currentPhase === 'pull' && p.captured) {
+          p.orbitA += p.orbitSpeed
+          p.orbitR += (12 - p.orbitR) * 0.08
+          p.x = tx + Math.cos(p.orbitA) * p.orbitR
+          p.y = ty + Math.sin(p.orbitA) * p.orbitR
         }
 
         if (currentPhase === 'hold') {
@@ -267,7 +293,8 @@ export default function BlackHole({ phase, target }: Props) {
       aria-hidden="true"
       style={{
         position: 'absolute', inset: 0, width: '100%', height: '100%',
-        pointerEvents: 'none', zIndex: 0,
+        pointerEvents: 'none',
+        zIndex: above ? 5 : 0,
       }}
     />
   )
