@@ -61,7 +61,10 @@ export default function AuthPage({ mode }: { mode: AuthMode }) {
         if (!cancelled) setPhase('drift')
       } else {
         setPhase('hold')
-        setDone('verified')
+        await wait(HOLD_MS)
+        // Back to drift before the panel swaps in, or its button would keep
+        // the sphere styling and sit there invisible.
+        if (!cancelled) { setPhase('drift'); setDone('verified') }
       }
       if (!cancelled) setBusy(false)
     })()
@@ -89,6 +92,10 @@ export default function AuthPage({ mode }: { mode: AuthMode }) {
 
     setPhase('hold')
     await wait(HOLD_MS)
+    // Settle before handing over. When onSuccess swaps in a finished panel
+    // rather than navigating away, leaving the phase on 'hold' would leave its
+    // button stuck as the invisible sphere.
+    setPhase('drift')
     setBusy(false)
     onSuccess()
   }

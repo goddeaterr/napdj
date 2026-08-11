@@ -113,12 +113,17 @@ export default function BlackHole({ phase, target }: Props) {
       const elapsed = now - sinceRef.current
       const active = currentPhase !== 'drift'
 
-      // Motion blur: fade the previous frame instead of wiping it. The faster
-      // the phase, the longer the trails linger.
+      /* Motion blur without touching the background. Painting translucent
+         black would work only if the canvas sat behind everything — it is
+         above the card while the hole is live, and a black fill there piles up
+         over the UI and hides it. `destination-out` instead eats a fraction of
+         the existing alpha each frame, so old frames fade into trails and the
+         canvas stays fully transparent. */
       ctx.setTransform(1, 0, 0, 1, 0, 0)
-      ctx.globalCompositeOperation = 'source-over'
-      ctx.fillStyle = active ? 'rgba(10,10,10,0.22)' : 'rgba(10,10,10,0.38)'
+      ctx.globalCompositeOperation = 'destination-out'
+      ctx.fillStyle = active ? 'rgba(0,0,0,0.30)' : 'rgba(0,0,0,0.45)'
       ctx.fillRect(0, 0, canvas.width, canvas.height)
+      ctx.globalCompositeOperation = 'source-over'
       const dpr = Math.min(window.devicePixelRatio || 1, 2)
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
 
@@ -131,8 +136,8 @@ export default function BlackHole({ phase, target }: Props) {
       if (currentPhase === 'pull' || currentPhase === 'hold') {
         const grow = currentPhase === 'hold' ? 1 : Math.min(1, elapsed / 700)
         const g = ctx.createRadialGradient(tx, ty, 0, tx, ty, 150 * grow)
-        g.addColorStop(0, 'rgba(255,255,255,0.22)')
-        g.addColorStop(0.45, 'rgba(255,255,255,0.05)')
+        g.addColorStop(0, 'rgba(255,255,255,0.16)')
+        g.addColorStop(0.45, 'rgba(255,255,255,0.04)')
         g.addColorStop(1, 'rgba(255,255,255,0)')
         ctx.globalCompositeOperation = 'lighter'
         ctx.fillStyle = g
