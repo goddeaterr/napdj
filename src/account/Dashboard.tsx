@@ -9,9 +9,21 @@ import styles from './Dashboard.module.css'
 
 export default function Dashboard() {
   const { lang } = useLang()
-  const { user, ready, balance, lessons, bookings, signOut, resendVerification } = useAuth()
+  const { user, ready, balance, lessons, bookings, signOut, resendVerification, cancelBooking } = useAuth()
   const c = DASH_COPY[lang] ?? DASH_COPY.en
   const [resent, setResent] = useState(false)
+  const [cancelling, setCancelling] = useState<string | null>(null)
+  const [cancelError, setCancelError] = useState<string | null>(null)
+
+  const CANCELLABLE = ['new', 'contacted', 'confirmed']
+
+  const askCancel = async (id: string) => {
+    if (!confirm(c.cancelAsk)) return
+    setCancelling(id)
+    const err = await cancelBooking(id)
+    setCancelError(err === 'too_late' ? c.cancelTooLate : err ? c.cancelFailed : null)
+    setCancelling(null)
+  }
   // Counts up once the data lands, so the number arrives rather than blinks in.
   const shownBalance = useCountUp(balance, ready && !!user, 1100)
 
@@ -94,6 +106,7 @@ export default function Dashboard() {
           {/* ── Bookings ── */}
           <section className={styles.panel}>
             <h2 className={styles.panelTitle}>{c.yourBookings}</h2>
+            {cancelError && <p className={styles.cancelError} role="alert">{cancelError}</p>}
             {bookings.length === 0 ? (
               <p className={styles.empty}>{c.noBookings}</p>
             ) : (
@@ -106,9 +119,18 @@ export default function Dashboard() {
                         {b.noPreference ? c.noPreference : fmtDate(b.date, b.time)}
                       </span>
                     </div>
-                    <span className={`${styles.status} ${styles['status_' + b.status] || ''}`}>
-                      {c.statuses[b.status] ?? b.status}
-                    </span>
+                    <div className={styles.itemRight}>
+                      <span className={`${styles.status} ${styles['status_' + b.status] || ''}`}>
+                        {c.statuses[b.status] ?? b.status}
+                      </span>
+                      {CANCELLABLE.includes(b.status) && (
+                        <button
+                          className={styles.cancelBtn}
+                          disabled={cancelling === b.id}
+                          onClick={() => askCancel(b.id)}
+                        >{c.cancel}</button>
+                      )}
+                    </div>
                   </li>
                 ))}
               </ul>

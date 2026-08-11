@@ -51,6 +51,7 @@ interface AuthCtx extends Overview {
   resetPassword: (token: string, password: string) => Promise<string | null>
   verifyEmail: (token: string) => Promise<string | null>
   resendVerification: (email: string) => Promise<string | null>
+  cancelBooking: (id: string) => Promise<string | null>
 }
 
 export interface SignUpData {
@@ -76,6 +77,7 @@ const Ctx = createContext<AuthCtx>({
   resetPassword: async () => null,
   verifyEmail: async () => null,
   resendVerification: async () => null,
+  cancelBooking: async () => null,
 })
 
 /** POSTs JSON and returns the server's error code, or null on success. */
@@ -149,10 +151,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const resendVerification = (email: string) => post('resend', { email })
 
+  const cancelBooking = async (id: string) => {
+    const error = await post('cancel', { id })
+    if (!error) await refresh()
+    return error
+  }
+
   return (
     <Ctx.Provider value={{
       user, ready, ...data, refresh,
-      signIn, signUp, signOut, forgotPassword, resetPassword, verifyEmail, resendVerification,
+      signIn, signUp, signOut, forgotPassword, resetPassword, verifyEmail, resendVerification, cancelBooking,
     }}>
       {children}
     </Ctx.Provider>

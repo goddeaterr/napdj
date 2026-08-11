@@ -216,3 +216,23 @@
   }
   .item:hover { padding-left: 0; }
 }
+
+/* ── Cancelling ───────────────────────────────────────────────────────── */
+.itemRight { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.cancelBtn {
+  background: none; cursor: pointer;
+  border: 1px solid rgba(255,255,255,0.16);
+  border-radius: 4px; padding: 5px 9px;
+  font-family: var(--font-condensed); font-size: 9.5px;
+  letter-spacing: .14em; text-transform: uppercase;
+  color: rgba(255,255,255,0.45);
+  transition: border-color .25s, color .25s;
+}
+.cancelBtn:hover:not(:disabled) { border-color: var(--taken-border); color: var(--taken); }
+.cancelBtn:disabled { opacity: .4; cursor: default; }
+.cancelError {
+  margin-bottom: 12px; padding: 10px 13px;
+  border: 1px solid var(--taken-border); border-left-width: 3px; border-radius: 6px;
+  background: var(--taken-bg); color: var(--taken);
+  font-size: 12px; line-height: 1.55;
+}

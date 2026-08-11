@@ -7,13 +7,14 @@ Agreed with the client, in priority order. Items 1–2 below were completed
 
 ## 1. Cancel / reschedule from the dashboard
 
-> **Server side is done and tested** (`cancelBooking` in `server/lib/accounts.js`,
+> **DONE** — endpoint and dashboard button both shipped and tested.
+> Only the owner notification on cancellation is left, if wanted.
+>
+> Server side (`cancelBooking` in `server/lib/accounts.js`,
 > `POST /api/auth/cancel`). Ownership, signed-out, unknown-id, double-cancel and
 > the 24h rule are all covered, and the calendar slot frees itself.
-> **Remaining: the dashboard button** — call `/api/auth/cancel` with the booking
-> id, then `refresh()`. Show it only for status `new`/`contacted`/`confirmed`.
-> Map `too_late` and `already_taken` to a readable message in all three
-> languages. Owner notification on cancellation is still to do.
+> The button shows only for `new`/`contacted`/`confirmed`, confirms first, and
+> maps `too_late` to a readable message in all three languages.
 
 **Why:** students can request a lesson but not cancel one, so every change
 becomes an e-mail to the studio.
