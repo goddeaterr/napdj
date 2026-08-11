@@ -10,11 +10,13 @@ export type AuthMode = 'signin' | 'signup' | 'forgot' | 'reset' | 'verify'
 
 /** How long the collapse/hold animation is allowed to play before we move on. */
 const PULL_MIN_MS = 950
-const HOLD_MS     = 620
 /** Burst out of the hole. */
 const BURST_MS    = 520
-/** The word holds — long enough to read it and watch it breathe. */
-const WORD_MS     = 6500
+/** The word holds on failure, where the visitor stays on this page anyway. */
+const WORD_MS     = 4200
+/** On success there is somewhere to be. The page curtain covers the change,
+    so the celebration is kept short rather than making people wait. */
+const SUCCESS_MS  = 700
 
 const wait = (ms: number) => new Promise(r => setTimeout(r, ms))
 
@@ -70,15 +72,18 @@ export default function AuthPage({ mode }: { mode: AuthMode }) {
       const [err] = await Promise.all([auth.verifyEmail(token), wait(PULL_MIN_MS)])
       if (cancelled) return
       if (err) setError(authError(lang, err))
-      else { setPhase('hold'); await wait(HOLD_MS) }
+      else { setPhase('hold'); await wait(SUCCESS_MS) }
       if (cancelled) return
 
       setPhase('collapse')
       await wait(BURST_MS)
       if (cancelled) return
-      setPhase('text')
-      await wait(WORD_MS)
-      if (cancelled) return
+
+      if (err) {
+        setPhase('text')
+        await wait(WORD_MS)
+        if (cancelled) return
+      }
 
       // Back to drift before the panel swaps in, or its button would keep the
       // sphere styling and sit there invisible.
@@ -103,21 +108,27 @@ export default function AuthPage({ mode }: { mode: AuthMode }) {
        out and the notes gather into the studio name. The card says which it
        was — the error appears while the word is still forming, so nobody waits
        on the animation to find out. */
-    if (err) {
-      setError(authError(lang, err))
-    } else {
+    if (!err) {
+      // Rain, a short burst, and straight on to wherever they were going.
       setPhase('hold')
-      await wait(HOLD_MS)
+      await wait(SUCCESS_MS)
+      setPhase('collapse')
+      await wait(BURST_MS)
+      setPhase('drift')
+      setBusy(false)
+      onSuccess()
+      return
     }
 
+    // Failure: nothing to navigate to, so the word gets its full run. The
+    // error is already on screen while it forms.
+    setError(authError(lang, err))
     setPhase('collapse')
     await wait(BURST_MS)
     setPhase('text')
     await wait(WORD_MS)
-
     setPhase('drift')
     setBusy(false)
-    if (!err) onSuccess()
   }
 
   const submit = (e: React.FormEvent) => {

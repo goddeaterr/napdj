@@ -8,6 +8,7 @@ import { findLegalPage } from './legal/pages'
 import LegalPageView from './legal/LegalPageView'
 import ErrorBoundary from './components/ErrorBoundary'
 import NotFound from './components/NotFound'
+import PageTransition from './components/PageTransition'
 import AuthPage, { type AuthMode } from './auth/AuthPage'
 import './styles/global.css'
 
@@ -26,13 +27,15 @@ const AUTH_ROUTES: Record<string, AuthMode> = {
 
 function Root() {
   const path = usePath()
+  // Keyed by path: plays on first load and on every route change.
+  const curtain = <PageTransition token={path} />
 
   if (path === '/admin') {
-    return <Suspense fallback={null}><AdminApp /></Suspense>
+    return <>{curtain}<Suspense fallback={null}><AdminApp /></Suspense></>
   }
 
   if (path === '/account') {
-    return <Suspense fallback={null}><Dashboard /></Suspense>
+    return <>{curtain}<Suspense fallback={null}><Dashboard /></Suspense></>
   }
 
   const authMode = AUTH_ROUTES[path]
@@ -40,14 +43,14 @@ function Root() {
   // Without it React reuses the instance and every piece of state survives the
   // navigation — a finished panel keeps rendering over the next screen, and the
   // button keeps the sphere styling from the animation that just ran.
-  if (authMode) return <AuthPage key={authMode} mode={authMode} />
+  if (authMode) return <>{curtain}<AuthPage key={authMode} mode={authMode} /></>
 
   const legal = findLegalPage(path)
-  if (legal) return <LegalPageView page={legal} />
+  if (legal) return <>{curtain}<LegalPageView page={legal} /></>
 
-  if (path !== '/') return <NotFound />
+  if (path !== '/') return <>{curtain}<NotFound /></>
 
-  return <App />
+  return <>{curtain}<App /></>
 }
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
