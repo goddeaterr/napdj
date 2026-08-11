@@ -3,7 +3,7 @@ import { useState } from 'react'
 import NekoLogo from './NekoLogo'
 import { useLang } from '../lib/LangContext'
 import { useScrollAnimation } from '../hooks/useScrollAnimation'
-import { CONTACT, LINKS, HOURS_LABEL, socialLinks } from '../config/site'
+import { CONTACT, LINKS, LEGAL, HOURS_LABEL, socialLinks } from '../config/site'
 import { LEGAL_PAGES } from '../legal/pages'
 import { navigate } from '../lib/router'
 import styles from './Footer.module.css'
@@ -180,7 +180,15 @@ export default function Footer() {
         <div className={styles.divider} />
 
         <div className={styles.bottom}>
-          <span>{t('footer_rights')}</span>
+          <span>
+            {t('footer_rights')}
+            {LEGAL.companyName && (
+              <span className={styles.legalId}>
+                {LEGAL.companyName}
+                {LEGAL.companyCode ? ` · ${LEGAL.companyCode}` : ''}
+              </span>
+            )}
+          </span>
           <span className={styles.bottomCenter}>Klaipėda · Lithuania · Est. 2020</span>
           <span className={styles.madeWith}>{t('footer_tagline')}</span>
         </div>

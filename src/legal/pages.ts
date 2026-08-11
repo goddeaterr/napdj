@@ -22,6 +22,7 @@ const address   = LEGAL.registeredAddress || `${CONTACT.city}, ${CONTACT.country
 const email     = CONTACT.email
 const dpoEmail  = LEGAL.dataContactEmail || CONTACT.email
 const phone     = CONTACT.phone
+const director  = LEGAL.director
 
 /* ── Privacy Policy ────────────────────────────────────────────────────── */
 const privacy: LegalPage = {
@@ -36,6 +37,7 @@ const privacy: LegalPage = {
     en: [
       { heading: '1. Data controller', body: [
         `${legalName}${LEGAL.companyCode ? `, company code ${LEGAL.companyCode}` : ''}${LEGAL.vatCode ? `, VAT code ${LEGAL.vatCode}` : ''}, ${address}.`,
+        `Represented by ${director}, director.`,
         `E-mail: ${dpoEmail} · Phone: ${phone}`,
         'We are the controller of the personal data described below. We have not appointed a Data Protection Officer, as we are not required to; data questions are handled directly at the address above.',
       ]},
@@ -78,6 +80,7 @@ const privacy: LegalPage = {
     ru: [
       { heading: '1. Оператор данных', body: [
         `${legalName}${LEGAL.companyCode ? `, код предприятия ${LEGAL.companyCode}` : ''}${LEGAL.vatCode ? `, код НДС ${LEGAL.vatCode}` : ''}, ${address}.`,
+        `Представитель: ${director}, директор.`,
         `E-mail: ${dpoEmail} · Телефон: ${phone}`,
         'Мы являемся оператором описанных ниже персональных данных. Отдельный специалист по защите данных не назначен, так как закон этого от нас не требует; все вопросы решаются по указанным выше контактам.',
       ]},
@@ -120,6 +123,7 @@ const privacy: LegalPage = {
     lt: [
       { heading: '1. Duomenų valdytojas', body: [
         `${legalName}${LEGAL.companyCode ? `, įmonės kodas ${LEGAL.companyCode}` : ''}${LEGAL.vatCode ? `, PVM kodas ${LEGAL.vatCode}` : ''}, ${address}.`,
+        `Atstovauja direktorė ${director}.`,
         `El. paštas: ${dpoEmail} · Telefonas: ${phone}`,
         'Esame toliau aprašytų asmens duomenų valdytojas. Duomenų apsaugos pareigūno neskyrėme, nes to nereikalaujama; visi klausimai sprendžiami aukščiau nurodytais kontaktais.',
       ]},
@@ -175,6 +179,7 @@ const terms: LegalPage = {
     en: [
       { heading: '1. Provider', body: [
         `${legalName}, ${address}${LEGAL.companyCode ? `, company code ${LEGAL.companyCode}` : ''}. E-mail ${email}, phone ${phone}.`,
+        `Represented by ${director}, director. Registered on ${LEGAL.registeredOn}.`,
       ]},
       { heading: '2. Booking', body: [
         'Submitting the form is a request, not a confirmed reservation. A lesson is booked only once we confirm the date and time by e-mail or phone, normally within 24 hours.',
@@ -215,6 +220,7 @@ const terms: LegalPage = {
     ru: [
       { heading: '1. Исполнитель', body: [
         `${legalName}, ${address}${LEGAL.companyCode ? `, код предприятия ${LEGAL.companyCode}` : ''}. E-mail ${email}, телефон ${phone}.`,
+        `Представитель: ${director}, директор. Дата регистрации: ${LEGAL.registeredOn}.`,
       ]},
       { heading: '2. Запись', body: [
         'Отправка формы — это заявка, а не подтверждённая бронь. Урок считается забронированным только после того, как мы подтвердим дату и время по e-mail или телефону, обычно в течение 24 часов.',
@@ -255,6 +261,7 @@ const terms: LegalPage = {
     lt: [
       { heading: '1. Paslaugų teikėjas', body: [
         `${legalName}, ${address}${LEGAL.companyCode ? `, įmonės kodas ${LEGAL.companyCode}` : ''}. El. paštas ${email}, telefonas ${phone}.`,
+        `Atstovauja direktorė ${director}. Įregistruota ${LEGAL.registeredOn}.`,
       ]},
       { heading: '2. Registracija', body: [
         'Formos pateikimas yra užklausa, o ne patvirtinta rezervacija. Pamoka laikoma rezervuota tik kai patvirtiname datą ir laiką el. paštu arba telefonu, paprastai per 24 valandas.',

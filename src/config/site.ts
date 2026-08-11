@@ -85,18 +85,26 @@ export const VENUE = {
 export const LEGAL = {
   /** Trading name shown across the site. */
   brand: 'neko art platform',
-  /** Registered legal name, e.g. 'MB Neko Art'. Leave '' if not registered yet. */
-  companyName: '',
+  /** Registered legal name. VšĮ = viešoji įstaiga, a public establishment. */
+  companyName: 'Neko muzika, VšĮ',
   /** Lithuanian company code (įmonės kodas). */
-  companyCode: '',
-  /** VAT code (PVM kodas), if VAT registered. */
+  companyCode: '305718580',
+  /** VAT code (PVM kodas). Empty — the company is not VAT registered. */
   vatCode: '',
-  /** Registered office address. Falls back to CONTACT city/country. */
-  registeredAddress: '',
+  /**
+   * Registered office as filed with the register. This is the legal address
+   * for notices, not somewhere students should turn up — keep the studio's
+   * visiting address in CONTACT.address if it is different.
+   */
+  registeredAddress: 'Minijos g. 130A-57, Klaipėda, Lietuva',
+  /** Director as filed with the register — the entity's legal representative. */
+  director: 'Alika Kitaigorodskaja',
+  /** Date the legal entity was registered. */
+  registeredOn: '2021-03-19',
   /** Person responsible for data protection questions. */
   dataContactEmail: 'artemijstepanov@gmail.com',
   /** Date the legal documents were last updated (shown on each page). */
-  lastUpdated: '2026-08-10',
+  lastUpdated: '2026-08-11',
 } as const
 
 export const SITE_URL = 'https://napdj.com'
