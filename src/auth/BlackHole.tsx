@@ -128,18 +128,48 @@ export default function BlackHole({ phase, target }: Props) {
          the result is cached per size and reused. */
       const key = `${word}:${Math.round(width)}x${Math.round(height)}`
       if (cachedWord && cachedWordKey === key) return cachedWord
+
       const off = document.createElement('canvas')
       off.width = Math.max(1, Math.floor(width))
       off.height = Math.max(1, Math.floor(height))
       const octx = off.getContext('2d', { willReadFrequently: true })
       if (!octx) return []
 
-      const size = Math.min(width * 0.24, height * 0.42, 260)
+      /* The card sits in the middle and is opaque, so a word drawn there is
+         hidden behind it. The two words go in the gutters either side instead,
+         each scaled to the space it actually has. On a narrow screen there are
+         no gutters, so they stack above and below the card. */
+      const CARD = 470                       // card width plus breathing room
+      const gutter = (width - CARD) / 2
+      const wide = gutter >= 190
+
+      const placements = wide
+        ? [
+            { text: 'NEKO',   cx: gutter / 2,             cy: height / 2, room: gutter },
+            { text: 'STUDIO', cx: width - gutter / 2,     cy: height / 2, room: gutter },
+          ]
+        : [
+            { text: 'NEKO',   cx: width / 2, cy: height * 0.16, room: width * 0.9 },
+            { text: 'STUDIO', cx: width / 2, cy: height * 0.86, room: width * 0.9 },
+          ]
+
       octx.fillStyle = '#fff'
       octx.textAlign = 'center'
       octx.textBaseline = 'middle'
-      octx.font = `${size}px "Bebas Neue", Impact, "Arial Black", sans-serif`
-      octx.fillText(word, width / 2, height / 2)
+
+      for (const place of placements) {
+        // Fit the word to its space: measure at a reference size, then scale.
+        const ref = 100
+        octx.font = `${ref}px "Bebas Neue", Impact, "Arial Black", sans-serif`
+        const refWidth = octx.measureText(place.text).width || ref
+        const size = Math.min(
+          (place.room * 0.82) * ref / refWidth,
+          height * (wide ? 0.34 : 0.16),
+          230,
+        )
+        octx.font = `${size}px "Bebas Neue", Impact, "Arial Black", sans-serif`
+        octx.fillText(place.text, place.cx, place.cy)
+      }
 
       const { data } = octx.getImageData(0, 0, off.width, off.height)
       const points: Array<{ x: number; y: number }> = []
@@ -149,11 +179,12 @@ export default function BlackHole({ phase, target }: Props) {
           if (data[(y * off.width + x) * 4 + 3] > 128) points.push({ x, y })
         }
       }
-      // Shuffle so particles do not fill the word left to right in bands.
+      // Shuffle so particles do not fill the words left to right in bands.
       for (let i = points.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1))
         ;[points[i], points[j]] = [points[j], points[i]]
       }
+
       cachedWord = points
       cachedWordKey = key
       return points
@@ -166,7 +197,7 @@ export default function BlackHole({ phase, target }: Props) {
 
       // A sparse word is unreadable, so top up — the extras burst out of the
       // hole, which is where the eye already is.
-      const wanted = Math.min(points.length, 330)
+      const wanted = Math.min(points.length, 420)
       while (parts.length < wanted) {
         const p = spawn()
         const angle = Math.random() * Math.PI * 2
