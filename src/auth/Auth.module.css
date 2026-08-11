@@ -150,6 +150,12 @@
 /* ── The button, which becomes the black hole ─────────────────────────── */
 .submit {
   position: relative;
+  /* Block, not the default inline-block. The phase classes centre the sphere
+     with `margin: 6px auto 0`, and auto margins do nothing on an inline-block —
+     which left it stuck against the card's left edge on the screens where the
+     button is not a flex item (verify, and the finished panels). */
+  display: block;
+  text-align: center;
   margin-top: 6px;
   width: 100%; height: 50px;
   border: none; border-radius: 7px;
